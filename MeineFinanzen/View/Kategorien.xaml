@@ -1,0 +1,192 @@
+﻿<!-- 03.10.2016   -View-  Kategorien.xaml -->
+<Window x:Class="MeineFinanzen.View.Kategorien"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:dw="clr-namespace:DrWPF.Windows.Controls"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MeineFinanzen.View"
+        mc:Ignorable="d"
+        Title="Kategorien"
+        WindowState="Maximized"
+        Loaded="Window_Loaded">
+    <Window.Resources>
+        <local:OCKategorien x:Key="kategorien" />
+        <CollectionViewSource x:Key="cvskategorien"
+                              Source="{StaticResource kategorien}" />
+        <Style x:Key="TreeViewItemStyle"
+               TargetType="TreeViewItem">
+            <Setter Property="IsExpanded"
+                    Value="True" />
+            <Setter Property="IsSelected"
+                    Value="{Binding IsInitiallySelected, Mode=OneTime}" />
+            <Setter Property="KeyboardNavigation.AcceptsReturn"
+                    Value="True" />
+            <Setter Property="dw:VirtualToggleButton.IsVirtualToggleButton"
+                    Value="True" />
+            <Setter Property="dw:VirtualToggleButton.IsChecked"
+                    Value="{Binding IsChecked}" />
+        </Style>
+        <HierarchicalDataTemplate x:Key="CheckBoxItemTemplate"
+                                  ItemsSource="{Binding KatChildren, Mode=OneTime}">
+            <StackPanel Orientation="Horizontal">
+                <!-- These elements are bound to a KategorieViewModel object. -->
+                <CheckBox Name="cbBox"
+                          Focusable="False"
+                          IsChecked="{Binding IsChecked}"
+                          VerticalAlignment="Center" />
+                <ContentPresenter Content="{Binding KatName, Mode=OneTime}"
+                                  Margin="2,0" />
+            </StackPanel>
+        </HierarchicalDataTemplate>
+    </Window.Resources>
+    <Grid ShowGridLines="True"
+          Background="#FFECECD9">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="22*" />
+            <ColumnDefinition Width="245*" />
+            <ColumnDefinition Width="470*" />
+            <ColumnDefinition Width="23*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="28*" />
+            <RowDefinition Height="419*" />
+            <RowDefinition Height="57*" />
+        </Grid.RowDefinitions>
+        <Button DockPanel.Dock="Bottom"
+                Command="Undo"
+                Content="Uncheck All"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Height="20"
+                Margin="8,8,0,0"
+                Width="100"
+                Grid.Column="1"
+                Grid.Row="2" />
+        <Button Name="btTest"
+                Click="btTest_Click"
+                Content="Test"
+                Margin="134,23,125,14"
+                Width="Auto"
+                Grid.Column="2"
+                Grid.Row="2" />
+        <TreeView x:Name="treeKategorie"
+                  Grid.Column="1"
+                  Grid.Row="1"
+                  ItemContainerStyle="{StaticResource TreeViewItemStyle}"
+                  ItemsSource="{Binding Mode=OneTime}"
+                  ItemTemplate="{StaticResource CheckBoxItemTemplate}" />
+        <Grid   ShowGridLines="False"
+                Grid.Column="2"
+                Grid.Row="1"
+                Background="#FFF3F9DD">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160*" />
+                <ColumnDefinition Width="100*" />
+                <ColumnDefinition Width="100*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="80" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="900" />
+            </Grid.RowDefinitions>
+            <Label Content="Kategorie bearbeiten"
+                   Grid.ColumnSpan="2"
+                   Grid.Row="0"
+                   HorizontalAlignment="Center"
+                   FontSize="24"
+                   FontStyle="Italic"
+                   FontWeight="Bold" />
+            <Label Content="Name:"
+                   Grid.Column="0"
+                   Grid.Row="2"
+                   HorizontalAlignment="Right"
+                   FontSize="14" />
+            <TextBox Name="txtName"
+                     Grid.Column="1"
+                     Grid.Row="2" />
+            <Label Content="Unterkategorie von:"
+                   Grid.Column="0"
+                   Grid.Row="3"
+                   HorizontalAlignment="Right"
+                   FontSize="14" />
+            <TextBox Name="txtUnterkategorieVon"
+                     Grid.Column="1"
+                     Grid.Row="3" />
+            <Label Content="Beschreibung:"
+                   Grid.Column="0"
+                   Grid.Row="4"
+                   HorizontalAlignment="Right"
+                   FontSize="14" />
+            <TextBox Name="txtBeschreibung"
+                     Grid.Column="1"
+                     Grid.Row="4" />
+            <Label Content="Stichwörter und Regeln:"
+                   Grid.Column="0"
+                   Grid.Row="5"
+                   HorizontalAlignment="Right"
+                   FontSize="14" />
+            <TextBox Name="txtStichwörterundRegeln"
+                     Grid.Column="1"
+                     Grid.Row="5"
+                     Height="70" />
+            <Label Content="Budget und Auswertung"
+                   Grid.Column="0"
+                   Grid.Row="6"
+                   Grid.ColumnSpan="2"
+                   HorizontalAlignment="Center"
+                   FontSize="24"
+                   FontStyle="Italic"
+                   FontWeight="Bold" />
+            <Label Content="Auswerten als:"
+                   Grid.Column="0"
+                   Grid.Row="7"
+                   HorizontalAlignment="Right"
+                   FontSize="14" />
+            <ComboBox Name="cbAuswertenals"
+                      Grid.Column="1"
+                      Grid.Row="7"
+                      AllowDrop="True"
+                      Height="22"
+                      HorizontalAlignment="Left"
+                      Margin="200,209,0,0"
+                      VerticalAlignment="Top"
+                      SelectedItem="{Binding Path=DepotID, Mode=TwoWay}"
+                      SelectionChanged="cmbSelectionChangedAuswertenals"
+                      Background="Linen"
+                      Width="270"
+                      FontWeight="Bold" />
+            <Label Content="Budgetzeitraum:"
+                   Grid.Column="0"
+                   Grid.Row="8"
+                   HorizontalAlignment="Right"
+                   FontSize="14" />
+            <TextBox Name="txtBudgetzeitraum"
+                     Grid.Column="1"
+                     Grid.Row="8" />
+            <Label Content="Budgetbetrag:"
+                   Grid.Column="0"
+                   Grid.Row="9"
+                   HorizontalAlignment="Right"
+                   FontSize="14" />
+            <TextBox Name="txtBudgetbetrag"
+                     Grid.Column="1"
+                     Grid.Row="9" />
+            <TextBox x:Name="TextBox1"
+                     Text="Hello! I am a TextBox."
+                     Background="#FFE9F3C3"
+                     Grid.Column="2"
+                     Grid.RowSpan="11" />
+        </Grid>
+    </Grid>
+</Window>

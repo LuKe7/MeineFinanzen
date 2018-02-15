@@ -1,0 +1,15 @@
+﻿<Window x:Class="MeineFinanzen.View.KontenSynHBCI4j"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MeineFinanzen.View"
+        xmlns:model="clr-namespace:MeineFinanzen.Model"
+        mc:Ignorable="d"
+        Title="KontenSynHBCI4j"
+        Height="800"
+        Width="800"
+        Loaded="Window_Loaded"
+        Closing="CloseWindow">
+    <Grid></Grid>
+</Window>

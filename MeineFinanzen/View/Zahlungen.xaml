@@ -1,0 +1,63 @@
+﻿<!-- 07.10.2016   Zahlungen.xaml  -->
+<Window x:Class="MeineFinanzen.View.Zahlungen"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:local="clr-namespace:MeineFinanzen.Model"        
+        Title="Zahlungen"
+        WindowState="Normal"
+        Loaded="Window_Loaded">
+    <Window.Resources>
+            <local:CollZahlungen x:Key="zahlungen" />
+            <CollectionViewSource x:Key="cvszahlungen"
+                                  Source="{StaticResource zahlungen}">
+                <CollectionViewSource.SortDescriptions>
+                    <scm:SortDescription PropertyName="PaymtPurpose" />
+                    <scm:SortDescription PropertyName="Isin" />
+                    <scm:SortDescription PropertyName="ValueDate" />
+                </CollectionViewSource.SortDescriptions>
+            </CollectionViewSource>
+            <local:NullImageConverter x:Key="nullImageConverter" />
+        </Window.Resources>
+        <Grid>
+            <DataGrid  x:Name="gridZahlungen"
+                       Language="DE-de"
+                       FontSize="12"
+                       RowHeight="40"
+                       BorderThickness="1.0"
+                       Width="895"
+                       Margin="10,363,-145,141"
+                       ItemsSource="{Binding Source={StaticResource cvszahlungen}}"
+                       AutoGenerateColumns="True"
+                       HorizontalGridLinesBrush="#E600FA00"
+                       VerticalGridLinesBrush="#9B7D7B62"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Stretch">
+                <!--  ,Converter={StaticResource nullImageConverter}
+            EntryDate;ValueDate;Value;AcctNo;BankCode;Name1;Name2;PaymtPurpose;EntryText;PrimaNotaNo;TranTypeIdCode;ZkaTranCode;TextKeyExt;BankRef;OwnerRef;SupplementaryDetails -->
+            </DataGrid>
+            <Button Content="Übernehen"
+                    HorizontalAlignment="Left"
+                    Margin="265,12,0,0"
+                    VerticalAlignment="Top"
+                    Width="75" />
+            <Button Content="Abbrechen"
+                    HorizontalAlignment="Left"
+                    Margin="505,12,0,0"
+                    VerticalAlignment="Top"
+                    Width="75" />
+            <Label Content="Zahlungen synchronisieren"
+                   FontSize="16"
+                   HorizontalAlignment="Left"
+                   Margin="25,5,0,0"
+                   VerticalAlignment="Top"
+                   Width="210" />
+            <DataGrid  x:Name="gridWP"
+                       HorizontalAlignment="Left"
+                       Margin="10,60,0,0"
+                       VerticalAlignment="Top"
+                       Height="285"
+                       Width="730"></DataGrid>
+        </Grid>
+    </Window>

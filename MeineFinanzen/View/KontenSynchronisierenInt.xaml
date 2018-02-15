@@ -1,0 +1,73 @@
+﻿<!-- 12.02.2018   -View-   KontenSynchronisierenInt.xaml -->
+<Window x:Class="MeineFinanzen.View.KontenSynchronisierenInt"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:MeineFinanzen.View"
+        Title="KontenSynchronisierenInt"
+        WindowState="Maximized"
+        xml:lang="de-DE"
+        FontSize="10"
+        HorizontalAlignment="Left"
+        Closing="Window_Closing"
+        Loaded="Window_Loaded">
+    <Grid x:Name="Grid1">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="24*" />
+            <ColumnDefinition Width="16*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="30*" />
+            <RowDefinition Height="5*" />
+        </Grid.RowDefinitions>
+        <!--Ein Element, mit dem Sie ein Windows Forms-Steuerelement
+            auf einer WPF-Seite hosten können.-->
+        <WindowsFormsHost x:Name="wfh1"
+                          Grid.Column="0"
+                          Grid.Row="0"
+                          Grid.RowSpan="4">
+            <!-- Mit wf: könnt ihr eine Form auswählen und mit 
+                 x: den Namen FieldModifier oder txtOben festlegen
+                DocumentCompleted="wb1_DocumentCompleted" -->
+            <wf:WebBrowser x:Name="wb1"
+                           DocumentTitleChanged="wb1_DocumentTitleChanged"
+                           StatusTextChanged="wb1_StatusTextChanged"
+                           Navigating="wb1_Navigating" />
+        </WindowsFormsHost>
+        <TextBox x:Name="txtOben"
+                 Grid.Column="1"
+                 Grid.Row="0"
+                 VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Auto" />
+        <TextBox x:Name="txtUnten"
+                 Grid.Column="1"
+                 Grid.Row="1"
+                 Text="txtUnten"
+                 VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Auto" />
+        <StackPanel VerticalAlignment="Top"
+                    Grid.Column="1"
+                    Grid.Row="2"
+                    HorizontalAlignment="Left">
+            <Button Name="btEnde"
+                    Click="btEnde_Click"
+                    Content="Habe fertig"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"                  
+                    Height="20" />
+            <ProgressBar x:Name="progrBar1"                       
+                         Height="20"
+                         Value="{Binding Progress1}"
+                         Maximum="{Binding Maximum1}"
+                         Minimum="{Binding Minimum1}" />
+            <ProgressBar x:Name="progrBar"                       
+                         Height="20"
+                         Value="{Binding Progress}"
+                         Maximum="{Binding Maximum}"
+                         Minimum="{Binding Minimum}" />
+   
+        </StackPanel>
+    </Grid>
+</Window>

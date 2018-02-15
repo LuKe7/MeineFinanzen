@@ -1,0 +1,1336 @@
+﻿<!-- 16.01.2018   -View-   HauptFenster.xaml -->
+<Window x:Class="MeineFinanzen.View.HauptFenster"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:view="clr-namespace:MeineFinanzen.View"
+        xmlns:model="clr-namespace:MeineFinanzen.Model"
+        xmlns:dw="clr-namespace:DrWPF.Windows.Controls"
+        xmlns:helpers="clr-namespace:MeineFinanzen.Helpers"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        mc:Ignorable="d"
+        Title="MeineFinanzen"
+        WindowState="Maximized"
+        FontSize="12"
+        FontFamily="Tahoma"
+        Loaded="Window_Loaded"
+        Closing="Window_Closing">
+    <Window.Resources>
+        <view:BoolToGridRowHeightConverter3 x:Key="boolToGridRowHeightConverter3" />
+        <view:BoolToGridRowHeightConverter2 x:Key="boolToGridRowHeightConverter2" />
+        <view:IconPathConverter x:Key="iconPathConverter" />
+        <view:SignedConvert x:Key="SignedConvert" />
+        <view:SignedConvertFi x:Key="SignedConvertFi" />
+        <view:DateConvert x:Key="dateConvert" />
+        <view:DateConvertFi x:Key="dateConvertFi" />
+        <view:ISINConverter x:Key="ISINConverter" />
+        <model:CollWertpapiere x:Key="wertpapiere" />
+        <CollectionViewSource x:Key="cvsWertpapiere"
+                              Source="{StaticResource wertpapiere}"
+                              Filter="CollectionViewSource_Filter">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Type" />
+                <scm:SortDescription PropertyName="isSumme" />
+                <scm:SortDescription PropertyName="Name" />
+            </CollectionViewSource.SortDescriptions>
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="AKName" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+        <model:CollKontoumsätze x:Key="kontoumsätze" />
+        <CollectionViewSource x:Key="cvskontoumsätze"
+                              Source="{StaticResource kontoumsätze}" />
+        <view:NameToBrushConverter x:Key="NameToBrushConverter" />
+        <DataTemplate x:Key="WertpapierDetail">
+            <Border BorderThickness="1"
+                    Background="BlanchedAlmond"
+                    Padding="10">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontSize="12"
+                                   Text="Email: "
+                                   VerticalAlignment="Center" />
+                        <TextBlock FontSize="16"
+                                   Foreground="MidnightBlue"
+                                   Text="{Binding Anzahl}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontSize="12"
+                                   Text="Phone: "
+                                   VerticalAlignment="Center" />
+                        <TextBlock FontSize="16"
+                                   Foreground="MidnightBlue"
+                                   Text="{Binding ISIN}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontSize="12"
+                                   Text="Sales Person: "
+                                   VerticalAlignment="Center" />
+                        <TextBlock FontSize="16"
+                                   Foreground="MidnightBlue"
+                                   Text="{Binding Name}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+        <SolidColorBrush x:Key="SelectedBackgroundBrush"
+                         Color="#DDD" />
+        <SolidColorBrush x:Key="DisabledForegroundBrush"
+                         Color="#888" />
+        <Style x:Key="{x:Type ComboBoxItem}"
+               TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="SnapsToDevicePixels"
+                    Value="true" />
+            <Setter Property="OverridesDefaultStyle"
+                    Value="true" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                        <Border x:Name="Border"
+                                Padding="2"
+                                SnapsToDevicePixels="true">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted"
+                                     Value="true">
+                                <Setter TargetName="Border"
+                                        Property="Background"
+                                        Value="{StaticResource SelectedBackgroundBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled"
+                                     Value="false">
+                                <Setter Property="Foreground"
+                                        Value="{StaticResource DisabledForegroundBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- <local:OCKategorien x:Key="kategorien" /> 
+        <CollectionViewSource x:Key="cvskategorien"
+                              Source="{StaticResource kategorien}" /> -->
+        <Style x:Key="TreeViewItemStyle"
+               TargetType="{x:Type TreeViewItem}">
+            <Setter Property="IsExpanded"
+                    Value="True" />
+            <Setter Property="IsSelected"
+                    Value="{Binding IsInitiallySelected, Mode=OneTime}" />
+            <Setter Property="KeyboardNavigation.AcceptsReturn"
+                    Value="True" />
+            <Setter Property="dw:VirtualToggleButton.IsVirtualToggleButton"
+                    Value="True" />
+            <Setter Property="dw:VirtualToggleButton.IsChecked"
+                    Value="{Binding IsChecked}" />
+        </Style>
+        <HierarchicalDataTemplate x:Key="CheckBoxItemTemplate"
+                                  ItemsSource="{Binding Children, Mode=OneTime}">
+            <StackPanel Orientation="Horizontal">
+                <!-- These elements are bound to a KategorieViewModel object. -->
+                <CheckBox x:Name="cbBox"
+                         
+                          IsChecked="{Binding IsChecked}"
+                          VerticalAlignment="Center" />
+                <ContentPresenter Content="{Binding Name, Mode=OneTime}" />
+            </StackPanel>
+        </HierarchicalDataTemplate>
+        <Style TargetType="{x:Type TextBlock}"
+               x:Key="RightCell">
+            <Setter Property="HorizontalAlignment"
+                    Value="Stretch" />
+            <Setter Property="TextAlignment"
+                    Value="Right" />
+        </Style>
+    </Window.Resources>
+    <Grid x:Name="GridÜberAlles"
+          Background="#FFB8B7A8">
+        <!-- Auto Die Größe wird von den Größeneigenschaften des Inhaltsobjekts bestimmt.  
+             100  Der Wert wird als Pixel ausgedrückt.  
+             *    Der Wert wird als gewichtetes Verhältnis zum verfügbaren Platz ausgedrückt. -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="12*" />
+            <RowDefinition Height="450*" />
+            <RowDefinition Height="0*" />
+        </Grid.RowDefinitions>
+        <StackPanel x:Name="MenuDateiExtraHilfe"
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Center">
+            <Menu DockPanel.Dock="Top"
+                  x:Name="mnuMenu"
+                  Height="20"                  
+                  FontSize="14">
+                <MenuItem Header="_Datei">
+                    <MenuItem Header="_Neu" />
+                    <MenuItem Header="_Öffnen" />
+                    <Separator />
+                    <MenuItem Header="_Speichern" />
+                    <MenuItem Header="Speichern _unter ..." />
+                    <Separator />
+                    <MenuItem Header="_Senden an">
+                        <MenuItem Header="_Mail" />
+                        <MenuItem Header="_Desktop" />
+                    </MenuItem>
+                    <MenuItem Header="_Beenden"
+                              Click="_Beenden_Click" />
+                </MenuItem>
+                <MenuItem Header="_Extras">
+                    <MenuItem Header="Kontenaufstellung HBCI4j"
+                              Click="KontenaufstellungHBCI4j_Click" />
+                    <MenuItem Header="Konten Synchronisieren Internet"
+                              Click="KontenSynchronisierenInt_Click" />
+                    <MenuItem Header="Konten Synchronisieren Subsembly"
+                              Click="KontenSynchronisierenSubsembly_Click" />
+                    <MenuItem Header="Konten Synchronisieren HBCI4j"
+                              Click="KontenSynchronisierenHBCI4j_Click" />
+                    <MenuItem Header="Konten Knotenliste erstellen"
+                              Click="Konten_Knotenliste_Erstellen_Click" />
+                    <MenuItem Header="Einstellungen"
+                              Click="Einstellungen_Click" />
+                    <MenuItem Header="Als Text speichern"
+                              Click="AlsTextSpeichern_Click" />
+                    <MenuItem Header="Als Text restore"
+                              Click="AlsTextRestore_Click" />
+                    <MenuItem Header="Zahlungen"
+                              Click="Zahlungen_Click" />
+                    <MenuItem Header="Jahreswechsel"
+                              Click="Jahreswechsel_Click" />
+                    <MenuItem Header="HistorieGesamt"
+                              Click="HistorieGesamt_Click" />
+                    <MenuItem Header="TestWPAktualisieren"
+                              Click="TestWPAktualisieren_Click" />
+                    <MenuItem Header="TestWPX.... auf 0 setzen"
+                              Click="TextWPXlöschen_Click" />
+                    <MenuItem Header="_Abmelden"
+                              Click="Abmelden_Click" />
+                </MenuItem>
+                <MenuItem Header="_Hilfe" />
+            </Menu>
+        </StackPanel>
+        <Grid x:Name="GridDgBankenÜbersicht"
+              Grid.Column="0"
+              Grid.Row="1"
+              Background="#FFB8B7A8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.3*" />
+                <RowDefinition Height="10*" />
+            </Grid.RowDefinitions>
+            <!-- in DgBankenViewModel mw.dgBankenÜbersicht.ItemsSource = banken; -->
+            <DataGrid x:Name="dgBankenÜbersicht"
+                      Grid.Column="0"
+                      Grid.Row="1"
+                      ItemsSource="{Binding}"                        
+                      BorderBrush="#FFA2B687"
+                      Background="#FFE6E5D1"
+                      RowHeight="50"
+                      Language="DE-de"
+                      GridLinesVisibility="None"
+                      VerticalAlignment="Top"
+                      RowDetailsVisibilityMode="Visible"
+                      AutoGenerateColumns="False"
+                      HorizontalAlignment="Left"
+                      PreviewMouseDown="dgBankenÜbersicht_PreviewMouseDown"
+                      HeadersVisibility="None"                    
+                      SelectionChanged="dgBankenÜbersicht_SelectionChanged">
+                <DataGrid.RowStyle>
+                    <Style TargetType="{x:Type DataGridRow}">
+                        <Setter Property="FontWeight"
+                                Value="Normal" />
+                        <Setter Property="Foreground"
+                                Value="Black" />
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected"
+                                     Value="True">
+                                <Setter Property="Background"
+                                        Value="White" />
+                            </Trigger>
+                            <DataTrigger Binding="{Binding SortFeld7}"
+                                         Value="800">
+                                <Setter Property="Background"
+                                        Value="LightBlue" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding SortFeld7}"
+                                         Value="801">
+                                <Setter Property="Background"
+                                        Value="LightSeaGreen" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding SortFeld7}"
+                                         Value="802">
+                                <Setter Property="Background"
+                                        Value="LemonChiffon" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding SortFeld7}"
+                                         Value="888">
+                                <Setter Property="Background"
+                                        Value="Khaki" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding SortFeld7}"
+                                         Value="889">
+                                <Setter Property="Background"
+                                        Value="Aquamarine" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Status7}"
+                                         Value="staxxx">
+                                <Setter Property="Background"
+                                        Value="Red" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding BildPfad7, Mode=TwoWay, Converter={StaticResource iconPathConverter}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Binding="{Binding BankName7, Mode=TwoWay}"
+                                        FontSize="15"
+                                        Width="176" />
+                    <DataGridTemplateColumn Width="130">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding BankValue7, Mode=TwoWay, StringFormat=\{0:###\,##0.00 \}}"
+                                           Foreground="{Binding BankValue7, Converter={StaticResource SignedConvert}}"
+                                           FontSize="15"
+                                           HorizontalAlignment="Right" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+                <DataGrid.RowDetailsTemplate>
+                    <DataTemplate>
+                        <Border>
+                            <Grid x:Name="GridInnereDatagrid"
+                                  ShowGridLines="False">
+                                <DataGrid x:Name="InnereDatagridBanken"
+                                          RowHeight="30"
+                                          Language="DE-de"
+                                          HeadersVisibility="None"
+                                          GridLinesVisibility="None"
+                                          FontSize="11"
+                                          AutoGenerateColumns="False"
+                                          ItemsSource="{Binding OCBankKonten}"
+                                          Background="#FF03190C"
+                                          BorderBrush="#FFE8E5CA"
+                                          PreviewMouseDown="InnereDatagrid_PreviewMouseDown">
+                                    <DataGrid.RowStyle>
+                                        <Style TargetType="{x:Type DataGridRow}">
+                                            <Setter Property="FontWeight"
+                                                    Value="Normal" />
+                                            <Setter Property="Foreground"
+                                                    Value="Black" />
+                                            <Style.Triggers>
+                                                <Trigger Property="IsSelected"
+                                                         Value="True">
+                                                    <Setter Property="Background"
+                                                            Value="White" />
+                                                </Trigger>
+                                                <DataTrigger Binding="{Binding KontoArt8}"
+                                                             Value="800">
+                                                    <Setter Property="Background"
+                                                            Value="LightBlue" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding KontoArt8}"
+                                                             Value="801">
+                                                    <Setter Property="Background"
+                                                            Value="LightSeaGreen" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding KontoArt8}"
+                                                             Value="802">
+                                                    <Setter Property="Background"
+                                                            Value="LemonChiffon" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding KontoArt8}"
+                                                             Value="888">
+                                                    <Setter Property="Background"
+                                                            Value="Khaki" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding KontoArt8}"
+                                                             Value="889">
+                                                    <Setter Property="Background"
+                                                            Value="Aquamarine" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGrid.RowStyle>
+                                    <DataGrid.Columns>
+                                        <DataGridTemplateColumn Width="160">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding KontoName8}"
+                                                               HorizontalAlignment="Left" />
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTemplateColumn Width="80">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding KontoArt8}"
+                                                               HorizontalAlignment="Left" />
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTemplateColumn>
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding KontoValue8, ConverterCulture=de-DE, StringFormat=\{0:###\,##0.00 \}}"
+                                                               Foreground="{Binding KontoValue8, Converter={StaticResource SignedConvert}}"
+                                                               HorizontalAlignment="Right" />
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </DataGrid.RowDetailsTemplate>
+            </DataGrid>
+        </Grid>
+        <StackPanel x:Name="StackGraphCheckBoxen"
+                    Grid.Column="1"
+                    Grid.Row="0"
+                    VerticalAlignment="Top"
+                    Orientation="Horizontal">
+            <CheckBox x:Name="cbGraph"
+                      Content="Graph"
+                      IsChecked="False" />
+            <CheckBox x:Name="cbBrowser"
+                      Margin="40, 0"
+                      Content="Browser"
+                      IsChecked="False" />
+            <ComboBox x:Name="cbKonten"                      
+                      Width="80"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Top"
+                      Loaded="cbKonten_Loaded"
+                      SelectionChanged="cbKonten_SelectionChanged" />
+            <ComboBox x:Name="cbNeueVerbindung"
+                      Margin="10,0,0,0"
+                      Grid.Column="0"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Top"
+                      Loaded="cbNeueVerbindung_Loaded"
+                      SelectionChanged="cbNeueVerbindung_SelectionChanged" />
+            <TextBox x:Name="txbCPU"
+                     Margin="10, 0"
+                     VerticalAlignment="Top"
+                     Width="100"
+                     Text="CPU" />
+            <TextBox x:Name="txbSuche"
+                     Margin="10, 0"
+                     VerticalAlignment="Top"
+                     Width="100"
+                     Text="Suche"
+                     />
+            <!-- <TextBlock Text="{Binding ThereIsNoData-Context, diag:PresentationTraceSources.TraceLevel=High}" />-->
+        </StackPanel>
+        <Grid x:Name="GridTabControl1"
+              Background="#FFE8DEBE"
+              Grid.Row="1"
+              Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="900*" />
+            </Grid.RowDefinitions>
+            <TabControl x:Name="tabControl1"
+                        Grid.Column="0"
+                        Grid.Row="1"
+                        FontSize="14"
+                        SelectionChanged="TabControl_SelectionChanged"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        BorderBrush="#FFC0D8A4"
+                        BorderThickness="4">
+                <TabItem x:Name="tabFinanzübersicht"
+                         Header="Finanzübersicht"
+                         VerticalAlignment="Top">
+                    <Grid x:Name="GridtabFinanzÜbersicht"
+                          Background="#FFD8CB9D">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <!-- Beginn Hauptteil = dgFinanzübersicht -->
+                        <Border Background="LightSeaGreen"
+                                BorderBrush="Black"
+                                BorderThickness="2"
+                                CornerRadius="20"
+                                Padding="4">
+                            <DataGrid x:Name="dgFinanzübersicht"
+                                      Grid.Column="0"
+                                      ItemsSource="{Binding}"
+                                      GridLinesVisibility="All"
+                                      RowHeight="36"
+                                      Language="DE-de"
+                                      VerticalAlignment="Top"
+                                      RowDetailsVisibilityMode="Visible"
+                                      SelectionChanged="dgFinanzÜbersicht_SelectionChanged"
+                                      Loaded="dgFinanzÜbersicht_Loaded"
+                                      AutoGenerateColumns="False"
+                                      HorizontalAlignment="Left"
+                                      BorderThickness="4.0"
+                                      BorderBrush="Green">
+                                <DataGrid.RowStyle>
+                                    <Style TargetType="{x:Type DataGridRow}">
+                                        <Setter Property="FontWeight"
+                                                Value="Normal" />
+                                        <Setter Property="Foreground"
+                                                Value="Black" />
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected"
+                                                     Value="True">
+                                                <Setter Property="Background"
+                                                        Value="White" />
+                                            </Trigger>
+                                            <DataTrigger Binding="{Binding SortFeld7}"
+                                                         Value="800">
+                                                <Setter Property="Background"
+                                                        Value="LightBlue" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding SortFeld7}"
+                                                         Value="801">
+                                                <Setter Property="Background"
+                                                        Value="LightSeaGreen" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding SortFeld7}"
+                                                         Value="802">
+                                                <Setter Property="Background"
+                                                        Value="LemonChiffon" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding SortFeld7}"
+                                                         Value="888">
+                                                <Setter Property="Background"
+                                                        Value="Khaki" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding SortFeld7}"
+                                                         Value="889">
+                                                <Setter Property="Background"
+                                                        Value="Aquamarine" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Status7}"
+                                                         Value="staxxx">
+                                                <Setter Property="Background"
+                                                        Value="Red" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGrid.RowStyle>
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn  MaxWidth="250"
+                                                             CanUserSort="False">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Image Source="{Binding BildPfad7, Converter={StaticResource iconPathConverter}}" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Bank"
+                                                        Binding="{Binding BankName7, Mode=TwoWay}" />
+                                    <DataGridTextColumn Header="BLZ"
+                                                        Binding="{Binding BLZ7, Mode=TwoWay}" />
+                                    <DataGridTextColumn Header="UserID"
+                                                        Binding="{Binding UserID7, Mode=TwoWay}" />
+                                    <DataGridTemplateColumn Header="Datum">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Datum7, Mode=TwoWay, StringFormat=\{0:dd/MM/yyyy\}}"
+                                                           Foreground="{Binding Datum7, Converter={StaticResource dateConvertFi}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Aktionen"
+                                                        Binding="{Binding Bearbeitungsart7, Mode=TwoWay}" />
+                                    <DataGridTemplateColumn  Header="Kontostand">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding BankValue7, Mode=TwoWay, StringFormat=\{0:###\,##0.00 \}}"
+                                                           Foreground="{Binding BankValue7, Converter={StaticResource SignedConvert}}"
+                                                           FontSize="15"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Funktionen">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Image Source="{Binding FunktionenPfad7, Mode=TwoWay, Converter={StaticResource iconPathConverter}}" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                                <!-- Beginn 2.Teil = dgFinanzübersicht2 -->
+                                <DataGrid.RowDetailsTemplate>
+                                    <DataTemplate>
+                                        <Border Background="LightBlue"
+                                                BorderBrush="Black"
+                                                BorderThickness="2"
+                                                CornerRadius="10"
+                                                Padding="4">
+                                            <Grid x:Name="GridInnereDatagrid2"
+                                                  ShowGridLines="True">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="40" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="{Binding Converter={StaticResource boolToGridRowHeightConverter2}}" />
+                                                </Grid.RowDefinitions>
+                                                <DataGrid x:Name="InnereDatagridFinanzen2"
+                                                          Grid.Column="1"
+                                                          GridLinesVisibility="All"
+                                                          RowHeight="22"
+                                                          Language="DE-de"
+                                                          FontSize="13"
+                                                          HeadersVisibility="None"
+                                                          AutoGenerateColumns="False"
+                                                          RowDetailsVisibilityMode="Visible"
+                                                          ItemsSource="{Binding OCBankKonten}"
+                                                          HorizontalAlignment="Left"
+                                                          HorizontalContentAlignment="Right"
+                                                          BorderThickness="3.0"
+                                                          BorderBrush="SeaGreen">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTemplateColumn Header="KontoName"
+                                                                                Width="160">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding KontoName8, PresentationTraceSources.TraceLevel=High}"
+                                                                               HorizontalAlignment="Left" />
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+                                                        <DataGridTemplateColumn Header="KontoArt"
+                                                                                Width="160">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding KontoArt8}"
+                                                                               HorizontalAlignment="Left" />
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+                                                        <DataGridTemplateColumn Header="KontoNr"
+                                                                                Width="160">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding KontoNr8, ConverterCulture=de-DE, StringFormat=\{0:###0 \}}"
+                                                                               Foreground="{Binding KontoNr8, Converter={StaticResource SignedConvert}}"
+                                                                               HorizontalAlignment="Left" />
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+                                                        <DataGridTemplateColumn Header="Datum"
+                                                                                Width="124">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding KontoDatum8, StringFormat=\{0:dd/MM/yyyy\}}"
+                                                                               Foreground="{Binding KontoDatum8, Converter={StaticResource dateConvertFi}}"
+                                                                               HorizontalAlignment="Right" />
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+                                                        <DataGridTemplateColumn Header="KtoWert"
+                                                                                Width="124">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding KontoValue8, ConverterCulture=de-DE, StringFormat=\{0:###\,##0.00 \}}"
+                                                                               Foreground="{Binding KontoValue8, Converter={StaticResource SignedConvert}}"
+                                                                               HorizontalAlignment="Right" />
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+                                                    </DataGrid.Columns>
+                                                    <!-- Beginn 3.Teil = dgFinanzübersicht3 -->
+                                                    <DataGrid.RowDetailsTemplate>
+                                                        <DataTemplate>
+                                                            <Border Background="LightBlue"
+                                                                    BorderBrush="Black"
+                                                                    BorderThickness="2"
+                                                                    CornerRadius="10"
+                                                                    Padding="4">
+                                                                <Grid x:Name="GridInnereDatagrid3"
+                                                                      ShowGridLines="False">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="20" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="{Binding Converter={StaticResource boolToGridRowHeightConverter3}}" />
+                                                                    </Grid.RowDefinitions>
+                                                                    <DataGrid x:Name="InnereDatagridBanken3"
+                                                                              Grid.Column="1"
+                                                                              GridLinesVisibility="Vertical"
+                                                                              
+                                                                              RowHeight="14"
+                                                                              Language="DE-de"
+                                                                              FontSize="7"
+                                                                              AutoGenerateColumns="False"
+                                                                              HeadersVisibility="None"
+                                                                              RowDetailsVisibilityMode="Visible"
+                                                                              ItemsSource="{Binding OCUmsätze}"
+                                                                              HorizontalAlignment="Left"
+                                                                              HorizontalContentAlignment="Right"
+                                                                              BorderThickness="2.0"
+                                                                              BorderBrush="SeaGreen">
+                                                                        <DataGrid.Columns>
+                                                                            <DataGridTemplateColumn Width="*">
+                                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <TextBlock Text="{Binding ValueDate}"
+                                                                                                   HorizontalAlignment="Left" />
+                                                                                    </DataTemplate>
+                                                                                </DataGridTemplateColumn.CellTemplate>
+                                                                            </DataGridTemplateColumn>
+                                                                            <DataGridTemplateColumn Width="*">
+                                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <TextBlock Text="{Binding Kontonummer, ConverterCulture=de-DE, StringFormat=\{0:###0 \}}"
+                                                                                                   Foreground="{Binding Kontonummer, Converter={StaticResource SignedConvert}}"
+                                                                                                   HorizontalAlignment="Left" />
+                                                                                    </DataTemplate>
+                                                                                </DataGridTemplateColumn.CellTemplate>
+                                                                            </DataGridTemplateColumn>
+                                                                            <DataGridTemplateColumn Width="*">
+                                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <TextBlock Text="{Binding Value, ConverterCulture=de-DE, StringFormat=\{0:###\,##0.00 \}}"
+                                                                                                   Foreground="{Binding Value, Converter={StaticResource SignedConvert}}"
+                                                                                                   HorizontalAlignment="Right" />
+                                                                                    </DataTemplate>
+                                                                                </DataGridTemplateColumn.CellTemplate>
+                                                                            </DataGridTemplateColumn>
+                                                                            <DataGridTemplateColumn Width="Auto">
+                                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <TextBlock Text="{Binding Name1}"
+                                                                                                   HorizontalAlignment="Left" />
+                                                                                    </DataTemplate>
+                                                                                </DataGridTemplateColumn.CellTemplate>
+                                                                            </DataGridTemplateColumn>
+                                                                            <DataGridTemplateColumn Width="*">
+                                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <TextBlock Text="{Binding Name2}"
+                                                                                                   HorizontalAlignment="Left" />
+                                                                                    </DataTemplate>
+                                                                                </DataGridTemplateColumn.CellTemplate>
+                                                                            </DataGridTemplateColumn>
+                                                                            <DataGridTemplateColumn Width="160">
+                                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <TextBlock Text="{Binding PaymtPurpose}"
+                                                                                                   HorizontalAlignment="Left" />
+                                                                                    </DataTemplate>
+                                                                                </DataGridTemplateColumn.CellTemplate>
+                                                                            </DataGridTemplateColumn>
+                                                                            <DataGridTemplateColumn Width="160">
+                                                                                <DataGridTemplateColumn.CellTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <TextBlock Text="{Binding EntryText}"
+                                                                                                   HorizontalAlignment="Left" />
+                                                                                    </DataTemplate>
+                                                                                </DataGridTemplateColumn.CellTemplate>
+                                                                            </DataGridTemplateColumn>
+                                                                        </DataGrid.Columns>
+                                                                    </DataGrid>
+                                                                </Grid>
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </DataGrid.RowDetailsTemplate>
+                                                    <!-- Ende 3.Teil = dgFinanzübersicht3 -->
+                                                </DataGrid>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGrid.RowDetailsTemplate>
+                            </DataGrid>
+                        </Border>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="tabWertpapiere"
+                         Header="Wertpapiere"
+                         FontSize="16">
+                    <Grid x:Name="GridChartBrowserGridwertpapiere"
+                          Background="#FFFBEBB6"
+                          Grid.Row="1"
+                          Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <helpers:RowDefinitionExtended Visible="{Binding IsChecked, ElementName=cbGraph, Mode=OneWay}"
+                                                           Height="110" />
+                            <helpers:RowDefinitionExtended Visible="{Binding IsChecked, ElementName=cbBrowser, Mode=OneWay}"
+                                                           Height="77.2" />
+                            <RowDefinition Height="2*" />
+                            <RowDefinition Height="40*" />
+                        </Grid.RowDefinitions>
+                        <view:GraphChart x:Name="graphchart"
+                                         Grid.Row="0"
+                                         DockPanel.Dock="Top"
+                                         Background="LightBlue"
+                                         HorizontalAlignment="Left"
+                                         HorizontalContentAlignment="Left" />
+                        <WebBrowser x:Name="wbAktuelles"
+                                    Grid.Row="1"
+                                    Width="996"
+                                    LoadCompleted="wbAktuelles_LoadCompleted"
+                                    HorizontalAlignment="Left" />
+                        <!-- <Button Content="Group"
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Click="GroupButton_Click"
+                                FontSize="10"
+                                VerticalAlignment="Top"
+                                Width="80" />
+                        <Button Content="UnGroup"
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Click="UngroupButton_Click"
+                                FontSize="10"
+                                Width="80"
+                                VerticalAlignment="Top"
+                                Margin="10,0,0,0" />   
+                        <TextBlock x:Name="txtAktualisiert"
+                                   Grid.Row="2"
+                                   Grid.Column="2"
+                                   Text="Aktualisiert: "
+                                   FontSize="10"
+                                   Width="180"
+                                   VerticalAlignment="Top"
+                                   Margin="10,0,0,0" />  -->
+                        <StackPanel x:Name="StackGridWertpapiere"
+                                    Grid.Row="2"
+                                    Grid.ColumnSpan="4"
+                                    Grid.RowSpan="3"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Left">
+                            <DataGrid x:Name="dgWertpapiere"
+                                      Language="DE-de"
+                                      FontSize="11"
+                                      ScrollViewer.CanContentScroll="True"
+                                      ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                                      RowDetailsTemplate="{StaticResource WertpapierDetail}"
+                                      RowDetailsVisibilityChanged="gridWertpapiere_RowDetailsVisibilityChanged"
+                                      ItemsSource="{Binding Source={StaticResource cvsWertpapiere}}"
+                                      AutoGenerateColumns="False"
+                                      SelectionChanged="gridWertpapiere_SelectionChanged"
+                                      SelectionUnit="FullRow"
+                                      LoadingRow="gridWertpapiere_LoadingRow"
+                                      AlternatingRowBackground="#FFBBF0D1"
+                                      HorizontalGridLinesBrush="#E600FA00"
+                                      VerticalGridLinesBrush="#9B7D7B62"
+                                      PreviewMouseDown="gridWertpapiere_PreviewMouseDown">
+                                <DataGrid.RowStyle>
+                                    <Style TargetType="{x:Type DataGridRow}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding isSumme}"
+                                                         Value="true">
+                                                <Setter Property="Foreground"
+                                                        Value="DarkBlue" />
+                                                <Setter Property="FontWeight"
+                                                        Value="Bold" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGrid.RowStyle>
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="Anzahl">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Anzahl, StringFormat=\{0:#\,##0.00 \}}"
+                                                           Foreground="{Binding Anzahl, Converter={StaticResource SignedConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Name"
+                                                        Binding="{Binding Name}"
+                                                        IsReadOnly="True" />
+                                    <DataGridTemplateColumn Header="Heute"
+                                                            SortMemberPath="Heute">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Heute, StringFormat=\{0:#0.00 \}}"
+                                                           Foreground="{Binding Heute, Converter={StaticResource SignedConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Rend">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Rend, StringFormat=\{0:##0.00 \}}"
+                                                           Foreground="{Binding Rend, Converter={StaticResource SignedConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Rend1J">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Rend1J, StringFormat=\{0:##0.00 \}}"
+                                                           Foreground="{Binding Rend1J, Converter={StaticResource SignedConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Ertrag">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Ertrag, StringFormat=\{0:###\,##0.00 \}}"
+                                                           Foreground="{Binding Ertrag, Converter={StaticResource SignedConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="KursZeit">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding KursZeit, StringFormat=\{0:dd/MM/yy HHmm\}}"
+                                                           Foreground="{Binding KursZeit, Converter={StaticResource dateConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="AktKurs">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding AktKurs, StringFormat=\{0:#\,##0.00 \}}"
+                                                           Foreground="{Binding AktKurs, ConverterParameter=AktKurs, Converter={StaticResource SignedConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="AktWert">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding AktWert, StringFormat=\{0:###\,##0.00 \}}"
+                                                           Foreground="{Binding AktWert, Converter={StaticResource SignedConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Zahlungen">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Zahlungen, StringFormat=\{0:##\,##0.00 \}}"
+                                                           Foreground="{Binding Zahlungen, Converter={StaticResource SignedConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Kaufsumme">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Kaufsumme, StringFormat=\{0:#\,##0.00 \}}"
+                                                           Foreground="{Binding Kaufsumme, Converter={StaticResource SignedConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="KaufDatum">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding KaufDatum, StringFormat=\{0:dd/MM/yy\}}"
+                                                           Foreground="{Binding KaufDatum, Converter={StaticResource dateConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Depot"
+                                                            Visibility="Hidden">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DepotID, StringFormat=\{0:#0 \}}"
+                                                           Foreground="{Binding DepotID, Converter={StaticResource SignedConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="KontoNr"
+                                                            Visibility="Hidden">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding KontoNr, StringFormat=\{0:######0 \}}"
+                                                           Foreground="{Binding KontoNr, Converter={StaticResource SignedConvert}}"
+                                                           Visibility="Hidden"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="ISIN"
+                                                        Binding="{Binding ISIN}" />
+                                    <DataGridTemplateColumn Header="Type">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Type, StringFormat=\{0:##0 \}}"
+                                                           Foreground="{Binding Type, Converter={StaticResource SignedConvert}}"
+                                                           Visibility="Hidden"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="AKKurz"
+                                                        Binding="{Binding AKKurz}"
+                                                        Visibility="Hidden" />
+                                    <DataGridTextColumn Header="AKName"
+                                                        Binding="{Binding AKName}"
+                                                        Visibility="Hidden" />
+                                    <DataGridTemplateColumn Header="Zins"
+                                                            CanUserReorder="True">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Zins, StringFormat=\{0:#\,##0.00 \}}"
+                                                           Foreground="{Binding Zins, Converter={StaticResource SignedConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="AbDatum">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding AbDatum, StringFormat=\{0:dd/MM/yy\}}"
+                                                           Foreground="{Binding AbDatum, Converter={StaticResource dateConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="BisDatum">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding BisDatum, StringFormat=\{0:dd/MM/yy\}}"
+                                                           Foreground="{Binding BisDatum, Converter={StaticResource dateConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Sha/Ren">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Sharpe, StringFormat=\{0:##0.00 \}}"
+                                                           Foreground="{Binding Sharpe, Converter={StaticResource SignedConvert}}"
+                                                           HorizontalAlignment="Right" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                                <DataGrid.GroupStyle>
+                                    <!-- Style for groups at top level. -->
+                                    <GroupStyle>
+                                        <GroupStyle.ContainerStyle>
+                                            <Style TargetType="{x:Type GroupItem}">
+                                                <Setter Property="Margin"
+                                                        Value="0,0,0,5" />
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                            <Expander IsExpanded="True"
+                                                                      BorderBrush="Black"
+                                                                      Foreground="Black"
+                                                                      BorderThickness="1,1,1,1"
+                                                                      Background="GhostWhite"
+                                                                      FontWeight="DemiBold"
+                                                                      FontSize="9">
+                                                                <Expander.Header>
+                                                                    <DockPanel>
+                                                                        <TextBlock FontWeight="UltraBlack"
+                                                                                   Text="{Binding Name}"
+                                                                                   Margin="32,0,0,0"
+                                                                                   Width="200"
+                                                                                   Height="13"
+                                                                                   FontSize="11"
+                                                                                   FontStyle="Italic" />
+                                                                    </DockPanel>
+                                                                </Expander.Header>
+                                                                <ItemsPresenter Margin="0,0,0,0" />
+                                                            </Expander>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </GroupStyle.ContainerStyle>
+                                    </GroupStyle>
+                                </DataGrid.GroupStyle>
+                            </DataGrid>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="tabWertpapiereGesamt"
+                         Header="WertpapiereGesamt"
+                         Visibility="Collapsed"
+                         FontSize="16">
+                    <DataGrid x:Name="gridWertpapiereGesamt"
+                              VirtualizingPanel.IsVirtualizing="False"
+                              FontSize="11"
+                              AutoGenerateColumns="False" />
+                </TabItem>
+                <TabItem x:Name="tabKontoumsätze"
+                         Header="Kontoumsatz"
+                         FontSize="16">
+                    <Grid x:Name="GridTabitemKontoumsatz"
+                          ShowGridLines="True"
+                          Background="#FFA2B687">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="10*" />
+                            <RowDefinition Height="3*" />
+                        </Grid.RowDefinitions>
+                        <DataGrid x:Name="gridKontoumsätze"
+                                  FontSize="11"
+                                  Grid.Column="0"
+                                  Grid.Row="0"
+                                  ItemsSource="{Binding Source={StaticResource cvskontoumsätze}}"
+                                  AutoGenerateColumns="False"
+                                  Language="DE-de"
+                                  HorizontalAlignment="Stretch"
+                                  HorizontalContentAlignment="Right"
+                                  EnableRowVirtualization="True"
+                                  VerticalAlignment="Top">
+                            <DataGrid.RowStyle>
+                                <Style TargetType="{x:Type DataGridRow}">
+                                    <Setter Property="FontWeight"
+                                            Value="Normal" />
+                                    <Setter Property="Foreground"
+                                            Value="Black" />
+                                </Style>
+                            </DataGrid.RowStyle>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Kontonummer"
+                                                    Binding="{Binding Kontonummer}" />
+                                <DataGridTextColumn Header="EntryDate"
+                                                    Binding="{Binding EntryDate}" />
+                                <DataGridTemplateColumn Header="ValueDate"
+                                                        SortMemberPath="ValueDate">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding ValueDate, StringFormat=\{0:dd/MM/yyyy-\}}"
+                                                       Foreground="{Binding ValueDate, Converter={StaticResource dateConvert}}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Value"
+                                                        SortMemberPath="Value">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Value, StringFormat=\{0:##0.00 \}}"
+                                                       Foreground="{Binding Value, Converter={StaticResource SignedConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="AcctNo"
+                                                    Binding="{Binding AcctNo}" />
+                                <DataGridTextColumn Header="BankCode"
+                                                    Binding="{Binding BankCode}" />
+                                <DataGridTextColumn Header="Name1"
+                                                    Binding="{Binding Name1}" />
+                                <DataGridTextColumn Header=""
+                                                    Binding="{Binding Name2}" />
+                                <DataGridTextColumn Header="PaymtPurpose"
+                                                    Binding="{Binding PaymtPurpose}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Grid x:Name="GridFilterKategorienAnzeige"
+                              Grid.Column="0"
+                              Grid.Row="1"
+                              Margin="4,4"
+                              ShowGridLines="True"
+                              Initialized="Initialized_GridFilterKategorienAnzeige"
+                              Background="#FFE4EAD5">
+                            <Grid.ColumnDefinitions>
+                                <!--<extended:ColumnDefinitionExtended Visible="{Binding IsChecked, ElementName=TickB, Mode=OneWay}" />
+                                <extended:ColumnDefinitionExtended Visible="{Binding IsChecked, ElementName=TickC, Mode=OneWay}" />
+                                <extended:ColumnDefinitionExtended Visible="{Binding IsChecked, ElementName=TickD, Mode=OneWay}" />  -->
+                                <ColumnDefinition Width="30*" />
+                                <ColumnDefinition Width="50*" />
+                                <ColumnDefinition Width="50*" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="20" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Column="0"
+                                        Grid.Row="1">
+                                <ComboBox x:Name="cbFilter2"
+                                          Margin="0,4"
+                                          AllowDrop="True"
+                                          Height="22"
+                                          IsEditable="true"
+                                          Text="Info"
+                                          HorizontalAlignment="Stretch"
+                                          Loaded="cbFilter2_Loaded"
+                                          SelectionChanged="cmbSelectionChangedFilter2"
+                                          Background="Linen"
+                                          SelectedIndex="0" />
+                                <DatePicker x:Name="datPicker1"
+                                            SelectedDateFormat="Long"
+                                            SelectedDate="3/23/09"
+                                            DisplayDateStart="1/01/09"
+                                            DisplayDateEnd="12/31/09"
+                                            FirstDayOfWeek="Monday" />
+                                <DatePicker x:Name="datPicker2"
+                                            SelectedDateFormat="Long"
+                                            SelectedDate="3/24/09"
+                                            DisplayDateStart="1/01/09"
+                                            DisplayDateEnd="12/31/09"
+                                            FirstDayOfWeek="Tuesday" />
+                                <Grid x:Name="GridBeträgeText"
+                                      Grid.Row="2"
+                                      ShowGridLines="True">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Label Content="Betrag von"
+                                           Grid.Row="0"
+                                           Grid.Column="0"
+                                           HorizontalAlignment="Right" />
+                                    <ComboBox x:Name="cbBetragVon"
+                                              Grid.Row="0"
+                                              Grid.Column="1"
+                                              AllowDrop="True"
+                                              IsEditable="true"
+                                              HorizontalAlignment="Stretch"
+                                              SelectionChanged="cmbSelectionChangedBetragVon"
+                                              Initialized="Initialized_cbBetragVon" />
+                                    <Label Content="Betrag bis"
+                                           Grid.Row="1"
+                                           Grid.Column="0"
+                                           HorizontalAlignment="Right" />
+                                    <ComboBox x:Name="cbBetragBis"
+                                              Grid.Row="1"
+                                              Grid.Column="1"
+                                              AllowDrop="True"
+                                              IsEditable="true"
+                                              HorizontalAlignment="Stretch"
+                                              SelectionChanged="cmbSelectionChangedBetragBis"
+                                              Initialized="Initialized_cbBetragBis" />
+                                    <Label Content="Text"
+                                           Grid.Row="2"
+                                           Grid.Column="0"
+                                           HorizontalAlignment="Right" />
+                                    <TextBox x:Name="txtText"
+                                             Grid.Row="2"
+                                             Grid.Column="1"
+                                             HorizontalAlignment="Stretch" />
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Left">
+                                <CheckBox x:Name="cbFilter"
+                                          Grid.Column="0"
+                                          Content="Filter On/off"
+                                          IsChecked="True" />
+                            </StackPanel>
+                            <TreeView x:Name="treeKategorie"
+                                      Margin="10,4"
+                                      Grid.Column="1"
+                                      ItemContainerStyle="{StaticResource TreeViewItemStyle}"
+                                      ItemsSource="{Binding Mode=OneTime}"
+                                      ItemTemplate="{StaticResource CheckBoxItemTemplate}" />
+                            <Grid x:Name="GridAusgabe"
+                                  Grid.Column="2"
+                                  ShowGridLines="True">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="24" />
+                                    <RowDefinition Height="100*" />
+                                </Grid.RowDefinitions>
+                                <Button x:Name="btTest"
+                                        Grid.Row="0"
+                                        Margin="10,4"
+                                        Width="80"
+                                        HorizontalAlignment="Left"
+                                        Content="btTest"
+                                        Click="btTest_Click" />
+                                <TextBox x:Name="TextBox1"
+                                         Grid.Row="1"
+                                         Text="A n z e i g e"
+                                         Background="#FFE9F3C3" />
+                            </Grid>
+                            <Grid x:Name="GridRechtsUnten"
+                                  Grid.Column="3"
+                                  ShowGridLines="True"
+                                  Background="{DynamicResource WindowBackgroundBrush}" />
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="tabKategorien"
+                         Header="Kategorien"
+                         Visibility="Collapsed"
+                         Background="#FFDBEA80"
+                         FontSize="11">
+                    <Grid ShowGridLines="True"
+                          Background="#FFCFEC21">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="tabGuckMalHier"
+                         Header="GuckMalHier"
+                         Visibility="Collapsed"
+                         Background="#FFDBEA80"
+                         FontSize="11">
+                    <Grid ShowGridLines="True"
+                          Background="{DynamicResource LightBrush}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="400" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="txtGuckMalHier"
+                                 Grid.Row="1"
+                                 Grid.Column="0"
+                                 HorizontalAlignment="Left"
+                                 VerticalAlignment="Top"
+                                 TextWrapping="Wrap"
+                                 ScrollViewer.CanContentScroll="True"
+                                 VerticalScrollBarVisibility="Visible" />
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Grid>
+</Window>

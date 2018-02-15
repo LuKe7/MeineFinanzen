@@ -1,0 +1,22 @@
+﻿Model View ViewModel (MVVM)
+
+DgBanken.cs
+// ===> Wertpapiere   Bank ---> dtWertpapSubsembly  <<Subsembly.FinTS>>                               
+// ===> Konto-Stände  Bank ---> @"Log\Kontenstände -" + sKontoNr
+// ===> Konto-Umsätze Bank ---> @"Log\Umsätze -" + sKontoNr 
+View's
+	Bearbeiten
+	Einstellungen
+	EröffnungsView
+	GraphChart
+	GridKlick
+	HistorieGesamt
+	Jahreswechsel
+	Kategorien
+	Konten_Knotenliste_Erstellen
+	KontenAusInternet
+	LoginView
+	HauptFenster
+	Splash
+	Zahlungen
+
