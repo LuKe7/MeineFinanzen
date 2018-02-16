@@ -15,29 +15,29 @@ namespace MeineFinanzen.Helpers {
             foreach (DataRow dr in DataSetAdmin.dtKontoumsätze.Rows) {
                 //Console.WriteLine("{0} ---- ValueDate: {1} {2}", ++nnnn, dr["ValueDate"].ToString(), dr["Value"].ToString());
                 //try {
-                    _kontoumsätze.Add(new Model.Kontoumsatz {
-                        Kontonummer = dr["Kontonummer"].ToString(),
-                        EntryDate = dr["EntryDate"].ToString(),
-                        ValueDate = dr["ValueDate"].ToString(),
-                        Value = dr["Value"].ToString(),
-                        AcctNo = dr["AcctNo"].ToString(),
-                        BankCode = dr["BankCode"].ToString(),
-                        Name1 = dr["Name1"].ToString(),
-                        Name2 = dr["Name2"].ToString(),
-                        PaymtPurpose = dr["PaymtPurpose"].ToString(),
-                        EntryText = dr["EntryText"].ToString(),
-                        PrimaNotaNo = dr["PrimaNotaNo"].ToString(),
-                        TranTypeIdCode = dr["TranTypeIdCode"].ToString(),
-                        ZkaTranCode = dr["ZkaTranCode"].ToString(),
-                        TextKeyExt = dr["TextKeyExt"].ToString(),
-                        BankRef = dr["BankRef"].ToString(),
-                        OwnerRef = dr["OwnerRef"].ToString(),
-                        SupplementaryDetails = dr["SupplementaryDetails"].ToString()
-                    });
-               // }
-               // catch (Exception ex) {
-               //     MessageBox.Show("aaaa" + ex);
-               // }
+                _kontoumsätze.Add(new Model.Kontoumsatz {
+                    Kontonummer = dr["Kontonummer"].ToString(),
+                    EntryDate = dr["EntryDate"].ToString(),
+                    ValueDate = dr["ValueDate"].ToString(),
+                    Value = dr["Value"].ToString(),
+                    AcctNo = dr["AcctNo"].ToString(),
+                    BankCode = dr["BankCode"].ToString(),
+                    Name1 = dr["Name1"].ToString(),
+                    Name2 = dr["Name2"].ToString(),
+                    PaymtPurpose = dr["PaymtPurpose"].ToString(),
+                    EntryText = dr["EntryText"].ToString(),
+                    PrimaNotaNo = dr["PrimaNotaNo"].ToString(),
+                    TranTypeIdCode = dr["TranTypeIdCode"].ToString(),
+                    ZkaTranCode = dr["ZkaTranCode"].ToString(),
+                    TextKeyExt = dr["TextKeyExt"].ToString(),
+                    BankRef = dr["BankRef"].ToString(),
+                    OwnerRef = dr["OwnerRef"].ToString(),
+                    SupplementaryDetails = dr["SupplementaryDetails"].ToString()
+                });
+                // }
+                // catch (Exception ex) {
+                //     MessageBox.Show("aaaa" + ex);
+                // }
             }
         }
     }
