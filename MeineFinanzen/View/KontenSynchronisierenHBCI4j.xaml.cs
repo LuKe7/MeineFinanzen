@@ -1,4 +1,4 @@
-﻿// 21.01.2018 KontenSynHBCI4j.cs
+﻿// 16.02.2018 KontenSynHBCI4j.cs
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,85 +14,8 @@ namespace MeineFinanzen.View {
         public List<WertpapHBCI4j> wp4js = new List<WertpapHBCI4j>();
         //internal DgBanken _b;
         public static DepotHolen _depHolen;
-        //string pathMeineBilder;
         public KontenSynHBCI4j() {
             InitializeComponent();
-        }
-        public void KontenSyn_HBCI4j(View.HauptFenster mw, bool laden) {
-            /* Verzeichnis: D:\MeineFinanzen\MyDepot\LogHBCI                                                                       
-             * --funktion--            -was-           -wohin-                                                                                
-             * KontoStändeFinCmd       Kontostände     \Kontenstände-sKontoNr-DateTime.csv               
-             * KontoUmsätzeFinCmdStmt  Kontoumsätze    \Umsätze-KontoNr-DateTime.csv     
-             *                                         \logKontoUmsätzeHolen.txt                                                                     
-             * DepotHolen_ausführen    WertpapierDepot dtWertpapHBCI4j (Mit angepasstem hbci4j geholt)   */
-            string propDir = @"C:/Users/LuKe/hbci4j-core/hbci4j-core-3.0.10/";    // hbci-Sparkasse-Holstein.properties";
-            string datenDir = @"D:\MeineFinanzen\MyDepot\KursDaten\Depot-aus-hbci4j\";
-            //List<string> props = new List<string>();
-            //props.Clear();
-            if (laden) {
-                // ---- Mit HBCI4j mit Java DepotAbrufTest.bat
-                // -----    nach Wertpap_ISIN.xml
-                conWrLi("---- -50- Start KontenSynchronisieren_HBCI4j");
-                // ---- props füllen.
-                DirectoryInfo ParentDirectory = new DirectoryInfo(propDir);
-                FileInfo[] fis = ParentDirectory.GetFiles();
-                foreach (FileInfo fi in fis) {
-                    string strExt = fi.Extension;
-                    string line = null;
-                    if (string.Compare(strExt, ".properties") == 0) {
-                        //Console.WriteLine("{0}", fi.FullName);
-                        // C:\Users\LuKe\hbci4j-core\hbci4j-core-3.0.10\hbci-Sparkasse-Holstein.properties
-                        if (fi.Length < 500 || fi.Length > 1600)
-                            continue;
-                        StreamReader file = new StreamReader(fi.FullName);
-                        //Console.WriteLine("properties gefunden?: {0}", file);
-                        while ((line = file.ReadLine()) != null) {
-                            if (line.Contains("client.passport.default=")) {
-                                string strPfad = fi.FullName.Substring(2);
-                                strPfad = strPfad.Replace(@"\", "/");
-                                if (!fi.FullName.Contains("Sparkasse"))
-                                    continue;
-                                // NOCH wieder raus wenn ING läuft.                                                        
-                                // ---- nach datenDir schreiben
-                                //Directory.SetCurrentDirectory(@"C:\Users\LuKe\eclipse-workspace\hbci4java-master.zip_expanded\hbci4java-master\target\classes");
-                                //Process.Start(@"C:\Users\LuKe\DepotAbrufTest.bat");
-                                //string ausgabeDir = "D:\\MeineFinanzen\\MyDepot\\KursDaten\\WertpapierDepot-aus-hbci4j";
-                                string argumentText = string.Format(@"{0}", propDir);//, ausgabeDir);
-                                Directory.SetCurrentDirectory(@"C:\Users\LuKe\eclipse-workspace\hbci4java-master.zip_expanded\hbci4java-master\target\classes");
-                                var process = new Process {
-                                    StartInfo = {
-                                    FileName = @"C:\Users\LuKe\DepotAbrufTest.bat",
-                                    Arguments = strPfad + " " + datenDir}
-                                };
-                                process.Start();
-                                process.WaitForExit();
-                            }
-                        }
-                        file.Close();
-                    }
-                }   // foreach .properties
-            }
-            // laden aus datenDir
-            conWrLi("---- -51- nach hbci4j");
-            // ---- In List WertpapHBCI4j importieren
-            DirectoryInfo ParentDirectory2 = new DirectoryInfo(datenDir);
-            FileInfo[] fis2 = ParentDirectory2.GetFiles();
-            // s.u. DataSet dsHier = new DataSet();
-            wp4js.Clear();
-            foreach (FileInfo fi in fis2) {
-                string strExt = fi.Extension;
-                string strName = fi.Name;
-                if ((string.Compare(strExt, ".xml") != 0) || (!strName.StartsWith("Wertpapier_")))
-                    continue;
-                Console.Write("{0,-80} ", fi.FullName);
-                wp4j = null;
-                GlobalRef.g_WPHBCI.DeserializeReadWertpapHBCI4j(fi.FullName, out wp4j);
-                // wird nicht gebraucht: dsHier.ReadXml(fi.FullName, XmlReadMode.Auto);                    
-                Console.WriteLine("{0,-28} {1,-16} {2,10} {3,20:dd/MM/yy H:mm:ss}", wp4j.Name, wp4j.ISIN, wp4j.Kurs, wp4j.KursZeit);
-                wp4js.Add(wp4j);
-            }   // foreach xml  
-                // ---- Update dtPortFol
-            WertpapHBCI4jToPortFol();
         }
         public bool WertpapHBCI4jToPortFol() {  // Update von List WertpapHBCI4j wp4js nach dtPortFol.          
             if (wp4js.Count == 0)

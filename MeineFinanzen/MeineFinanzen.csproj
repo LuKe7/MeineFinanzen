@@ -192,9 +192,6 @@
     <Compile Include="View\Zahlungen.xaml.cs">
       <DependentUpon>Zahlungen.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WindowTest.xaml.cs">
-      <DependentUpon>WindowTest.xaml</DependentUpon>
-    </Compile>
     <Page Include="View\Bearbeiten.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -277,10 +274,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WindowTest.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -305,8 +298,8 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="MeineFinanzen.pptx" />
-    <None Include="MeineFinanzen_Übersicht.docx" />
+    <None Include="Doku\MeineFinanzen.pptx" />
+    <None Include="Doku\MeineFinanzen_Übersicht.docx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -332,19 +325,51 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Model\MeineBilder\geld.jpg" />
+    <Resource Include="MeineBilder\geld.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Model\MeineBilder\20160825_084354.jpg" />
+    <Resource Include="MeineBilder\20160825_084354.jpg" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Goldbarren.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="MeineFinanzen.txt" />
+    <Resource Include="Doku\MeineFinanzen.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Daten\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\Aktualisieren1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\Aktualisieren2.png" />
+    <Resource Include="MeineBilder\Aktualisieren3.png" />
+    <Resource Include="MeineBilder\Aktualisieren4.jpg" />
+    <Resource Include="MeineBilder\Aktualisieren4.png" />
+    <Resource Include="MeineBilder\Aktualisieren6.jpg" />
+    <Resource Include="MeineBilder\Aktualisieren6A.jpg" />
+    <Resource Include="MeineBilder\Aktualisieren7.jpg" />
+    <Resource Include="MeineBilder\Aktualisieren8.jpg" />
+    <Resource Include="MeineBilder\Aktualisieren9.png" />
+    <Resource Include="MeineBilder\baustelle.jpg" />
+    <Resource Include="MeineBilder\baustelle.png" />
+    <Resource Include="MeineBilder\ccc.bmp" />
+    <Resource Include="MeineBilder\DiBa.png" />
+    <Resource Include="MeineBilder\finanzen.jpg" />
+    <Resource Include="MeineBilder\geldEuro.jpg" />
+    <Resource Include="MeineBilder\geldHäuser.jpg" />
+    <Resource Include="MeineBilder\geldLeute.jpg" />
+    <Resource Include="MeineBilder\Goldbarren.jpg" />
+    <Resource Include="MeineBilder\Kategorien.png" />
+    <Resource Include="MeineBilder\kategorien2.jpg" />
+    <Resource Include="MeineBilder\Leer.png" />
+    <Resource Include="MeineBilder\new2.jpg" />
+    <Resource Include="MeineBilder\nichts.jpg" />
+    <Resource Include="MeineBilder\Penrose_triangle_%28animation%29.gif" />
+    <Resource Include="MeineBilder\Spk.png" />
+    <Resource Include="MeineBilder\wertpapiere2.jpg" />
+    <Resource Include="MeineBilder\wertpapierejpg.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

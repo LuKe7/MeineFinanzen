@@ -1,4 +1,5 @@
-﻿// 08.01.2018   -Model-  Kontenaufstellung_HBCI4j.cs 
+﻿// 16.02.2018   -Model-  Kontenaufstellung_HBCI4j.cs 
+// 16.02.2018 Pfad
 using MeineFinanzen.ViewModel;
 using System;
 using System.Collections.ObjectModel;
@@ -44,7 +45,7 @@ namespace MeineFinanzen.Model {
             DateTime dtLeUmw = File.GetLastWriteTime(fiExe.FullName);
             }
         public void Kontenaufstellung_ReadXml() {
-            string datenDir = @"D:\MeineFinanzen\MyDepot\KursDaten\Depot-aus-hbci4j\";
+            string datenDir = Helpers.GlobalRef.g_Ein.myDepotPfad + @"\KursDaten\Depot-aus-hbci4j\";
             // laden aus datenDir
             // ---- In List WertpapHBCI4j importieren
             DirectoryInfo ParentDirectory2 = new DirectoryInfo(datenDir);

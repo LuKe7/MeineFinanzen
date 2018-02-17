@@ -45,7 +45,6 @@ namespace MeineFinanzen.Helpers {
             conWrLi("---- -73- Vor return ChartDatenHolenX()");
             return dtWoche;
         }
-        //GetFiles(@"C:\Windows", "*.exe|*.dll", SearchOption.TopDirectoryOnly);
         public static string[] HoleFiles(string path, string searchPattern, SearchOption searchOption) {
             string[] searchPatterns = searchPattern.Split('|');
             List<string> files = new List<string>();

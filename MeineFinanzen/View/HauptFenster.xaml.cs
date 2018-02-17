@@ -698,7 +698,7 @@ namespace MeineFinanzen.View {
             while ((dep != null) && !(dep is DataGridCell))
                 dep = VisualTreeHelper.GetParent(dep);
             if (dep == null)
-                return;
+                return; 
             DataGridRow row1 = dep as DataGridRow;
             while ((dep != null) && !(dep is DataGridRow))
                 dep = VisualTreeHelper.GetParent(dep);
@@ -706,7 +706,7 @@ namespace MeineFinanzen.View {
             string xxx = row1.Item.ToString();
             if (xxx == "{NewItemPlaceholder}")
                 return;
-            //Title = ((Model.BankKonto)(row1.Item)).KontoName8;
+            //Title = ((Model.BankKonto)(row1.Item)).KontoName 8;
             string kontoArt = ((Model.BankKonten)(row1.Item)).KontoArt8;
             if (kontoArt.Contains("Portfolio")) {
                 alleTabsHidden();
@@ -841,11 +841,11 @@ namespace MeineFinanzen.View {
                 dep = VisualTreeHelper.GetParent(dep);
             row1 = dep as DataGridRow;
             //var strxxx = (Model.BankKonten)row1.Item;
-            //Console.WriteLine("BankName: " + strxxx.KontoName8);
+            //Console.WriteLine("BankName: " + strxxx.KontoName 8);
             string strType = row1.Item.GetType().ToString();            // ist 'MeineFinanzen.Model.BankKonto'.
             try {
                 if (strType == "MeineFinanzen.Model.BankKonto") {
-                    //Title = ((Model.BankKonto)(row1.Item)).KontoName8;
+                    //Title = ((Model.BankKonto)(row1.Item)).KontoName 8;
                     }
                 //Title = ((Model.BankÜbersicht)(row1.Item)).BankName7;   // ist BankKonto. Kann nicht in BankÜbersicht umgew werden.
                 alleTabsHidden();
@@ -901,11 +901,11 @@ namespace MeineFinanzen.View {
                       foreach (Model.BankKonto ko in item.OCBankKonten) {                    
                           if (ko.OCUmsätze.Count > 0) {
                               dgFinanzübersicht.SetDetailsVisibilityForItem(ko, Visibility.Visible);
-                              Console.Write(" {0,-20}=Visible   Ums={1}", ko.KontoName8, ko.OCUmsätze.Count);
+                              Console.Write(" {0,-20}=Visible   Ums={1}", ko.KontoName 8, ko.OCUmsätze.Count);
                           }
                           else {
                               dgFinanzübersicht.SetDetailsVisibilityForItem(ko, Visibility.Collapsed);
-                              Console.Write(" {0,-20}=Collapsed Ums=null", ko.KontoName8);
+                              Console.Write(" {0,-20}=Collapsed Ums=null", ko.KontoName 8);
                           }
                           //e.Row.Background = new SolidColorBrush(Colors.Olive);
                           //e.Row.DetailsVisibility = Visibility.Collapsed;
@@ -935,11 +935,11 @@ namespace MeineFinanzen.View {
                 foreach (Model.BankKonto ko in item.OCBankKonten) {
                     if (ko.OCUmsätze.Count > 0) {
                         dgFinanzübersicht.SetDetailsVisibilityForItem(ko, Visibility.Visible);
-                        //Console.Write(" {0,-20}=Visible   Ums:{1}", ko.KontoName8, ko.OCUmsätze.Count);
+                        //Console.Write(" {0,-20}=Visible   Ums:{1}", ko.KontoName 8, ko.OCUmsätze.Count);
                     }
                     else {
                         dgFinanzübersicht.SetDetailsVisibilityForItem(ko, Visibility.Collapsed);
-                        //Console.Write(" {0,-20}=Collapsed Ums:null", ko.KontoName8);
+                        //Console.Write(" {0,-20}=Collapsed Ums:null", ko.KontoName 8);
                     }
                 }
             }
@@ -1000,7 +1000,7 @@ Console.WriteLine("InnereDatagridBanken3_RowDetailsVisibilityChanged:{0} Name1:{
 private void InnereDatagridFinanzen2_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e) {
 DataGridRow dgrow = e.Row as DataGridRow;
 Model.BankKonto kon = (Model.BankKonto)dgrow.Data-Context;
-//Console.WriteLine("InnereDatagridBanken2_RowDetailsVisibilityChanged:KontoName8:{0} KontoNr8:{1}", kon.KontoName8, kon.KontoNr8);
+//Console.WriteLine("InnereDatagridBanken2_RowDetailsVisibilityChanged:KontoName 8:{0} KontoNr8:{1}", kon.KontoName 8, kon.KontoNr8);
 }
 private void dgFinanzübersicht1_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e) {
 DataGridRow dgrow = e.Row as DataGridRow;
@@ -1386,8 +1386,8 @@ return;
             var dg = (Model.BankKonten)value;
             if (dg.OCUmsätze == null)
                 return null;
-            Console.WriteLine("\tBoolToGridRowHeightConverter3 {0,-24} {1,-20} {2,-20} {3,16} {4} OCUmsätze.Count:{5}",
-                dg.KontoName8, dg.KontoArt8, dg.KontoNr8, dg.KontoValue8, dg.KontoDatum8, dg.OCUmsätze.Count);
+            //Console.WriteLine("\tBoolToGridRowHeightConverter3 {0,-24} {1,-20} {2,-20} {3,16} {4} OCUmsätze.Count:{5}",
+            //    dg.KontoName 8, dg.KontoArt8, dg.KontoNr8, dg.KontoValue8, dg.KontoDatum8, dg.OCUmsätze.Count);
             if (dg.OCUmsätze.Count > 0) {
                 int ro = dg.OCUmsätze.Count;
                 if (ro > 10)

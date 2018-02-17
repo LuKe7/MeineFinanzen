@@ -1,4 +1,4 @@
-﻿<!-- 12.02.2018   -View-   KontenSynchronisierenInt.xaml -->
+﻿<!-- 17.02.2018   -View-   KontenSynchronisierenInt.xaml -->
 <Window x:Class="MeineFinanzen.View.KontenSynchronisierenInt"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

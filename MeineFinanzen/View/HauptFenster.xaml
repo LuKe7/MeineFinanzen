@@ -596,6 +596,8 @@
                                                     <ColumnDefinition Width="40" />
                                                     <ColumnDefinition Width="*" />
                                                 </Grid.ColumnDefinitions>
+                                                <!--diagnostics:PresentationTraceSources.TraceLevel=High,                                                                          
+                                                                                          UpdateSourceTrigger=PropertyChanged-->
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="{Binding Converter={StaticResource boolToGridRowHeightConverter2}}" />
                                                 </Grid.RowDefinitions>
@@ -618,7 +620,8 @@
                                                                                 Width="160">
                                                             <DataGridTemplateColumn.CellTemplate>
                                                                 <DataTemplate>
-                                                                    <TextBlock Text="{Binding KontoName8, PresentationTraceSources.TraceLevel=High}"
+                                                                    <TextBlock Text="{Binding KontoName8
+                                                                       }"
                                                                                HorizontalAlignment="Left" />
                                                                 </DataTemplate>
                                                             </DataGridTemplateColumn.CellTemplate>

@@ -68,7 +68,8 @@ namespace MeineFinanzen.ViewModel {
                 else
                     strImagePath += "nichts";
                 strImagePath += ".png";
-                DgBanken.bank.BildPfad7 = pathMeineBilder + strImagePath;                    // +BildPfad7   
+                DgBanken.bank.BildPfad7 = pathMeineBilder + strImagePath;                    // +BildPfad7 
+                // D:\Visual Studio 2015\Projects\SubsemblyFinTS\DiBa.png
                 DgBanken.bank.BLZ7 = aContact.BankCode;
                 DgBanken.bank.UserID7 = aContact.UserID;
                 DgBanken.bank.Datum7 = File.GetLastWriteTime(Helpers.GlobalRef.g_Ein.myDepotPfad + @"Log\BankKontoStand.xml");
@@ -111,7 +112,7 @@ namespace MeineFinanzen.ViewModel {
                         _b.Betrag = 0;
                     }
                     DgBanken.konto = new BankKonten();
-                    DgBanken.konto.KontoName8 = aAcctInfo.AcctName;                          // +KontoName8                      
+                    DgBanken.konto.KontoName8 = aAcctInfo.AcctName;                          // +KontoName 8                      
                     DgBanken.konto.KontoArt8 = aAcctInfo.AcctTypeClass.ToString();           // +KontoArt8                    
                     DgBanken.konto.KontoNr8 = aAcctInfo.AcctNo;                              // +KontoNr8                     
                     DgBanken.konto.KontoValue8 = _b.Betrag;                                     // +KontoValue8                                  
@@ -144,7 +145,7 @@ namespace MeineFinanzen.ViewModel {
             DgBanken.bank.Datum7 = File.GetLastWriteTime(Helpers.GlobalRef.g_Ein.myDepotPfad + @"Log\BankKontoStand.xml");
             DgBanken.bank.BankName7 = "GeschlFonds";                                         // +BankName7     
             DgBanken.bank.BildPfad7 = @"C:\Users\Public\Pictures\index.png";                 // +BildPfad7 
-            DgBanken.bank.BankValue7 = _b.SummeGeschlFonds();                                   // +BankValue7
+            DgBanken.bank.BankValue7 = _b.SummeGeschlFonds();                                // +BankValue7
 
             DgBanken.bank = new BankÜbersicht();                                             // -BankÜbersicht
             DgBanken.bank.OCBankKonten = new ObservableCollection<BankKonten>();

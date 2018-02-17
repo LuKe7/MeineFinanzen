@@ -30,10 +30,10 @@ namespace MeineFinanzen.ViewModel {
         public string sKontoNr;
         public double Betrag = 0.00;
         public static Helpers.DepotHolen _depHolen;
-        public string pathMeineBilder = "";
+        //public string path MeineBilder = "";
         public DgBanken() {
             mw = GlobalRef.g_mw;
-            pathMeineBilder = GlobalRef.g_Ein.strBilderPfad + @"\";
+            //path MeineBilder = GlobalRef.g_Ein.strBilderPfad + @"\";
             //_depHolen = new DepotHolen();    // In FinKontenÜbersicht Grundwerte setzen und ini depHolen.
             }
         public void machdgbanken() {            
@@ -299,10 +299,9 @@ namespace MeineFinanzen.ViewModel {
                 Console.WriteLine("\t\t-OCBankKonten");
                 foreach (Model.BankKonten bako in ban.OCBankKonten) {
                     Console.WriteLine("\t\t\t-BankKonto");
-                    Console.WriteLine("\t\t\t\t+KontoName8 : {0,-12} ", bako.KontoName8);
+                    Console.WriteLine("\t\t\t\t+KontoName 8: {0,-12} ", bako.KontoName8);
                     Console.WriteLine("\t\t\t\t+KontoArt8  : {0,-12} ", bako.KontoArt8);
-                    Console.WriteLine("\t\t\t\t+KontoNr8   : {0,-12} ", bako.KontoNr8);
-                    Console.WriteLine("\t\t\t\t+KontoValue8: {0,-12} ", bako.KontoValue8);
+                    Console.WriteLine("\t\t\t\t+KontoNr8   : {0,-12} ", bako.KontoNr8); 
                     Console.WriteLine("\t\t\t\t+KontoDatum8: {0,-12} ", bako.KontoDatum8);
                     if (bako.OCUmsätze != null) {
                         //foreach (Model.Umsatz ums in bako.OCUmsätze) {

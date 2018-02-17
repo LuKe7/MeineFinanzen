@@ -1,4 +1,4 @@
-﻿// 01.01.2018 KontenSynchronisieren_HBCI4j.cs
+﻿// 16.02.2018 KontenSynchronisieren_HBCI4j.cs
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,10 +14,10 @@ namespace MeineFinanzen.ViewModel {
         public List<WertpapHBCI4j> wp4js = new List<WertpapHBCI4j>();
         internal DgBanken _b;
         public static DepotHolen _depHolen;
-        string pathMeineBilder;
+        //string path MeineBilder;
         public VMKontenSynchronisierenHBCI4j() {
             _b = GlobalRef.g_dgBanken;
-            pathMeineBilder = GlobalRef.g_Ein.strBilderPfad + @"\";
+            //path MeineB ilder = GlobalRef.g_Ein.strBilderPfad + @"\";
             _depHolen = new DepotHolen();    // In FinKontenÜbersicht Grundwert
             }
         public void KontenSynchronisieren_HBCI4j(View.HauptFenster mw, bool laden) {
@@ -27,8 +27,8 @@ namespace MeineFinanzen.ViewModel {
              * KontoUmsätzeFinCmdStmt  Kontoumsätze    \Umsätze-KontoNr-DateTime.csv     
              *                                         \logKontoUmsätzeHolen.txt                                                                     
              * DepotHolen_ausführen    WertpapierDepot dtWertpapHBCI4j (Mit angepasstem hbci4j geholt)   */
-            string propDir = @"C:/Users/LuKe/hbci4j-core/hbci4j-core-3.0.10/";    // hbci-Sparkasse-Holstein.properties";
-            string datenDir = @"D:\MeineFinanzen\MyDepot\KursDaten\Depot-aus-hbci4j\";
+            string propDir = Helpers.GlobalRef.g_Ein.strHBCI4j;
+            string datenDir = Helpers.GlobalRef.g_Ein.myDepotPfad + @"\KursDaten\Depot-aus-hbci4j\";
             //List<string> props = new List<string>();
             //props.Clear();
             if (laden) { 
@@ -42,8 +42,7 @@ namespace MeineFinanzen.ViewModel {
                     string strExt = fi.Extension;
                     string line = null;
                     if (string.Compare(strExt, ".properties") == 0) {
-                        //Console.WriteLine("{0}", fi.FullName);
-                        // C:\Users\LuKe\hbci4j-core\hbci4j-core-3.0.10\hbci-Sparkasse-Holstein.properties
+                        //Console.WriteLine("{0}", fi.FullName);                      
                         if (fi.Length < 500 || fi.Length > 1600)
                             continue;
                         StreamReader file = new StreamReader(fi.FullName);
@@ -54,15 +53,12 @@ namespace MeineFinanzen.ViewModel {
                                 strPfad = strPfad.Replace(@"\", "/");
                                 if (!fi.FullName.Contains("Sparkasse"))
                                     continue;           // NOCH wieder raus wenn ING läuft.                                                        
-                                                        // ---- nach datenDir schreiben
-                                                        //Directory.SetCurrentDirectory(@"C:\Users\LuKe\eclipse-workspace\hbci4java-master.zip_expanded\hbci4java-master\target\classes");
-                                                        //Process.Start(@"C:\Users\LuKe\DepotAbrufTest.bat");
-                                                        //string ausgabeDir = "D:\\MeineFinanzen\\MyDepot\\KursDaten\\WertpapierDepot-aus-hbci4j";
+                                                        // ---- nach datenDir schreiben                                                     
                                 string argumentText = string.Format(@"{0}", propDir);//, ausgabeDir);
-                                Directory.SetCurrentDirectory(@"C:\Users\LuKe\eclipse-workspace\hbci4java-master.zip_expanded\hbci4java-master\target\classes");
+                                Directory.SetCurrentDirectory(Helpers.GlobalRef.g_Ein.strEclipseHbci4jClasses);
                                 var process = new Process {
                                     StartInfo = {
-                            FileName = @"C:\Users\LuKe\DepotAbrufTest.bat",
+                            FileName = Helpers.GlobalRef.g_Ein.myDepotPfad + @"\DepotAbrufTest.bat",                       
                             Arguments = strPfad + " " + datenDir}
                                     };
                                 process.Start();

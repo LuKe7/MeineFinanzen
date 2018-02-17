@@ -1,5 +1,7 @@
-﻿// 26.11.2016   --Model--   CollEinstellungen.cs
+﻿// 17.02.2018   --Model--   CollEinstellungen.cs
 // 2017.10.27 Ordner Subsembly... wg Notebook angepasst.
+// 16.02.2018 strHBCI4j   C :/Users/username/hbci4j-core/hbci4j-core-3.0.10
+// 17.02.2018 BilderPfad.
 using System.IO;
 using System;
 using System.Windows;
@@ -37,6 +39,8 @@ namespace MeineFinanzen.Model {
         public string strEinstellungen { get; set; }
         public string strVersion { get; set; }
         public string strSubsemblyAPI { get; set; }
+        public string strHBCI4j { get; set; }
+        public string strEclipseHbci4jClasses { get; set; }
         public string strBilderPfad { get; set; }
         public string strStartBild { get; set; }        
         public event PropertyChangedEventHandler PropertyChanged;
@@ -82,27 +86,26 @@ namespace MeineFinanzen.Model {
             //conWrLi("---- -x- SerializeWriteEinstellungen()");
         }
         private void AktualisiereEinstellungsDaten(Einstellungen einD) {
-            //conWrLi("---- -x- AktualisiereEinstellungsDaten");
+            conWrLi("---- -x- AktualisiereEinstellungsDaten");
             FileInfo fiExe = (new FileInfo(Assembly.GetEntryAssembly().Location));
             DateTime dtLeUmw = File.GetLastWriteTime(fiExe.FullName);
-            // fiExe.FullName: C :\Users\LuKe\Documents\Visual Studio 2015\Projects\MeineFinanzenProjekte\MeineFinanzen\MeineFinanzen\bin\Debug\MeineFinanzen.exe
+            // fiExe.FullName: D:\Visual Studio 2015\Projects\MeineFinanzenProjekte\MeineFinanzen\MeineFinanzen\bin\Debug\MeineFinanzen.exe
             einD.strKompileTime = dtLeUmw.ToString();
             // 21.06.2016 10:22:33           
-            einD.myDocPfad = @"D:";            
+            einD.myDocPfad = fiExe.FullName.Substring(0, 2);
             einD.myDataPfad = einD.myDocPfad + @"\" + Assembly.GetExecutingAssembly().GetName().Name + @"\";
-            // C :\Users\LuKe\Documents\MeineFinanzen\                      
+            // D :\\MeineFinanzen\\                     
             einD.myDepotPfad = einD.myDataPfad + @"MyDepot"; // NOCH MyDepot aus Datei holen: DepotNr=1.
             einD.strVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            // 1.0.0.0
-            // D:\Visual Studio 2015\Projects\SubsemblyFinTS\FinAdmin.exe
+            // 1.0.0.0            
             einD.strEinstellungen = einD.myDepotPfad + @"\Einstellungen\EinstellungsDaten.xml";
-            // D:\MeineFinanzen\MyDepot\Einstellungen\EinstellungsDaten.xml
+            // D :\MeineFinanzen\MyDepot\Einstellungen\EinstellungsDaten.xml            
             einD.strSubsemblyAPI = einD.myDocPfad + @"\Visual Studio 2015\Projects\SubsemblyFinTS";
-            // D:\Visual Studio 2015\Projects\SubsemblyFinTS
-            // C:\Users\LuKe\Documents\Subsembly FinTs API
-            //einD.strBilderPfad =
-            //    @"C:\Users\LuKe\Documents\Visual Studio 2015\Projects\MeineFinanzenProjekte\MeineFinanzen\MeineFinanzen\MeineBilder";
-            //einD.strStartBild = @"\20160825_084354.jpg";
+            // D :\Visual Studio 2015\Projects\SubsemblyFinTS
+            // C :\Users\username\Documents\Subsembly FinTs API
+            einD.strEclipseHbci4jClasses = @"C:\Users\LuKe\eclipse-workspace\hbci4java-master.zip_expanded\hbci4java-master\target\classes";
+            einD.strHBCI4j = @"C:/Users/LuKe/hbci4j-core/hbci4j-core-3.0.10/";    // xxxxxxx.properties";
+            einD.strBilderPfad = einD.myDocPfad + @"\Visual Studio 2015\Projects\MeineFinanzenProjekte\MeineFinanzen\MeineFinanzen\MeineBilder";
             einD.bsHeight = (int)SystemParameters.PrimaryScreenWidth;
             einD.bsWidth = (int)SystemParameters.PrimaryScreenHeight;
             einD.bsHkorr = einD.bsHeight / 1080;
