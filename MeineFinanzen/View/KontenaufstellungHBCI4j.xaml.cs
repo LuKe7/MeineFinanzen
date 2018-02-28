@@ -20,7 +20,7 @@ namespace MeineFinanzen.View {
 
             }
         private void dgvKontenaufstellung_PreviewMouseDown(Object sender, MouseButtonEventArgs e) {
-            conWrLi("---- -xx- dgvKontenaufstellung_PreviewMouseDown");
+            ConWrLi("---- -xx- dgvKontenaufstellung_PreviewMouseDown");
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is DataGridCell))
                 dep = VisualTreeHelper.GetParent(dep);
@@ -38,7 +38,7 @@ namespace MeineFinanzen.View {
             var item = dataGrid.ItemContainerGenerator.ItemFromContainer(dgRow1);
             //Console.WriteLine("cell1.Column.Header: {0}", cell1.Column.Header); // ist z.B. WPURLSharp
             string _ColHeader = cell1.Column.Header.ToString();            
-            //conWrLi("---- -94- boDgvRowAusgewählt=true");
+            //ConWrLi("---- -94- boDgvRowAusgewählt=true");
             string _curName = ((WertpapSynchro)item).WPSName;
             string _curIsin = ((WertpapSynchro)item).WPSISIN;
             if (e.LeftButton == MouseButtonState.Pressed) { }        
@@ -46,7 +46,7 @@ namespace MeineFinanzen.View {
         private void InnereDatagrid_PreviewMouseDown(Object sender, MouseButtonEventArgs e) {
 
             }
-        private void conWrLi(string str1) {
+        private void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
             }
         }

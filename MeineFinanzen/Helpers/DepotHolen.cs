@@ -27,7 +27,7 @@ namespace MeineFinanzen.Helpers {
             fkü.Dispose();
         }
         public decimal DepotHolen_ausführen() {
-            conWrLi("---- -30- Start DepotHolen_ausführen");
+            ConWrLi("---- -30- Start DepotHolen_ausführen");
             Application.DoEvents();
             //Debug.WriteLine("{0} mkDepot DepotHolen_ausführen( _ktoType:{1} BLZ:{2}", DateTime.Now, _ktoType, _blz);
             fkü = new FinKontenÜbersicht();
@@ -71,7 +71,7 @@ namespace MeineFinanzen.Helpers {
             }
             fkü.Dispose();
             fkü = null;
-            conWrLi("---- -39- Ende DepotHolen_ausführen");
+            ConWrLi("---- -39- Ende DepotHolen_ausführen");
             return total;
         }
         public decimal finToDtGesamt(FinPortfList aPortfListOrder) {
@@ -139,7 +139,7 @@ namespace MeineFinanzen.Helpers {
             }
             return aktwert; // FALSCH: ab 02.2017 aStatementOfHoldings.TotalValue;
         }
-        private void conWrLi(string str1) {
+        private void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
         }
         /*The interest amount that has been accrued in between coupon payment periods. Verbindlichkeiten aus aufgelaufenen Zinsen auf Einlagen

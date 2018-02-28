@@ -15,7 +15,7 @@ namespace MeineFinanzen.ViewModel {
 
         public ListCollectionView _userview;
         public Model.User user = new Model.User();
-        public List<Model.User> users = new List<Model.User>();
+        public List<Model.User> user_s = new List<Model.User>();
 
         public LoginCommand loginCommand = null;    //Set up the readonly loginCommand that is only initialized at class contruction
         public LoginCommand UserLoginCommand {
@@ -34,13 +34,12 @@ namespace MeineFinanzen.ViewModel {
             _userview = new ListCollectionView(new ObservableCollection<Model.User>(UserFüllen()));//Initialize the LoginCommand, passing in this instance of the ViewModel                                  
         }
         private List<Model.User> UserFüllen() {
-            users.Clear();
-            users.Add(new Model.User {
+            user_s.Add(new Model.User {
                 UserName = "LuKe",
                 UserPassword = "passwrt"
             });
-            Helpers.GlobalRef.g_User.DeSerializeReadLogin(strxxx + @"\LoginDaten.xml", out users);
-            return users;
+            Helpers.GlobalRef.g_User.DeSerializeReadLogin(strxxx + @"\LoginDaten.xml", out user_s);
+            return user_s;
         }
         private string _errorMessage;    //Property to hold the error message to be displayed
         public string ErrorMessage {

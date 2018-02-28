@@ -1,11 +1,11 @@
-﻿// 21.01.2018   -View-  HauptFenster.cs 
+﻿// 28.02.2018   -View-  HauptFenster.cs 
 // Tja, wenn man die Grundlagen nicht lernen will, stolpert man halt ständig beim Ausprobieren.
 // Wenn du eine DataTable an ein DG bindest, spiegelt der DefaultView der DT die Daten wieder. Mit allen Filter- und Sort-Angaben.
 // 16.11.2014 Ser/Deserialize 'Wertpapiere' zu/von Xml-Datei. 
 // 07.08.2015 neustart: erst sichern.
 // 11.2016 Login
 // 27.11.2016 In KontenSynchronisieren..... BankÜbersichtsDaten.xml erstellen. 
-// 27.10.2017 Ordneranpassung fürs Notebook D:/....
+// 27.10.2017 Ordneranpassung fürs Notebook D :/....
 using System;
 using System.Data;
 using System.Diagnostics;
@@ -34,7 +34,7 @@ namespace MeineFinanzen.View {
         private SplashWindow splash = null;
         internal List<FinContact> liContacte = new List<FinContact>();
         internal DgBanken _dgBanken;
-        internal VMKontenSynchronisierenHBCI4j _kosyHBCI4j;
+        internal KontenSynchronisierenHBCI4j _kosyHBCI4j;
         internal VMKontenSynchronisierenSubsembly _kosySubsembly;
         internal KontenSynchronisierenInt _kosyInt;
         internal Konten_Knotenliste_Erstellen _kosyErstellen;
@@ -57,7 +57,7 @@ namespace MeineFinanzen.View {
             // NOCH splash.Show();
             InitializeComponent();
             processes = Process.GetProcesses();
-            conWrLi("---- -1a- In HauptFenster()");
+            ConWrLi("---- -1a- In HauptFenster()");
             GlobalRef.g_mw = this;
             GlobalRef.g_Ein = new Einstellungen();
             GlobalRef.g_User = new User();
@@ -85,39 +85,39 @@ namespace MeineFinanzen.View {
             // string strxxx = Helpers.GlobalRef.g_Ein + @"\" + Assembly.GetExecutingAssembly().GetName().Name;
             // MeineFinanzen.Model.Einstellungen\MeineFinanzen            
             GlobalRef.g_Ein.DeSerializeReadEinstellungen(rootDir.FullName + @"\MyDepot\Einstellungen\EinstellungsDaten.xml", out GlobalRef.g_Ein);
-            conWrLi("---- -1c- In HauptFenster()");
+            ConWrLi("---- -1c- In HauptFenster()");
             GlobalRef.g_Ein.SerializeWriteEinstellungen(GlobalRef.g_Ein.strEinstellungen, GlobalRef.g_Ein);
-            conWrLi("---- -1d- In HauptFenster()");
+            ConWrLi("---- -1d- In HauptFenster()");
             }
         private void Window_Loaded(object sender, RoutedEventArgs e) {
-            conWrLi("---- -2a- Beginn in Window_Loaded()");
+            ConWrLi("---- -2a- Beginn in Window_Loaded()");
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
             dispatcherTimer.Start();
-            DateTime dt7 = DataSetAdmin.HolenAusXml("MeineFinanzen");
+            DateTime dt7 = DataSetAdmin.HolenAusXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             if (dt7 == null) {
                 MessageBox.Show("MeineFinbanzen HauptFenster.xaml.cs HauptFenster() Fehler bei HolenAusXml() DataSetAdmin");
                 this.Close();
                 }
-            conWrLi("---- -2b- Nach DataSetAdmin.HolenAusXml()");
+            ConWrLi("---- -2b- Nach DataSetAdmin.HolenAusXml()");
             var counters = new List<PerformanceCounter>();
             foreach (FinContact aContact in FinAdmin.DefaultFolder) { // FinContactFolder.Default) {  
-                conWrLi("---- -2b+- FinContact: " + aContact.BankCode + "/" + aContact.ContactName);
+                ConWrLi("---- -2b+- FinContact: " + aContact.BankCode + "/" + aContact.ContactName);
                 liContacte.Add(aContact);           // Banken    zwischenspeichern. Wg. Blockade.
                 }
-            conWrLi("---- -2c- In Window_Loaded()");
+            ConWrLi("---- -2c- In Window_Loaded()");
             _stopwatch.Start();
             _dgBanken = new DgBanken();
             _dgBanken.machdgbanken();               // Mit DeSerialize banken also Read                   
             _kosyErstellen = new Konten_Knotenliste_Erstellen(this);
             GlobalRef.g_KoHBCI.Kontenaufstellung_ReadXml();
             //_kontenaufHBCI4j = new KontenaufstellungHBCI4j();
-            conWrLi("---- -4- Nach machdgbanken()");
+            ConWrLi("---- -4- Nach machdgbanken()");
             wbAktuelles.Navigate(GlobalRef.g_Ein.strUrlIndizes);
             dgFinanzübersicht.ItemsSource = null;
             dgFinanzübersicht.ItemsSource = DgBanken.banken;
             Console.WriteLine("---- --01-- HauptFenster _dgBanken.banken.Count {0}", DgBanken.banken.Count);
-            conWrLi("---- -5- Nach _tabFinanzen.maches()");
+            ConWrLi("---- -5- Nach _tabFinanzen.maches()");
             umsHolen = new Helpers.UmsätzeHolen(this);
             Console.WriteLine("---- --02-- HauptFenster _dgBanken.banken.Count {0}", DgBanken.banken.Count);
             // NOCH dtKontoumsätze sofort erstellen, beim download.
@@ -143,7 +143,7 @@ namespace MeineFinanzen.View {
             foreach (Model.BankÜbersicht fin in DgBanken.banken) {
                 if (fin.OCBankKonten.Count > 0)
                     if (fin.OCBankKonten[0].KontoNr8.Length > 0) {
-                        //conWrLi("==== Bankname {0} /{1}/ {2} {3}", fin.Bankname, fin.Kontonummer, fin.Kontoname, fin.SortFeld);
+                        //ConWrLi("==== Bankname {0} /{1}/ {2} {3}", fin.Bankname, fin.Kontonummer, fin.Kontoname, fin.SortFeld);
                         if (DBNull.Value.Equals(fin.OCBankKonten[0].KontoArt8) || (fin.OCBankKonten[0].KontoArt8 == ""))
                             continue;
                         cbKonten.Items.Add(fin.OCBankKonten[0].KontoNr8);
@@ -169,12 +169,12 @@ namespace MeineFinanzen.View {
             string text = (sender as ComboBox).SelectedItem as string;
             }
         private void wbAktuelles_LoadCompleted(object sender, NavigationEventArgs e) {
-            conWrLi("---- -16g- wbAktuelles_LoadCompleted()");
+            ConWrLi("---- -16g- wbAktuelles_LoadCompleted()");
             WebBrowser wb = (WebBrowser)sender;
             mshtml.HTMLDocument htmlDoc = wb.Document as mshtml.HTMLDocument;
             htmlDoc.parentWindow.scroll(0, 300);
             WindowState = WindowState.Maximized;
-            conWrLi("---- -16h- wbAktuelles_LoadCompleted()");
+            ConWrLi("---- -16h- wbAktuelles_LoadCompleted()");
             // NOCH splash.Close();
             Console.WriteLine("---- --05-- HauptFenster _dgBanken.banken.Count {0}", DgBanken.banken.Count);
             }
@@ -200,7 +200,7 @@ namespace MeineFinanzen.View {
                 }
             }
         //private IEnumerable<CollZahlungen> _zahlungen;     
-        private void conWrLi(string str1) {
+        private void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
             }
         private static void ExecuteInForeground() {
@@ -219,14 +219,14 @@ namespace MeineFinanzen.View {
             graphchart.GeneriereGraph(dtWochen);
             }
         internal void neuStarten() {
-            conWrLi("---- -8h- in neuStarten-1");
-            DateTime dt = DataSetAdminNS.DataSetAdmin.HolenAusXml("MeineFinanzen");
+            ConWrLi("---- -8h- in neuStarten-1");
+            DateTime dt = DataSetAdminNS.DataSetAdmin.HolenAusXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             if (dt == null) {
                 MessageBox.Show("MeineFinanzen HauptFenster.xaml.cs HauptFenster() Fehler bei HolenAusXml() DataSetAdmin");
                 this.Close();
                 }
             WertPapStart();
-            conWrLi("---- -8i- in neuStarten-2");
+            ConWrLi("---- -8i- in neuStarten-2");
             }
         private void dispatcherTimer_Tick(object sender, EventArgs e) {
             TimeSpan ts = _stopwatch.Elapsed;   // Die vergangene Zeit
@@ -277,11 +277,11 @@ namespace MeineFinanzen.View {
             //StackCheckBoxen.Visibility = System.Windows.Visibility.Visible;
             tabControl1.SelectedItem = tabWertpapiere;
             tabWertpapiere.Visibility = Visibility.Visible;
-            conWrLi("---- -8a- in WertPapStart vor tabWertpap");
+            ConWrLi("---- -8a- in WertPapStart vor tabWertpap");
             tabWertpap();
-            conWrLi("---- -8b- in WertPapStart nach tabWertpap");
+            ConWrLi("---- -8b- in WertPapStart nach tabWertpap");
             dgWertpapiere.UpdateLayout();
-            conWrLi("---- -8c- in WertPapStart nach dgWertpapiere.UpdateLayout()");
+            ConWrLi("---- -8c- in WertPapStart nach dgWertpapiere.UpdateLayout()");
             }
         private void btKategorien_Click(object sender, RoutedEventArgs e) {
             Kategorien myKat = new Kategorien(this);
@@ -411,7 +411,7 @@ namespace MeineFinanzen.View {
             App.Current.Shutdown();
             }
         private void Konten_Knotenliste_Erstellen_Click(object sender, RoutedEventArgs e) {
-            /* string strDir = @"C :\Users\LuKe\Documents\Visual Studio 2015\Projects\MeineFinanzen Projekte\SynchronisierenInit\bin\Debug";            
+            /* string strDir = @"C :\U sers\LuKe\Documents\Visual Studio 2015\Projects\MeineFinanzen Projekte\SynchronisierenInit\bin\Debug";            
              Directory.SetCurrentDirectory(strDir);
              ProcessStartInfo startInfo = new ProcessStartInfo("SynchronisierenInit");
              startInfo.Arguments = null;
@@ -439,30 +439,30 @@ namespace MeineFinanzen.View {
             _kosyInt.Show();
             }
         private void KontenSynchronisierenSubsembly_Click(object sender, RoutedEventArgs e) {
-            conWrLi("---- -8d- Nach KontenSynchronisierenSubsembly_Click()");
+            ConWrLi("---- -8d- Nach KontenSynchronisierenSubsembly_Click()");
             _kosySubsembly = new VMKontenSynchronisierenSubsembly();
             _kosySubsembly.KontenSynchronisieren_Subsembly(this, true);       // false = nicht laden.
             do { }
             while (!_kosySubsembly.WertpapSubsemblyToPortFol());
             WertPapStart();
-            conWrLi("---- -8e- Nach WertPapStart()");
+            ConWrLi("---- -8e- Nach WertPapStart()");
             string s = Convert.ToString(DateTime.Now).Trim();
             string filename = Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\PortFol_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
             GlobalRef.g_WP.SerializeWertpapiere(filename, _tabwertpapiere._wertpapiere);
-            conWrLi("---- -8f- Nach SerializeWertpapiere()");
+            ConWrLi("---- -8f- Nach SerializeWertpapiere()");
             }
         private void KontenSynchronisierenHBCI4j_Click(Object sender, RoutedEventArgs e) {
-            conWrLi("---- -8d- Nach KontenSynHBCI4j_Click()");
-            _kosyHBCI4j = new VMKontenSynchronisierenHBCI4j();
-            _kosyHBCI4j.KontenSynchronisieren_HBCI4j(this, true);       // false = nicht laden.
+            ConWrLi("---- -8d- Nach KontenSynchronisierenHBCI4j_Click()");
+            _kosyHBCI4j = new KontenSynchronisierenHBCI4j();
+            _kosyHBCI4j.ShowDialog();
             do { }
             while (!_kosyHBCI4j.WertpapHBCI4jToPortFol());
             WertPapStart();
-            conWrLi("---- -8e- Nach WertPapStart HBCI()");
+            ConWrLi("---- -8e- Nach WertPapStart HBCI()");
             string s = Convert.ToString(DateTime.Now).Trim();
             string filename = Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\PortFolHBCI_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
             GlobalRef.g_WP.SerializeWertpapiere(filename, _tabwertpapiere._wertpapiere);
-            conWrLi("---- -8f- Nach SerializeWertpapiere HBCI()");
+            ConWrLi("---- -8f- Nach SerializeWertpapiere HBCI()");
             }
         /*  <?xml version = "1.0" ?>
             -<Wertpapier>
@@ -683,7 +683,7 @@ namespace MeineFinanzen.View {
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
             string s = Convert.ToString(DateTime.Now).Trim();
             string filename = Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\PortFol_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
-            string obok = DataSetAdmin.DatasetSichernInXml("MeineFinanzen");
+            string obok = DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             if (obok != null) {
                 MessageBox.Show("MeineFinanzen HauptFenster.xaml.cs HauptFenster() Fehler DatasetSichernInXlm() in WindowClose() DataSetAdmin: " + obok);
                 this.Close();
@@ -981,7 +981,7 @@ namespace MeineFinanzen.View {
                 dtrow["WPXKursY"] = "0";
                 }
             DataSetAdmin.dtPortFol = dtPortFol;
-            DataSetAdmin.DatasetSichernInXml("MeineFinanzen");
+            DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             Close();
             }
         private void KontenaufstellungHBCI4j_Click(Object sender, RoutedEventArgs e) {
@@ -1144,7 +1144,7 @@ return;
             string execName = Assembly.GetExecutingAssembly().GetModules()[0].FullyQualifiedName;
             string currentFolder = System.IO.Path.GetDirectoryName(execName);
             string icons = System.IO.Path.Combine(currentFolder, "icons");
-            return icons;       // C :\Users\LuKe\Documents\Visual Studio 2010\Projects\MeineFinanzen\bin\Release\icons
+            return icons;       // C :\U sers\LuKe\Documents\Visual Studio 2010\Projects\MeineFinanzen\bin\Release\icons
         }        
         private void TreeView_Loaded(object sender, RoutedEventArgs e)
         {

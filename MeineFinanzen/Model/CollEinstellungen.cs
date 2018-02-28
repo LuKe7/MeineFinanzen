@@ -1,6 +1,6 @@
-﻿// 17.02.2018   --Model--   CollEinstellungen.cs
+﻿// 21.02.2018   --Model--   CollEinstellungen.cs
 // 2017.10.27 Ordner Subsembly... wg Notebook angepasst.
-// 16.02.2018 strHBCI4j   C :/Users/username/hbci4j-core/hbci4j-core-3.0.10
+// 16.02.2018 strHBCI4j   C :/U sers/username/hbci4j-core/hbci4j-core-3.0.10
 // 17.02.2018 BilderPfad.
 using System.IO;
 using System;
@@ -42,7 +42,9 @@ namespace MeineFinanzen.Model {
         public string strHBCI4j { get; set; }
         public string strEclipseHbci4jClasses { get; set; }
         public string strBilderPfad { get; set; }
-        public string strStartBild { get; set; }        
+        public string strStartBild { get; set; }
+        public string strMyDocuments { get; set; }
+        public string strMyProfile { get; set; }       
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string propertyName) {
             if (PropertyChanged != null) {
@@ -68,7 +70,7 @@ namespace MeineFinanzen.Model {
             //Console.WriteLine("===>DeSerializeReadEinstellungen Read = " + einD.strEinstellungen + "\n--->" + einD.myAppName +
             //   " " + einD.strVersion + " " + einD.strKompileTime +
             //    "\n--->" + einD.myDataPfad + "\n--->" + einD.myDepotPfad);
-            //conWrLi("---- -x- DeSerializeReadEinstellungen()");
+            //ConWrLi("---- -x- DeSerializeReadEinstellungen()");
         }
         public void SerializeWriteEinstellungen(string filename, Einstellungen einD) { 
             // Write             
@@ -83,13 +85,15 @@ namespace MeineFinanzen.Model {
             //Console.WriteLine("===>SerializeWriteEinstellungen Write  = " + einD.strEinstellungen + "\n--->" + einD.myAppName +
             //    " " + einD.strVersion + " " + einD.strKompileTime +
             //    "\n--->" + einD.myDataPfad + "\n--->" + einD.myDepotPfad);
-            //conWrLi("---- -x- SerializeWriteEinstellungen()");
+            //ConWrLi("---- -x- SerializeWriteEinstellungen()");
         }
         private void AktualisiereEinstellungsDaten(Einstellungen einD) {
-            conWrLi("---- -x- AktualisiereEinstellungsDaten");
+            ConWrLi("---- -x- AktualisiereEinstellungsDaten");
+            einD.strMyProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);   // C:\Users\LuKe
+            einD.strMyDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments); // C:\Users\LuKe\Documents
             FileInfo fiExe = (new FileInfo(Assembly.GetEntryAssembly().Location));
             DateTime dtLeUmw = File.GetLastWriteTime(fiExe.FullName);
-            // fiExe.FullName: D:\Visual Studio 2015\Projects\MeineFinanzenProjekte\MeineFinanzen\MeineFinanzen\bin\Debug\MeineFinanzen.exe
+            // fiExe.FullName: D :\Visual Studio 2015\Projects\MeineFinanzenProjekte\MeineFinanzen\MeineFinanzen\bin\Debug\MeineFinanzen.exe
             einD.strKompileTime = dtLeUmw.ToString();
             // 21.06.2016 10:22:33           
             einD.myDocPfad = fiExe.FullName.Substring(0, 2);
@@ -102,9 +106,9 @@ namespace MeineFinanzen.Model {
             // D :\MeineFinanzen\MyDepot\Einstellungen\EinstellungsDaten.xml            
             einD.strSubsemblyAPI = einD.myDocPfad + @"\Visual Studio 2015\Projects\SubsemblyFinTS";
             // D :\Visual Studio 2015\Projects\SubsemblyFinTS
-            // C :\Users\username\Documents\Subsembly FinTs API
-            einD.strEclipseHbci4jClasses = @"C:\Users\LuKe\eclipse-workspace\hbci4java-master.zip_expanded\hbci4java-master\target\classes";
-            einD.strHBCI4j = @"C:/Users/LuKe/hbci4j-core/hbci4j-core-3.0.10/";    // xxxxxxx.properties";
+            // C :\U sers\username\Documents\Subsembly FinTs API
+            einD.strEclipseHbci4jClasses = einD.strMyProfile + @"\eclipse-workspace\hbci4java-master.zip_expanded\hbci4java-master\target\classes";
+            einD.strHBCI4j = einD.strMyProfile + @"/hbci4j-core/hbci4j-core-3.0.10/";    // xxxxxxx.properties";
             einD.strBilderPfad = einD.myDocPfad + @"\Visual Studio 2015\Projects\MeineFinanzenProjekte\MeineFinanzen\MeineFinanzen\MeineBilder";
             einD.bsHeight = (int)SystemParameters.PrimaryScreenWidth;
             einD.bsWidth = (int)SystemParameters.PrimaryScreenHeight;
@@ -139,13 +143,13 @@ namespace MeineFinanzen.Model {
         //public Einstellungen HoleEinstellungsDatenALT() {            
         /*
         string st3 = Environment.CurrentDirectory;            
-        // C :\Users\LuKe\Documents\Visual Studio 2015\Projects\MeineFinanzenProjekte\MeineFinanzen\MeineFinanzen\bin\Debug
+        // C :\U sers\LuKe\Documents\Visual Studio 2015\Projects\MeineFinanzenProjekte\MeineFinanzen\MeineFinanzen\bin\Debug
         string st4 = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        // C :\Users\LuKe\AppData\Roaming
+        // C :\U sers\LuKe\AppData\Roaming
         string st5 = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
         // C :\ProgramData
         string st6 = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        // C :\Users\LuKe\AppData\Local
+        // C :\U sers\LuKe\AppData\Local
        Console.WriteLine("Environment.CurrentDirectory                                              :{0}", st3);
        Console.WriteLine("Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)      :{0}", st4);
        Console.WriteLine("Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData):{0}", st5);
@@ -154,15 +158,15 @@ namespace MeineFinanzen.Model {
         /*
         FileInfo fiExe = (new FileInfo(Assembly.GetEntryAssembly().Location));            
         DateTime dtLeUmw = File.GetLastWriteTime(fiExe.FullName);
-        // fiExe.FullName: C :\Users\LuKe\Documents\Visual Studio 2015\Projects\MeineFinanzenProjekte\MeineFinanzen\MeineFinanzen\bin\Debug\MeineFinanzen.exe
+        // fiExe.FullName: C :\U sers\LuKe\Documents\Visual Studio 2015\Projects\MeineFinanzenProjekte\MeineFinanzen\MeineFinanzen\bin\Debug\MeineFinanzen.exe
         strKompileTime = dtLeUmw.ToString();
         // 21.06.2016 10:22:33           
         myDocPfad = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        // C :\Users\LuKe\Documents                        
+        // C :\U sers\LuKe\Documents                        
         myAppName = Assembly.GetExecutingAssembly().GetName().Name;
         // MeineFinanzen
         myDataPfad = myDocPfad + @"\" + myAppName + @"\";
-        // C :\Users\LuKe\Documents\MeineFinanzen\                                              
+        // C :\U sers\LuKe\Documents\MeineFinanzen\                                              
         string sVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         // 1.0.0.0
         str EinstellungenPfad = einD.myDocPfad + @"\Einstellungs--Daten.xml";
@@ -171,7 +175,7 @@ namespace MeineFinanzen.Model {
         bsHkorr = bsHeight / 1080;
         bsWkorr = bsWidth / 1920;
         string strrr = Environment.CurrentDirectory;            
-        // C :\Users\LuKe\Documents\Visual Studio 2010\Projects\PortfolioManager\PortfolioManager\bin\DebugXXXXXXZZZ
+        // C :\U sers\LuKe\Documents\Visual Studio 2010\Projects\PortfolioManager\PortfolioManager\bin\DebugXXXXXXZZZ
         string[] Zeilen = null;            
         Zeilen = File.ReadAllLines(myDataPfad + @"MyDepot\Settings\Settings-Portfolio.txt");           
         strPortfolioGridFontName = AusTextDatenHolen(Zeilen, "Portfolio", "GridFontName");            
@@ -262,8 +266,8 @@ namespace MeineFinanzen.Model {
         }
         return "";
     } */
-        public void conWrLi(string str1) {
+        public void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
-        }
+        } 
     }
 }

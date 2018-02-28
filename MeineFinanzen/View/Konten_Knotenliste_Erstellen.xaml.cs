@@ -46,7 +46,7 @@ namespace MeineFinanzen.View {
         PortFol pofo = new PortFol();
         public Konten_Knotenliste_Erstellen() { }
         public Konten_Knotenliste_Erstellen(HauptFenster mw) {
-            conWrLi("---- -91- Konten_Knotenliste_Erstellen");
+            ConWrLi("---- -91- Konten_Knotenliste_Erstellen");
             _mw = mw;
             _wertpapsynchro = (CollWertpapSynchro)mw.Resources["wertpapsynchro"];
             InitializeComponent();
@@ -55,7 +55,7 @@ namespace MeineFinanzen.View {
             wb1.ScrollBarsEnabled = true;
             }
         private void Window_Loaded(object sender, RoutedEventArgs e) {
-            conWrLi("---- -92- Konten_Knotenliste_Erstellen Window_Loaded");
+            ConWrLi("---- -92- Konten_Knotenliste_Erstellen Window_Loaded");
             dtPortFol = DataSetAdmin.dsHier.Tables["tblPortFol"];       // dtPortFol geholt.
             liPortFol = dtPortFol.ToCollection<PortFol>();              // liPortFol erstellen.
             allesReset();       // Mit neu laden.
@@ -223,14 +223,14 @@ namespace MeineFinanzen.View {
                     continue;
                 PortFol lirow = liPortFol.Find(x => x.WPISIN.Contains(strISIN));
                 if (lirow.WPStand != (DateTime)dtrow["WPStand"]) {
-                    Console.WriteLine("++++ Stand alt: {0,-12} meu: {1,-12}", (DateTime)dtrow["WPStand"], lirow.WPStand);
+                    Console.WriteLine("++++ Stand alt: {0,-12} neu: {1,-12}", (DateTime)dtrow["WPStand"], lirow.WPStand);
                     dtrow["WPStand"] = lirow.WPStand;
                     }
                 if (lirow.WPUrlText != (string)dtrow["WPUrlText"])
                     dtrow["WPUrlText"] = lirow.WPUrlText;
 
                 if (lirow.WPSharpe != (float)dtrow["WPSharpe"]) {
-                    Console.WriteLine("++++ Sharpe alt: {0,-12} meu: {1,-12}", (float)dtrow["WPSharpe"], lirow.WPSharpe);
+                    Console.WriteLine("++++ Sharpe alt: {0,-12} neu: {1,-12}", (float)dtrow["WPSharpe"], lirow.WPSharpe);
                     dtrow["WPSharpe"] = lirow.WPSharpe;
                     }
                 if (lirow.WPXPathSharp != (string)dtrow["WPXPathSharp"])
@@ -246,7 +246,7 @@ namespace MeineFinanzen.View {
                     dtrow["WPProzentAenderung"] = lirow.WPProzentAenderung;
 
                 if (lirow.WPKurs != (float)dtrow["WPKurs"]) {
-                    Console.WriteLine("++++ Kurs alt: {0,-12} meu: {1,-12}", (float)dtrow["WPKurs"], lirow.WPKurs);
+                    Console.WriteLine("++++ Kurs alt: {0,-12} neu: {1,-12}", (float)dtrow["WPKurs"], lirow.WPKurs);
                     dtrow["WPKurs"] = lirow.WPKurs;
                     }
                 if (lirow.WPXPathKurs != (string)dtrow["WPXPathKurs"])
@@ -268,11 +268,11 @@ namespace MeineFinanzen.View {
                     dtrow["WPXZeitY"] = lirow.WPXZeitY;
                 }
             DataSetAdmin.dtPortFol = dtPortFol;
-            DataSetAdmin.DatasetSichernInXml("MeineFinanzen");
+            DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             Close();
             }
         private void dgvUrls_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
-            //conWrLi("---- -93- dgvUrls_PreviewMouseDown");
+            //ConWrLi("---- -93- dgvUrls_PreviewMouseDown");
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is DataGridCell))
                 dep = VisualTreeHelper.GetParent(dep);
@@ -291,7 +291,7 @@ namespace MeineFinanzen.View {
             //Console.WriteLine("cell1.Column.Header: {0}", cell1.Column.Header); // ist z.B. WPURLSharp
             _ColHeader = cell1.Column.Header.ToString();
             boDgvRowAusgewählt = true;
-            //conWrLi("---- -94- boDgvRowAusgewählt=true");
+            //ConWrLi("---- -94- boDgvRowAusgewählt=true");
             _curName = ((WertpapSynchro)item).WPSName;
             _curIsin = ((WertpapSynchro)item).WPSISIN;
             _curUrl = ((WertpapSynchro)item).WPSURL;
@@ -474,7 +474,7 @@ namespace MeineFinanzen.View {
                 return;
             foundRow.WPUrlText = _curUrl;
             }
-        public void conWrLi(string str1) {
+        public void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
             }
         private int FindRowIndex(DataGridRow row) {

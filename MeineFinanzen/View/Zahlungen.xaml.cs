@@ -15,22 +15,22 @@ namespace MeineFinanzen.View {
         HauptFenster _mw;
         Random rand = new Random();
         public Zahlungen() {
-            conWrLi("---- -80- Zahlungen()");
+            ConWrLi("---- -80- Zahlungen()");
         }
         public Zahlungen(HauptFenster mw) {
-            conWrLi("---- -81- Zahlungen (HauptFenster mw)");
+            ConWrLi("---- -81- Zahlungen (HauptFenster mw)");
             _mw = mw;
             InitializeComponent();
-            conWrLi("---- -82- Zahlungen nach InitializeComponent()");
+            ConWrLi("---- -82- Zahlungen nach InitializeComponent()");
             _zahlungen = (Model.CollZahlungen)Resources["zahlungen"];
             _kontoumsätze = (Model.CollKontoumsätze)mw.Resources["kontoumsätze"];
-            conWrLi("---- -83- Zahlungen nach Kto Ums holen");
+            ConWrLi("---- -83- Zahlungen nach Kto Ums holen");
         }
-        public void conWrLi(string str1) {
+        public void ConWrLi(string str1) {
            Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
         }
         private void Window_Loaded(object sender, RoutedEventArgs e) {
-            conWrLi("---- -84- Zahlungen Window_Loaded");
+            ConWrLi("---- -84- Zahlungen Window_Loaded");
             int anz = 0;
             double wert = 0;
             //string[] sArr = new string[] { "nix", "ZINSEN/DIVIDENDE", "WERTPAPIERZAHLUNG", "STORNO" };
@@ -137,7 +137,7 @@ namespace MeineFinanzen.View {
                     }
                 }
             }
-            DataSetAdmin.DatasetSichernInXml("MeineFinanzen");
+            DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             this.Close();
         }
         public void undLos() {

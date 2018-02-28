@@ -41,9 +41,9 @@ namespace MeineFinanzen.Model {
                 MessageBox.Show("Fehler: DeserializeReadBankÜbersicht -Read- " + ex);
                 }
             AktualisiereBankÜbersichtsDaten(filename, bankÜ);
-            //Console.WriteLine("===>DeserializeReadBankÜbersicht = " + bankÜ[0].BildPfad7 + "\n--->" + bankÜ[0].BankName7 +
-            //   " " + bankÜ[0].BankValue7 + " " + bankÜ[0].OCBankKonten.Count);
-            //conWrLi("---- -x- DeserializeReadBankÜbersicht()");
+            Console.WriteLine("===>DeserializeReadBankÜbersicht = " + bankÜ[0].BildPfad7 + "\n--->" + bankÜ[0].BankName7 +
+               " " + bankÜ[0].BankValue7 + " " + bankÜ[0].OCBankKonten.Count);
+            //ConWrLi("---- -x- DeserializeReadBankÜbersicht()");
             }
         public void SerializeWriteBankÜbersicht(string filename, IList<BankÜbersicht> bankÜ) {
             // Write             
@@ -54,9 +54,9 @@ namespace MeineFinanzen.Model {
                 } catch (Exception ex) {
                 MessageBox.Show("Fehler: SerializeWriteBankÜbersicht -Write-  " + ex);
                 }
-            //Console.WriteLine("===>SerializeWriteBankÜbersicht =   " + bankÜ[0].BildPfad7 + "\n--->" + bankÜ[0].BankName7 +
-            //   " " + bankÜ[0].BankValue7 + " " + bankÜ[0].OCBankKonten.Count);
-            //conWrLi("---- -x- SerializeWriteBankÜbersicht()");
+            Console.WriteLine("===>SerializeWriteBankÜbersicht =   " + bankÜ[0].BildPfad7 + "\n--->" + bankÜ[0].BankName7 +
+               " " + bankÜ[0].BankValue7 + " " + bankÜ[0].OCBankKonten.Count);
+            //ConWrLi("---- -x- SerializeWriteBankÜbersicht()");
             }
         private void AktualisiereBankÜbersichtsDaten(string filename, IList<BankÜbersicht> bankÜ) {
             FileInfo fiExe = (new FileInfo(Assembly.GetEntryAssembly().Location));
@@ -70,7 +70,7 @@ namespace MeineFinanzen.Model {
             bankÜ.LiBankKonten[0].Konto Nr8 =
             bankÜ.LiBankKonten[0].Konto Value8 = */
             }
-        public void conWrLi(string str1) {
+        public void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
             }
         }

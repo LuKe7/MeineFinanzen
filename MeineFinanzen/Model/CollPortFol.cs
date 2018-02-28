@@ -89,7 +89,6 @@ RaisePropertyChanged("Anzahl");
         public void BeginEdit() { }
         public void CancelEdit() { }
         public void EndEdit() { }
-        // D:\MeineFinanzen\MyDepot\Daten\dataset.xml
         static XmlSerializer xmlserializer = new XmlSerializer(typeof(List<PortFol>));
         public void DeserializeReadPortFol(string filename, out List<PortFol> portfol) {
             portfol = null;

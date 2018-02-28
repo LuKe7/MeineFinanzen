@@ -1,5 +1,5 @@
 ﻿// 22.11.2017   -Model-   ChartDatenHolen.cs
-// Aus  C :\Users\LuKe\Documents\MeineFinanzen\MyDepot\KursDaten\PortFol_20061122.xml einlesen.
+// Aus  C :\U sers\LuKe\Documents\MeineFinanzen\MyDepot\KursDaten\PortFol_20061122.xml einlesen.
 // Auch  PortFol_20151124 (2015_11_24 12_45_03 UTC).xml
 // max 2.000.000,-
 using System;
@@ -42,7 +42,7 @@ namespace MeineFinanzen.Helpers {
                     if (fsi.Name.Contains(".xml"))
                         AddToDatatable(file, fsi.Name);
             }
-            conWrLi("---- -73- Vor return ChartDatenHolenX()");
+            ConWrLi("---- -73- Vor return ChartDatenHolenX()");
             return dtWoche;
         }
         public static string[] HoleFiles(string path, string searchPattern, SearchOption searchOption) {
@@ -110,7 +110,7 @@ namespace MeineFinanzen.Helpers {
                 }
             }
         }
-        public void conWrLi(string str1) {
+        public void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
         }
         #region IDisposable Support

@@ -63,7 +63,7 @@ namespace MeineFinanzen.Model {
                 DgBanken.ko4js.Add(DgBanken.ko4j);
                 }   // foreach FileInfo  
             }
-        public void conWrLi(string str1) {
+        public void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
             }
         }

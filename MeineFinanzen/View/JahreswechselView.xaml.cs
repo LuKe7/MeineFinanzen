@@ -12,16 +12,16 @@ namespace MeineFinanzen.View {
         public Model.CollWertpapiere _wertpap = null;
         HauptFenster _mw;
         public JahreswechselView() {
-            conWrLi("---- -xx- JahreswechselView()");
+            ConWrLi("---- -xx- JahreswechselView()");
         }
         public JahreswechselView(HauptFenster mw) {
-            conWrLi("---- -xx- JahreswechselView (HauptFenster mw)");
+            ConWrLi("---- -xx- JahreswechselView (HauptFenster mw)");
             _mw = mw;
             _wertpap = (Model.CollWertpapiere)Resources["wertpapiere"];          
             InitializeComponent();
         }
         private void Window_Loaded(object sender, RoutedEventArgs e) {
-            conWrLi("---- -xx- JahreswechselView Window_Loaded");                       
+            ConWrLi("---- -xx- JahreswechselView Window_Loaded");                       
             double aktWert = 0;
             double su0101Wert;           
             foreach (DataRow dr in DataSetAdmin.dtPortFol.Rows) {
@@ -77,7 +77,7 @@ namespace MeineFinanzen.View {
             }
             return null;
         }
-        public void conWrLi(string str1) {
+        public void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
         }
     }

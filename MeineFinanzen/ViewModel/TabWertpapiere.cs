@@ -513,7 +513,7 @@ namespace MeineFinanzen.ViewModel {
             return null;
         } */
         public Wertpapier holeVortagesDatenXXXXXX() {
-            // C :\Users\LuKe\Documents\MeineFinanzen\MyDepot\KursDaten\PortFol_20151019 (2015_10_21 10_17_02 UTC).xml
+            // C :\U sers\LuKe\Documents\MeineFinanzen\MyDepot\KursDaten\PortFol_20151019 (2015_10_21 10_17_02 UTC).xml
             Wertpapier wpVorher = null;
             //string s = "";
             string pfad = "";
@@ -624,7 +624,7 @@ namespace MeineFinanzen.ViewModel {
                 return ((new CaseInsensitiveComparer()).Compare(x, y));
                 }
             }
-        public void conWrLi(string str1) {
+        public void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
             }
         }

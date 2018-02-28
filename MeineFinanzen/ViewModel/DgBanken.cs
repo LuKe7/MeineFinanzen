@@ -37,13 +37,14 @@ namespace MeineFinanzen.ViewModel {
             //_depHolen = new DepotHolen();    // In FinKontenÜbersicht Grundwerte setzen und ini depHolen.
             }
         public void machdgbanken() {            
-            //conWrLi("---- -x- DgBanken vor Deserialisierung -read-");
+            //ConWrLi("---- -x- DgBanken vor Deserialisierung -read-");
             GlobalRef.g_Büb = new BankÜbersicht();
             GlobalRef.g_Büb.DeserializeReadBankÜbersicht(GlobalRef.g_Ein.myDepotPfad + @"\Daten\BankÜbersichtsDaten.xml", out banken);
             mw.dgBankenÜbersicht.ItemsSource = null;
             mw.dgBankenÜbersicht.ItemsSource = banken;
             mw.tabControl1.SelectedItem = mw.tabFinanzübersicht;
             mw.dgBankenÜbersicht.EnableRowVirtualization = false;
+            testBankAnzeige();
             }
         public double SummeGeschlFonds() {
             double geschlfonds = 0.00;
@@ -120,7 +121,7 @@ namespace MeineFinanzen.ViewModel {
         dtWPGes pif.Name:ExchangeRate                       GetValue:0                        PropertyType:System.Decimal
         dtWPGes pif.Name:NumberOfSubBalances                GetValue:1                        PropertyType:System.Int32*/
         public string[] KontoStändeFinCmd(string cmdLine, string kto) {
-            conWrLi("---- -29e- In KontoumsatzFüllen " + kto);
+            ConWrLi("---- -29e- In KontoumsatzFüllen " + kto);
             string[] strResult2;
             Directory.SetCurrentDirectory(Helpers.GlobalRef.g_Ein.strSubsemblyAPI);
             ProcessStartInfo startInfo = new ProcessStartInfo("FinCmd");
@@ -158,7 +159,7 @@ namespace MeineFinanzen.ViewModel {
                         int anzAendern = 0;
                         foreach (DataRow updRow in DataSetAdmin.dtPortFol.Rows) {
                             if (updRow["WPKontoNr"].ToString() == sKontoNr) {
-                                conWrLi("---- -29h- In KontoStändeFinCmd " + kto);
+                                ConWrLi("---- -29h- In KontoStändeFinCmd " + kto);
                                 anzAendern += 1;
                                 Betrag = Convert.ToDouble(sValue);
                                 updRow["WPStand"] = mw._Datum;
@@ -180,7 +181,7 @@ namespace MeineFinanzen.ViewModel {
                             }
                         }
                     }
-                conWrLi("---- -29j- In KontoStändeFinCmd " + kto);
+                ConWrLi("---- -29j- In KontoStändeFinCmd " + kto);
                 return strResult2;
                 } catch (Exception ex) {
                 MessageBox.Show("KontenÜbersicht, GetDataTable Fehler: " + ex);
@@ -209,7 +210,7 @@ namespace MeineFinanzen.ViewModel {
                             foreach (string zei in strResult1)
                                 sw.Write(zei);
                             }
-                        conWrLi("---- -29f- In KontoUmsätzeFinCmdStmt " + ktoNr);
+                        ConWrLi("---- -29f- In KontoUmsätzeFinCmdStmt " + ktoNr);
                         ErstelledtKontoumsätzeGesamt(';', strResult1, ktoNr);
                         }
                     }
@@ -261,7 +262,7 @@ namespace MeineFinanzen.ViewModel {
                 } catch (Exception ex) {
                 MessageBox.Show("KontenÜbersicht, GetDataTable Fehler: " + ex);
                 }
-            conWrLi("---- -29h- ErstelledtKontoumsätzeGesamt " + ktoNr);
+            ConWrLi("---- -29h- ErstelledtKontoumsätzeGesamt " + ktoNr);
             return;
             }
         public string[] csvParser(string csv, char separator = ',') {
@@ -285,7 +286,7 @@ namespace MeineFinanzen.ViewModel {
                     }
             return strLine;
             }
-        public void conWrLi(string str1) {
+        public void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
             }
         public void testBankAnzeige() {

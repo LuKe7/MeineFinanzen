@@ -32,8 +32,8 @@ namespace MeineFinanzen.View {
                 byte[] password = ViewModel.PasswordHashing.CalculateHash(
                             ViewModel.SecureStringManipulation.ConvertSecureStringToByteArray(
                                 viewModel.PasswordSecureString));
-                //Helpers.GlobalRef.g_User.users[0].UserName = null;
-                //Helpers.GlobalRef.g_User.users[0].UserPassword = null; 
+                //Helpers.GlobalRef.g_User.u sers[0].UserName = null;
+                //Helpers.GlobalRef.g_User.u sers[0].UserPassword = null; 
                 List<Model.User> liUser = new List<Model.User>();
                 // NOCH Helpers.GlobalRef.g_User.Add(new Model.User() { UserName = username, UserPassword = password.ToString() });
                 // NOCH FEHLER Helpers.GlobalRef.g_User.SerializeWriteLogin(strxxx + @"\\LoginDaten.xml", Helpers.GlobalRef.g_User);

@@ -36,7 +36,7 @@ namespace MeineFinanzen {
         }
         protected override void OnLoad(EventArgs e) {
             //private void FinKontenÜbersicht_Load(object sender, EventArgs e)  
-            conWrLi("---- -40- Start FinKontenÜbersicht");
+            ConWrLi("---- -40- Start FinKontenÜbersicht");
             int lfdnr = -1;             // Geändert!!!!
             int selectNr = 0;           // Geändert!!!!
             // Add all contacts that have been set up with the Sub sembly FinTS Admin to the selection box.
@@ -62,7 +62,7 @@ namespace MeineFinanzen {
             versionInfoLabel.Text = "Sub sembly FinTS API " + FinUtil.ApiVersion.ToString();
             //
             base.OnLoad(e);
-            conWrLi("---- -48- Ende FinKontenÜbersicht");
+            ConWrLi("---- -48- Ende FinKontenÜbersicht");
         }
         private void contactComboBox_SelectedIndexChanged(object sender, System.EventArgs e) {
             // Get the new contact selection.
@@ -978,7 +978,7 @@ namespace MeineFinanzen {
             }
         }
         #endregion
-        private void conWrLi(string str1) {
+        private void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
         }
     }

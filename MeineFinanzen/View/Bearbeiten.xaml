@@ -7,38 +7,52 @@
         mc:Ignorable="d"
         Title="Bearbeiten"
         Loaded="Window_Loaded"
-        Height="1080"
-        Width="784"
-        VerticalAlignment="Top"
-        WindowStyle="ThreeDBorderWindow"
-        WindowStartupLocation="CenterOwner">
-    <Grid>
+        WindowState="Normal">
+    <Grid Name="GridWertpapiereBearbeiten"
+          Background="#FFB8B7A8">
+        <!-- Auto Die Größe wird von den Größeneigenschaften des Inhaltsobjekts bestimmt.  
+             100  Der Wert wird als Pixel ausgedrückt.  
+             *    Der Wert wird als gewichtetes Verhältnis zum verfügbaren Platz ausgedrückt. -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10*" />
+            <ColumnDefinition Width="10*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+        </Grid.RowDefinitions>
         <Label Content="Wertpapier bearbeiten"
-               HorizontalAlignment="Left"
-               Margin="200,30,0,0"
-               VerticalAlignment="Top"
+               Grid.Column="1"
+               Grid.Row="0"              
                FontSize="24"
                FontStyle="Italic"
-               FontWeight="Bold"
-               Width="412"
-               FontStretch="Expanded" />
+               FontWeight="Bold"/>
         <Label Content="Depot:"
-               HorizontalAlignment="Left"
-               Margin="55,202,0,0"
-               VerticalAlignment="Top"
-               Width="95"
-               FontSize="14"
-               HorizontalContentAlignment="Right" />
+               Grid.Column="0"
+               Grid.Row="1"               
+               FontSize="14" />
         <ComboBox Name="cbDepot"
+                  Grid.Column="1"
+                  Grid.Row="1"
                   AllowDrop="True"
                   Height="22"
-                  HorizontalAlignment="Left"
-                  Margin="200,209,0,0"
-                  VerticalAlignment="Top"
+                  HorizontalAlignment="Left"                                  
                   SelectedItem="{Binding Path=DepotID, Mode=TwoWay}"
                   SelectionChanged="cmbSelectionChangedDepot"
-                  Background="Linen"
-                  Width="270"
+                  Background="Linen"                  
                   FontWeight="Bold" />
         <Label Content="Type:"
                HorizontalAlignment="Left"
@@ -303,22 +317,15 @@
                FontSize="14"
                HorizontalContentAlignment="Right" />
         <Button Content="Ok"
+                Grid.Column="0"
+                Grid.Row="10"
                 Name="btOk"
-                HorizontalAlignment="Left"
-                Margin="520,911,0,0"
-                VerticalAlignment="Top"
-                Width="75"
-                Click="btOk_Click"
-                Background="Linen"
-                Height="22" />
+                Click="btOk_Click"     />
         <Button Content="Abbrechen"
-                Name="btAbbrechen"
-                HorizontalAlignment="Left"
-                Margin="520,948,0,0"
-                VerticalAlignment="Top"
-                Width="75"
+                Grid.Column="1"
+                Grid.Row="10"
+                Name="btAbbrechen"               
                 Click="btAbbrechen_Click"
-                Background="Linen"
-                Height="22" />
+                Background="Linen"  />
     </Grid>
 </Window>

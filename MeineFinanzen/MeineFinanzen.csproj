@@ -140,8 +140,6 @@
     <Compile Include="Model\PortFolDatensatz.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModel\DgBanken.cs" />
-    <Compile Include="ViewModel\VMKontenSynchronisierenHBCI4j.cs" />
-    <Compile Include="ViewModel\VMKontenSynchronisierenInt.cs" />
     <Compile Include="ViewModel\VMKontenSynchronisierenSubsembly.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />
     <Compile Include="ViewModel\TabKontoumsätze.cs" />

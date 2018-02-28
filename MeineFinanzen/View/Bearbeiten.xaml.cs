@@ -121,7 +121,7 @@ namespace MeineFinanzen.View {
                 MessageBox.Show("WPKaufsumme wird übernommen!" + _wertpap[_nwp].Name + " Alt: " + _rowPortFol["WPKaufsumme"] + " Neu: " + _wertpap[_nwp].Kaufsumme);
             _rowPortFol["WPKaufsumme"] = _wertpap[_nwp].Kaufsumme;
             _rowPortFol["WPKaufDatum"] = _wertpap[_nwp].KaufDatum;
-            DataSetAdmin.DatasetSichernInXml("MeineFinanzen");
+            DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             this.Close();
         }
         private void cmbSelectionChangedType(object sender, SelectionChangedEventArgs e) {

@@ -1,5 +1,6 @@
-﻿// 09.02.2018 KontenSynchronisierenSubsembly.cs
+﻿// 28.02.2018 VMKontenSynchronisierenSubsembly.cs
 // Get Passw verändert. NOCH verbessern.
+// SortFeld7 < 888 sind Banken.
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,9 +12,7 @@ using DataSetAdminNS;
 using Subsembly.FinTS;
 using MeineFinanzen.Model;
 using System.Xml;
-using System.Reflection;
 using MeineFinanzen.Helpers;
-
 namespace MeineFinanzen.ViewModel {
     public class VMKontenSynchronisierenSubsembly {
         internal DgBanken _b;
@@ -26,7 +25,7 @@ namespace MeineFinanzen.ViewModel {
         }
         //public void KontenSynchronisieren_Subsembly(View.HauptFenster mw, bool laden) {  // false = nicht laden.
         public void KontenSynchronisieren_Subsembly(View.HauptFenster mw, bool laden) {
-            /* Verzeichnis: D:\MeineFinanzen\MyDepot\Log                                                                       
+            /* Verzeichnis: D :\MeineFinanzen\MyDepot\Log                                                                       
             * --funktion--            -was-           -wohin-                                                                                
             * KontoStändeFinCmd       Kontostände     \Kontenstände - sKontoNr-DateTime.csv balance   -contactname...               
             * KontoUmsätzeFinCmdStmt  Kontoumsätze    \Umsätze-KontoNr-DateTime.csv         statement -contactname... 
@@ -34,7 +33,7 @@ namespace MeineFinanzen.ViewModel {
             * DepotHolen_ausführen    WertpapierDepot dtWertpapSubsembly. (Mit angepasstem FinPadForm geholt)   */
             if (!laden)
                 return;
-            conWrLi("---- -20- Start KontenSynchronisieren_Subsembly");
+            ConWrLi("---- -20- Start KontenSynchronisieren_Subsembly");
             mw._boKurseAktualisierenKo = true;
             string[] strResult;
             double BankBetrag = 0.00;
@@ -58,7 +57,7 @@ namespace MeineFinanzen.ViewModel {
                 DgBanken.bank = new BankÜbersicht();                                         // -BankÜbersicht
                 DgBanken.bank.OCBankKonten = new ObservableCollection<BankKonten>();
                 DgBanken.banken.Add(DgBanken.bank);
-                DgBanken.bank.SortFeld7 = (anzBanken++ + 800).ToString();                    // aContact.BankCode;   50010517
+                DgBanken.bank.SortFeld7 = (anzBanken++ + 300).ToString();                    // aContact.BankCode;   50010517
                 DgBanken.bank.BankName7 = aContact.ContactName;                              // +BankName7         
                 string strImagePath = "";
                 if (aContact.ContactName.Contains("Spark"))
@@ -69,12 +68,12 @@ namespace MeineFinanzen.ViewModel {
                     strImagePath += "nichts";
                 strImagePath += ".png";
                 DgBanken.bank.BildPfad7 = pathMeineBilder + strImagePath;                    // +BildPfad7 
-                // D:\Visual Studio 2015\Projects\SubsemblyFinTS\DiBa.png
+                // D :\Visual Studio 2015\Projects\SubsemblyFinTS\DiBa.png
                 DgBanken.bank.BLZ7 = aContact.BankCode;
                 DgBanken.bank.UserID7 = aContact.UserID;
                 DgBanken.bank.Datum7 = File.GetLastWriteTime(Helpers.GlobalRef.g_Ein.myDepotPfad + @"Log\BankKontoStand.xml");
                 DgBanken.bank.Bearbeitungsart7 = "bearb...";
-                DgBanken.bank.FunktionenPfad7 = pathMeineBilder + "Aktualisieren9.png";
+                DgBanken.bank.FunktionenPfad7 = pathMeineBilder + "Aktualisieren1.png";
                 DgBanken.bank.Status7 = "sta";
                 _depHolen._bank = aContact.ContactName;
                 _depHolen._blz = aContact.BankCode;
@@ -115,7 +114,7 @@ namespace MeineFinanzen.ViewModel {
                     DgBanken.konto.KontoName8 = aAcctInfo.AcctName;                          // +KontoName 8                      
                     DgBanken.konto.KontoArt8 = aAcctInfo.AcctTypeClass.ToString();           // +KontoArt8                    
                     DgBanken.konto.KontoNr8 = aAcctInfo.AcctNo;                              // +KontoNr8                     
-                    DgBanken.konto.KontoValue8 = _b.Betrag;                                     // +KontoValue8                                  
+                    DgBanken.konto.KontoValue8 = _b.Betrag;                                  // +KontoValue8                                  
 
                     DateTime dt = File.GetLastWriteTime(Helpers.GlobalRef.g_Ein.myDepotPfad + @"Log\BankKontoStand.xml");// +KontoDatum8
                     DgBanken.konto.KontoDatum8 = dt;
@@ -134,17 +133,18 @@ namespace MeineFinanzen.ViewModel {
                     Console.WriteLine("GesamtBetrag: {0} BankBetrag: {1} Betrag: {2}", GesamtBetrag, BankBetrag, _b.Betrag);
                 }   // loop AcctInfo = Konten der Bank
             }   //  loop Contact = Bank
-            conWrLi("---- -26- In KontenSynchronisieren_Subsembly");
+            ConWrLi("---- -26- In KontenSynchronisieren_Subsembly");
 
             DgBanken.bank = new BankÜbersicht();                                             // -BankÜbersicht
             DgBanken.bank.OCBankKonten = new ObservableCollection<BankKonten>();
             DgBanken.banken.Add(DgBanken.bank);
             DgBanken.bank.SortFeld7 = "888";
             DgBanken.bank.Bearbeitungsart7 = "bearb...";
-            DgBanken.bank.FunktionenPfad7 = pathMeineBilder + "Aktualisieren9.png";
+            DgBanken.bank.FunktionenPfad7 = pathMeineBilder + "Aktualisieren1.png";
             DgBanken.bank.Datum7 = File.GetLastWriteTime(Helpers.GlobalRef.g_Ein.myDepotPfad + @"Log\BankKontoStand.xml");
             DgBanken.bank.BankName7 = "GeschlFonds";                                         // +BankName7     
-            DgBanken.bank.BildPfad7 = @"C:\Users\Public\Pictures\index.png";                 // +BildPfad7 
+            DgBanken.bank.BildPfad7 = pathMeineBilder + "Aktualisieren1.png";                // +BildPfad7 
+            // @"C :\U sers\Public\Pictures\index.png";                 
             DgBanken.bank.BankValue7 = _b.SummeGeschlFonds();                                // +BankValue7
 
             DgBanken.bank = new BankÜbersicht();                                             // -BankÜbersicht
@@ -152,27 +152,28 @@ namespace MeineFinanzen.ViewModel {
             DgBanken.banken.Add(DgBanken.bank);
             DgBanken.bank.SortFeld7 = "889";
             DgBanken.bank.Bearbeitungsart7 = "bearb...";
-            DgBanken.bank.FunktionenPfad7 = pathMeineBilder + "Aktualisieren9.png";
+            DgBanken.bank.FunktionenPfad7 = pathMeineBilder + "Aktualisieren1.png";
             DgBanken.bank.Datum7 = File.GetLastWriteTime(Helpers.GlobalRef.g_Ein.myDepotPfad + @"Log\BankKontoStand.xml");
             DgBanken.bank.BankName7 = "Alle Konten";                                         // +BankName7     
-            DgBanken.bank.BildPfad7 = @"C:\Users\Public\Pictures\index.png";                 // +BildPfad7 
-            DgBanken.bank.BankValue7 = GesamtBetrag + _b.SummeGeschlFonds();                 // +BankValue7  NOCH
+            DgBanken.bank.BildPfad7 = pathMeineBilder + "Aktualisieren1.png";                // +BildPfad7 
+            // @"C :\U sers\Public\Pictures\index.png";                
+            DgBanken.bank .BankValue7 = GesamtBetrag + _b.SummeGeschlFonds();                 // +BankValue7  NOCH
             mw.swLog.Close();
-            string str = DataSetAdmin.DatasetSichernInXml("MeineFinanzen");
+            string str = DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             if (str != null) {
                 MessageBox.Show("Fehler DatasetSichernInXml(): " + str);
             } else {
                 Helpers.GlobalRef.g_Büb.SerializeWriteBankÜbersicht(Helpers.GlobalRef.g_Ein.myDepotPfad
                     + @"\Daten\BankÜbersichtsDaten.xml", DgBanken.banken);
-                conWrLi("---- -29- In KontenSynchronisieren_Subsembly");
+                ConWrLi("---- -29- In KontenSynchronisieren_Subsembly");
             }
 
             mw.dgBankenÜbersicht.UpdateLayout();
             mw._boKurseAktualisierenKo = false;
-            conWrLi("---- -29b- In KontenSynchronisieren_Subsembly vor neuStart");
+            ConWrLi("---- -29b- In KontenSynchronisieren_Subsembly vor neuStart");
             mw.neuStarten();
             //testBankAnzeige();
-            conWrLi("---- -29c- Fertig KontenSynchronisieren_Subsembly nach neuStart");
+            ConWrLi("---- -29c- Fertig KontenSynchronisieren_Subsembly nach neuStart");
         }
         public bool WertpapSubsemblyToPortFol() {  // Update von dtWertpapSubsembly ---> dtPortFol.          
             if (DataSetAdmin.dtWertpapSubsembly.Columns.Count == 0)
@@ -311,7 +312,7 @@ namespace MeineFinanzen.ViewModel {
             }
             return true;
         }
-        public void conWrLi(string str1) {
+        public void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
         }
         public static string[] HoleFiles(string path, string searchPattern, SearchOption searchOption) {

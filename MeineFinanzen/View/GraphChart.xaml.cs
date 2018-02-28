@@ -21,7 +21,7 @@ namespace MeineFinanzen.View {
         }
         // Draw a simple graph. Creates the chart based on the ChartDataTable.        
         internal void GeneriereGraph(DataTable dtWoche) {
-            conWrLi("---- -40- GeneriereGraph()");
+            ConWrLi("---- -40- GeneriereGraph()");
             if (dtWoche.Rows.Count > 34)
                 abWoche = dtWoche.Rows.Count - 34;            
             double d = 0;
@@ -145,7 +145,7 @@ Woche:95 x:860.262 last_y:1166   */
             graphArea.Children.Add(polyline);                       // Die Verbindungslinien            
             setText(80.00, 8.00, "Depotwerte wöchentlich", Colors.Black);
             //CanvasXXX(); 
-            conWrLi("---- -41- GeneriereGraph()");
+            ConWrLi("---- -41- GeneriereGraph()");
         }
         private void AddMarkerTextToChart(double top, double markerTextValue) {
             TextBlock markText = new TextBlock();
@@ -202,7 +202,7 @@ Woche:95 x:860.262 last_y:1166   */
             var slider = sender as Slider;                       
             textBoxSlider.Text = "zoomSlider: " + slider.Value.ToString("0.0") + ", max: " + slider.Maximum;
         }
-        private void conWrLi(string str1) {
+        private void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
         }
     }

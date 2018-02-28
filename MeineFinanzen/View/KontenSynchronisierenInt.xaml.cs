@@ -154,7 +154,7 @@ namespace MeineFinanzen.View {
             txtUnten.Clear();
             txtUnten.FontSize = 10;
             txtUnten.FontFamily = new FontFamily("Courier New, Verdana");
-            DateTime dt = DataSetAdmin.HolenAusXml("MeineFinanzen");
+            DateTime dt = DataSetAdmin.HolenAusXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             if (dt == null) {
                 System.Windows.MessageBox.Show("MeineFinanzen HauptFenster.xaml.cs HauptFenster() Fehler HolenAusXml() DataSetAdmin");
                 System.Windows.MessageBox.Show("MyPortfolio Fehler!!  Dateien nicht geladen!!!!");
@@ -268,32 +268,32 @@ namespace MeineFinanzen.View {
             }
         private void wb1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e) {
             if (bo_ZeitSchwelle) {
-                txtWrLi("bo_ZeitSchwelle");
+                TxtWrLi("bo_ZeitSchwelle");
                 verarbeiteDokument();
                 }
             else if (e.Url.AbsolutePath != (sender as WebBrowser).Url.AbsolutePath) {
-                txtWrLi("Urls !=");
+                TxtWrLi("Urls !=");
                 }
             else if (!navigateGestartet) {
-                txtWrLi("navigateNICHTGestartet: " + wb1.ReadyState);      // nach dem Letzten WP.              
+                TxtWrLi("navigateNICHTGestartet: " + wb1.ReadyState);      // nach dem Letzten WP.              
                 }
             else if (wb1.ReadyState == WebBrowserReadyState.Complete) {
-                txtWrLi("Complete");
+                TxtWrLi("Complete");
                 verarbeiteDokument();
                 }
             else if (wb1.ReadyState == WebBrowserReadyState.Interactive) {
                 nInteractive++;
-                txtWrLi("Interactive" + nInteractive);
+                TxtWrLi("Interactive" + nInteractive);
                 if (nInteractive > 16) {
-                    txtWrLi("Interactive > 16");
+                    TxtWrLi("Interactive > 16");
                     verarbeiteDokument();
                     }
                 }
             else if (wb1.ReadyState == WebBrowserReadyState.Loading) {
-                txtWrLi("Loading");
+                TxtWrLi("Loading");
                 }
             else {
-                txtWrLi("wb1-DocumentCompleted: " + wb1.ReadyState + " unbekannt!!!");
+                TxtWrLi("wb1-DocumentCompleted: " + wb1.ReadyState + " unbekannt!!!");
                 }
             }
         private void verarbeiteDokument() { // Evtl. mehrere Durchläufe, evtl. wg. Sharpe/Fehler. 
@@ -433,7 +433,7 @@ namespace MeineFinanzen.View {
             Close();
             }
         private void Grid1_Unloaded(object sender, RoutedEventArgs e) {
-            DataSetAdmin.DatasetSichernInXml("MeineFinanzen");
+            DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             }
         private void PrintTxtOben(string str) {
             txtOben.AppendText(str);
@@ -452,9 +452,9 @@ namespace MeineFinanzen.View {
             }
         internal void myTimer_Elapsed(object sender, ElapsedEventArgs e) {
             Progress = stopWatch.ElapsedMilliseconds;
-            //conWrLi("myTimer_Elapsed:" + string.Format("Progress:{0,6}", Progress));
+            //ConWrLi("myTimer_Elapsed:" + string.Format("Progress:{0,6}", Progress));
             if (stopWatch.ElapsedMilliseconds > threshold) {
-                conWrLi("---- myTimer_Elapsed bo_ZeitSchwelle:" + string.Format("Progress:{0,6}", Progress));
+                ConWrLi("---- myTimer_Elapsed bo_ZeitSchwelle:" + string.Format("Progress:{0,6}", Progress));
                 //lastPacketReceived = stopWatch.ElapsedMilliseconds;
                 bo_ZeitSchwelle = true;
                 //wb1.DocumentCompleted -= new WebBrowserDocumentCompletedEventHandler(wb1_DocumentCompleted);
@@ -462,7 +462,7 @@ namespace MeineFinanzen.View {
                 }
             }
         private void Window_Closing(object sender, CancelEventArgs e) {
-            //DataSetAdmin.DatasetSichernInXml("MeineFinanzen");
+            //DataSetAdmin.DatasetSichernInXml(D :xxx MeineFinanzen");
             MessageBoxResult result = System.Windows.MessageBox.Show("Schließen?", "Beenden",
                                       MessageBoxButton.YesNo,
                                       MessageBoxImage.Question,
@@ -485,7 +485,7 @@ namespace MeineFinanzen.View {
                     dtrow["WPStand"] = lirow.WPStand;
                     }
                 if (lirow.WPKurs != (float)dtrow["WPKurs"]) {
-                    Console.WriteLine("++++ Kurs alt: {0,-12} meu: {1,-12}", (float)dtrow["WPKurs"], lirow.WPKurs);
+                    Console.WriteLine("++++ Kurs alt: {0,-12} neu: {1,-12}", (float)dtrow["WPKurs"], lirow.WPKurs);
                     dtrow["WPKurs"] = lirow.WPKurs;
                     }
                 if (lirow.WPProzentAenderung != (float)dtrow["WPProzentAenderung"])
@@ -495,16 +495,16 @@ namespace MeineFinanzen.View {
                     dtrow["WPSharpe"] = lirow.WPSharpe;
                 }
             DataSetAdmin.dtPortFol = dtPortFol;
-            DataSetAdmin.DatasetSichernInXml("MeineFinanzen");
+            DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             }
         private void warte(int ms) {
             Stopwatch sw = Stopwatch.StartNew();
             var delay = Task.Delay(ms).ContinueWith(_ => { sw.Stop(); return sw.ElapsedMilliseconds; });
             }
-        public void conWrLi(string str1) {
+        public void ConWrLi(string str1) {
             Console.WriteLine("{0,-80} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
             }
-        public void txtWrLi(string str1) {
+        public void TxtWrLi(string str1) {
             try {
                 string str = string.Format("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
                 txtUnten.AppendText(Environment.NewLine + str);
@@ -512,7 +512,7 @@ namespace MeineFinanzen.View {
                 txtUnten.InvalidateVisual();
                 }
             catch (Exception ex) {
-                System.Windows.MessageBox.Show("Fehler txtWrLi()" + ex);
+                System.Windows.MessageBox.Show("Fehler TxtWrLi()" + ex);
                 }
             }
         }

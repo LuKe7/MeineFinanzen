@@ -1,4 +1,4 @@
-﻿<Window x:Class="MeineFinanzen.View.KontenSynHBCI4j"
+﻿<Window x:Class="MeineFinanzen.View.KontenSynchronisierenHBCI4j"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,10 +6,19 @@
         xmlns:local="clr-namespace:MeineFinanzen.View"
         xmlns:model="clr-namespace:MeineFinanzen.Model"
         mc:Ignorable="d"
-        Title="KontenSynHBCI4j"
+        Title="KontenSynchronisierenHBCI4j"
         Height="800"
-        Width="800"
+        Width="600"
         Loaded="Window_Loaded"
         Closing="CloseWindow">
-    <Grid></Grid>
+    <Grid>
+        <TextBox Name="txbHBCI"
+                 Width="400"                
+                 FontSize="18"
+                 Text="hbci Status"
+                 VerticalScrollBarVisibility="Auto"
+                 TextWrapping="Wrap"
+                 AcceptsReturn="True"
+                 AcceptsTab="True" />
+    </Grid>
 </Window>

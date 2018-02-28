@@ -1,4 +1,4 @@
-﻿<!-- 16.01.2018   -View-   HauptFenster.xaml -->
+﻿<!-- 28.02.2018   -View-   HauptFenster.xaml -->
 <Window x:Class="MeineFinanzen.View.HauptFenster"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -423,7 +423,7 @@
                       Loaded="cbKonten_Loaded"
                       SelectionChanged="cbKonten_SelectionChanged" />
             <ComboBox x:Name="cbNeueVerbindung"
-                      Margin="10,0,0,0"
+                      Margin="1,0,0,0"
                       Grid.Column="0"
                       HorizontalAlignment="Left"
                       VerticalAlignment="Top"
@@ -435,11 +435,10 @@
                      Width="100"
                      Text="CPU" />
             <TextBox x:Name="txbSuche"
-                     Margin="10, 0"
+                     Margin="1, 0"
                      VerticalAlignment="Top"
-                     Width="100"
-                     Text="Suche"
-                     />
+                     Width="60"
+                     Text="Suche" />
             <!-- <TextBlock Text="{Binding ThereIsNoData-Context, diag:PresentationTraceSources.TraceLevel=High}" />-->
         </StackPanel>
         <Grid x:Name="GridTabControl1"
