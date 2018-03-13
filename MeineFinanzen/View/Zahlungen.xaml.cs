@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Data;
 using DataSetAdminNS;
+using MeineFinanzen.ViewModel;
 namespace MeineFinanzen.View {
     public partial class Zahlungen : Window {
         List<ISIN> isins = new List<ISIN>();
@@ -23,7 +24,7 @@ namespace MeineFinanzen.View {
             InitializeComponent();
             ConWrLi("---- -82- Zahlungen nach InitializeComponent()");
             _zahlungen = (Model.CollZahlungen)Resources["zahlungen"];
-            _kontoumsätze = (Model.CollKontoumsätze)mw.Resources["kontoumsätze"];
+            _kontoumsätze = (Model.CollKontoumsätze)mw.Resources["kontoumsätzeXXX"];
             ConWrLi("---- -83- Zahlungen nach Kto Ums holen");
         }
         public void ConWrLi(string str1) {
@@ -34,7 +35,7 @@ namespace MeineFinanzen.View {
             int anz = 0;
             double wert = 0;
             //string[] sArr = new string[] { "nix", "ZINSEN/DIVIDENDE", "WERTPAPIERZAHLUNG", "STORNO" };
-            foreach (Model.Wertpapier wp in _mw._tabwertpapiere._wertpapiere) {
+            foreach (Model.Wertpapier wp in DgBanken._wertpapiere) {
                 if (wp.ISIN.Length != 12)
                     continue;
                 if (wp.ISIN.Contains("7483612"))

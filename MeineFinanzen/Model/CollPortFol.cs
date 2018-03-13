@@ -1,4 +1,11 @@
-﻿// 05.01.2018   -Model-  CollPortFol.cs 
+﻿// 13.03.2018   -Model-  CollPortFol.cs 
+// 13.03.2018 Die Url für KontenSynchronisierenInt NEU.
+//            z.B https://www.finanzen.net/fonds/sharperatio/whc_-_global_discovery
+//            1.WPUrlText1 enthält "https://www." 
+//            2.WPUrlText2 enthält "finanzen.net/"
+//            3.WPUrlText3 enthält "fonds/"
+//            4.WPUrlText4 enthält "sharperatio/"
+//            5.WPUrlText5 enthält "whc - global_discovery"
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

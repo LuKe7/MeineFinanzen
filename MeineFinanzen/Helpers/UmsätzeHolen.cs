@@ -10,7 +10,7 @@ namespace MeineFinanzen.Helpers {
         public UmsätzeHolen() { }
         public UmsätzeHolen(View.HauptFenster mw) {
             _mw = mw;
-            _kontoumsätze = (Model.CollKontoumsätze)_mw.Resources["kontoumsätze"];
+            _kontoumsätze = (Model.CollKontoumsätze)_mw.Resources["kontoumsätzeXXX"];
             //ErstelledtKontoumsätze();
             foreach (DataRow dr in DataSetAdmin.dtKontoumsätze.Rows) {
                 //Console.WriteLine("{0} ---- ValueDate: {1} {2}", ++nnnn, dr["ValueDate"].ToString(), dr["Value"].ToString());

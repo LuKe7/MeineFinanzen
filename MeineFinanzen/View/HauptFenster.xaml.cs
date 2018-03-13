@@ -1,4 +1,4 @@
-﻿// 28.02.2018   -View-  HauptFenster.cs 
+﻿// 09.03.2018   -View-  HauptFenster.cs 
 // Tja, wenn man die Grundlagen nicht lernen will, stolpert man halt ständig beim Ausprobieren.
 // Wenn du eine DataTable an ein DG bindest, spiegelt der DefaultView der DT die Daten wieder. Mit allen Filter- und Sort-Angaben.
 // 16.11.2014 Ser/Deserialize 'Wertpapiere' zu/von Xml-Datei. 
@@ -42,14 +42,13 @@ namespace MeineFinanzen.View {
         internal DateTime _Datum;
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
         private bool _isGroup = true;
-        internal bool _boKurseAktualisierenKo = false;
-        private bool _boKurseAktualisierenIn = false;
+        internal bool _boAktualisieren = false;
         internal TabWertpapiere _tabwertpapiere = new TabWertpapiere();
         private TabKontoumsätze _tabKtoGes = new TabKontoumsätze();
         // NOCH internal ViewModel.TabGuckMalHier _tabguck = null;        
         internal bool tabWertGefüllt = false;
         private Stopwatch _stopwatch = new Stopwatch();        // Eine StopUhr
-        private static Helpers.UmsätzeHolen umsHolen;
+        private static UmsätzeHolen umsHolen;
         private Process[] processes;
         DirectoryInfo rootDir = null;
         public HauptFenster() {
@@ -91,7 +90,7 @@ namespace MeineFinanzen.View {
             }
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             ConWrLi("---- -2a- Beginn in Window_Loaded()");
-            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
             dispatcherTimer.Start();
             DateTime dt7 = DataSetAdmin.HolenAusXml(Helpers.GlobalRef.g_Ein.myDataPfad);
@@ -108,7 +107,7 @@ namespace MeineFinanzen.View {
             ConWrLi("---- -2c- In Window_Loaded()");
             _stopwatch.Start();
             _dgBanken = new DgBanken();
-            _dgBanken.machdgbanken();               // Mit DeSerialize banken also Read                   
+            _dgBanken.Machdgbanken();               // Mit DeSerialize banken also Read                   
             _kosyErstellen = new Konten_Knotenliste_Erstellen(this);
             GlobalRef.g_KoHBCI.Kontenaufstellung_ReadXml();
             //_kontenaufHBCI4j = new KontenaufstellungHBCI4j();
@@ -135,7 +134,7 @@ namespace MeineFinanzen.View {
             //RowDef3.Height = new GridLength(1, GridUnitType.Star);
             Console.WriteLine("---- --03-- HauptFenster _dgBanken.banken.Count {0}", DgBanken.banken.Count);
             }
-        private void cbKonten_Loaded(object sender, RoutedEventArgs e) {
+        private void CbKonten_Loaded(object sender, RoutedEventArgs e) {
             cbKonten.Text = "";
             cbKonten.Items.Add("Alle Konten");
             cbKonten.SelectedIndex = 0;
@@ -155,7 +154,7 @@ namespace MeineFinanzen.View {
                 }
             Console.WriteLine("---- --04-- HauptFenster _dgBanken.banken.Count {0}", DgBanken.banken.Count);
             }
-        private void cbNeueVerbindung_Loaded(object sender, RoutedEventArgs e) {
+        private void CbNeueVerbindung_Loaded(object sender, RoutedEventArgs e) {
             cbNeueVerbindung.Text = "";
             cbNeueVerbindung.Items.Add("Bankverbindungen");
             cbNeueVerbindung.Items.Add("Neues Bank/Konto A");
@@ -163,12 +162,12 @@ namespace MeineFinanzen.View {
             cbNeueVerbindung.Items.Add("Neues Bank/Konto C");
             cbNeueVerbindung.SelectedIndex = 0;
             }
-        private void cbNeueVerbindung_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+        private void CbNeueVerbindung_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (cbNeueVerbindung.Items.CurrentItem == null)
                 return;
             string text = (sender as ComboBox).SelectedItem as string;
             }
-        private void wbAktuelles_LoadCompleted(object sender, NavigationEventArgs e) {
+        private void WbAktuelles_LoadCompleted(object sender, NavigationEventArgs e) {
             ConWrLi("---- -16g- wbAktuelles_LoadCompleted()");
             WebBrowser wb = (WebBrowser)sender;
             mshtml.HTMLDocument htmlDoc = wb.Document as mshtml.HTMLDocument;
@@ -218,7 +217,7 @@ namespace MeineFinanzen.View {
             DataTable dtWochen = dh.ChartDatenHolenX();
             graphchart.GeneriereGraph(dtWochen);
             }
-        internal void neuStarten() {
+        internal void NeuStarten() {
             ConWrLi("---- -8h- in neuStarten-1");
             DateTime dt = DataSetAdminNS.DataSetAdmin.HolenAusXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             if (dt == null) {
@@ -228,7 +227,7 @@ namespace MeineFinanzen.View {
             WertPapStart();
             ConWrLi("---- -8i- in neuStarten-2");
             }
-        private void dispatcherTimer_Tick(object sender, EventArgs e) {
+        private void DispatcherTimer_Tick(object sender, EventArgs e) {
             TimeSpan ts = _stopwatch.Elapsed;   // Die vergangene Zeit
             CPUSpeedAnzeigen();
             if (ts.Seconds > 180) {
@@ -237,10 +236,10 @@ namespace MeineFinanzen.View {
                 dispatcherTimer.Start();
                 _stopwatch.Restart();
                 }
-            if (_boKurseAktualisierenIn) {                  // Wenn gestartet
+            if (_boAktualisieren) {                         // Wenn gestartet
                 if (!PrüfeKurseAktualisierenLäuft()) {      // und nicht mehr läuft               
-                    _boKurseAktualisierenIn = false;
-                    neuStarten();
+                    _boAktualisieren = false;
+                    KontenSynchronisierenInt_Fertig();
                     }
                 }
             }
@@ -258,37 +257,38 @@ namespace MeineFinanzen.View {
             var selected = item.SelectedItem as TabItem;
             //this.Title = selected.Header.ToString();
             }
-        private void tabFinanzen() {
+        private void TabFinanzen() {
             // _tabFinanzen.maches(this);
             //GridGesamtvermögen.Visibility = Visibility.Visible;
             //cbNeueVerbindung.Visibility = Visibility.Visible;
             }
-        private void tabWertpap() {
-            _tabwertpapiere = new ViewModel.TabWertpapiere();
+        private void TabWertpap() {
+            _tabwertpapiere = new TabWertpapiere();
             _tabwertpapiere.FelderLöschen();
             _tabwertpapiere.ErstelleWertpapiere(this);  // Aus dtPortFol
+
             tabWertGefüllt = true;
             CPUSpeedAnzeigen();
             }
         private void WertPapStart() {
-            alleTabsHidden();
+            AlleTabsHidden();
             cbGraph.Visibility = Visibility.Visible;
             cbBrowser.Visibility = Visibility.Visible;
             //StackCheckBoxen.Visibility = System.Windows.Visibility.Visible;
             tabControl1.SelectedItem = tabWertpapiere;
             tabWertpapiere.Visibility = Visibility.Visible;
             ConWrLi("---- -8a- in WertPapStart vor tabWertpap");
-            tabWertpap();
+            TabWertpap();
             ConWrLi("---- -8b- in WertPapStart nach tabWertpap");
             dgWertpapiere.UpdateLayout();
             ConWrLi("---- -8c- in WertPapStart nach dgWertpapiere.UpdateLayout()");
             }
-        private void btKategorien_Click(object sender, RoutedEventArgs e) {
+        private void BtKategorien_Click(object sender, RoutedEventArgs e) {
             Kategorien myKat = new Kategorien(this);
             myKat.ShowDialog();    // Window_Loaded                
             myKat.Close();
             }
-        private void alleTabsHidden() {
+        private void AlleTabsHidden() {
             //StackCheckBoxen.Visibility = System.Windows.Visibility.Hidden;
             cbGraph.Visibility = Visibility.Collapsed;
             cbBrowser.Visibility = Visibility.Collapsed;
@@ -309,23 +309,23 @@ namespace MeineFinanzen.View {
             tabKategorien.Visibility = Visibility.Hidden;
             tabGuckMalHier.Visibility = Visibility.Hidden;
             }
-        private void gridWertpapiere_LoadingRow(object sender, DataGridRowEventArgs e) { }
-        private void btWertpapiereGesamt_Click(object sender, RoutedEventArgs e) {
-            alleTabsHidden();
+        private void GridWertpapiere_LoadingRow(object sender, DataGridRowEventArgs e) { }
+        private void BtWertpapiereGesamt_Click(object sender, RoutedEventArgs e) {
+            AlleTabsHidden();
             tabControl1.SelectedItem = tabWertpapiereGesamt;
             tabWertpapiereGesamt.Visibility = Visibility.Visible;
             //btWertpapiereGesamt.BorderThickness = new Thickness(6.0);
             gridWertpapiereGesamt.UpdateLayout();
             }
-        private void btKontoumsatz_Click(object sender, RoutedEventArgs e) {
-            alleTabsHidden();
+        private void BtKontoumsatz_Click(object sender, RoutedEventArgs e) {
+            AlleTabsHidden();
             tabControl1.SelectedItem = tabKontoumsätze;
             tabKontoumsätze.Visibility = Visibility.Visible;
             //btKontoumsatz.BorderThickness = new Thickness(6.0);
             ViewModel.TabKontoumsätze tabkto = new ViewModel.TabKontoumsätze(this);
             }
-        private void btGuckMalHier_Click(object sender, RoutedEventArgs e) {
-            alleTabsHidden();
+        private void BtGuckMalHier_Click(object sender, RoutedEventArgs e) {
+            AlleTabsHidden();
             tabControl1.SelectedItem = tabGuckMalHier;
             tabGuckMalHier.Visibility = Visibility.Visible;
             //btGuckMalHier.BorderThickness = new Thickness(6.0);
@@ -384,7 +384,7 @@ namespace MeineFinanzen.View {
                 e.Accepted = true;
                 }
             }
-        private void gridWertpapiere_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+        private void GridWertpapiere_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             System.Windows.Controls.DataGrid dg = sender as System.Windows.Controls.DataGrid;
             /*
             DataRow dtr = ((System.Data.DataRowView)(dg.SelectedValue)).Row;
@@ -397,12 +397,12 @@ namespace MeineFinanzen.View {
             } */
             //Now to get the cell value just write dtr[0], dtr["ID"], etc.
             }
-        private void cbKonten_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+        private void CbKonten_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (cbKonten.Items.Count == 1)
                 return;
             if (tabControl1.SelectedItem != tabKontoumsätze)
                 return;
-            alleTabsHidden();
+            AlleTabsHidden();
             tabControl1.SelectedItem = tabKontoumsätze;
             tabKontoumsätze.Visibility = Visibility.Visible;
             //btKontoumsätzeGesamt.BorderThickness = new Thickness(6.0);
@@ -428,54 +428,52 @@ namespace MeineFinanzen.View {
              } */
 
             _kosyErstellen.ShowDialog();
-            neuStarten();
+            NeuStarten();
             }
         private void KontenSynchronisierenInt_Click(object sender, RoutedEventArgs e) {
-            if (_boKurseAktualisierenIn || _boKurseAktualisierenKo)
+            if (_boAktualisieren)
                 return;
-            _boKurseAktualisierenIn = true;
-            //_kosyInt.KontenSynchronisieren_Int(this, true);  // ===> Wertpapiere Internet ---> dtPortFol Kurs Änd% ÄndDat Sharpe 
-            _kosyInt = new KontenSynchronisierenInt();
-            _kosyInt.Show();
+            _boAktualisieren = true;
+            _kosyInt = new KontenSynchronisierenInt(); // ===> Wertpapiere Internet ---> dtPortFol Kurs Änd% ÄndDat Sharpe 
+            _kosyInt.Ausführen(this, true);  // Kehrt vorzeitig zurück. Wenn fertig: Rest starten s.u.       
             }
+        private void KontenSynchronisierenInt_Fertig() {
+            WertPapStart();
+            GlobalRef.g_dgBanken.Machdgbanken();
+            string s = Convert.ToString(DateTime.Now).Trim();
+            string filename = GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\PortFolInt_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
+            GlobalRef.g_WP.SerializeWertpapiere(filename, DgBanken._wertpapiere);
+            ConWrLi("---- -xx- Nach SerializeWertpapiere Int()");
+            _boAktualisieren = false;
+        }
         private void KontenSynchronisierenSubsembly_Click(object sender, RoutedEventArgs e) {
-            ConWrLi("---- -8d- Nach KontenSynchronisierenSubsembly_Click()");
+            if (_boAktualisieren)
+                return;
             _kosySubsembly = new VMKontenSynchronisierenSubsembly();
-            _kosySubsembly.KontenSynchronisieren_Subsembly(this, true);       // false = nicht laden.
+            _kosySubsembly.Ausführen(this, true);       // false = nicht laden.
+            GlobalRef.g_dgBanken.Machdgbanken();
             do { }
             while (!_kosySubsembly.WertpapSubsemblyToPortFol());
-            WertPapStart();
-            ConWrLi("---- -8e- Nach WertPapStart()");
+            WertPapStart();            
             string s = Convert.ToString(DateTime.Now).Trim();
-            string filename = Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\PortFol_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
-            GlobalRef.g_WP.SerializeWertpapiere(filename, _tabwertpapiere._wertpapiere);
-            ConWrLi("---- -8f- Nach SerializeWertpapiere()");
-            }
+            string filename = GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\PortFol_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
+            GlobalRef.g_WP.SerializeWertpapiere(filename, DgBanken._wertpapiere); 
+            ConWrLi("---- -xx- Nach SerializeWertpapiere Subsembly()");
+        }
         private void KontenSynchronisierenHBCI4j_Click(Object sender, RoutedEventArgs e) {
-            ConWrLi("---- -8d- Nach KontenSynchronisierenHBCI4j_Click()");
+            if (_boAktualisieren)
+                return;
             _kosyHBCI4j = new KontenSynchronisierenHBCI4j();
-            _kosyHBCI4j.ShowDialog();
+            _kosyHBCI4j.Ausführen(this, true);
+            GlobalRef.g_dgBanken.Machdgbanken();
             do { }
             while (!_kosyHBCI4j.WertpapHBCI4jToPortFol());
             WertPapStart();
-            ConWrLi("---- -8e- Nach WertPapStart HBCI()");
             string s = Convert.ToString(DateTime.Now).Trim();
-            string filename = Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\PortFolHBCI_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
-            GlobalRef.g_WP.SerializeWertpapiere(filename, _tabwertpapiere._wertpapiere);
-            ConWrLi("---- -8f- Nach SerializeWertpapiere HBCI()");
-            }
-        /*  <?xml version = "1.0" ?>
-            -<Wertpapier>
-            <Zeit>22.11.17 17:12</Zeit>
-            <ISIN>LU0171293920</ISIN>
-            <Name>BGF-US BASIC VAL.NA.A2 EO</Name>
-            <wptype>812</wptype>
-            <KursZeit>21.11.17 00:00</KursZeit>
-            <Saldo>670.00 </Saldo>
-            <SaldoType>STCK</SaldoType>
-            <Kurs>70.57</Kurs>
-            <pricetype>EUR</pricetype>
-            </Wertpapier>*/
+            string filename = GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\PortFolHBCI_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
+            GlobalRef.g_WP.SerializeWertpapiere(filename, DgBanken._wertpapiere);
+            ConWrLi("---- -xx- Nach SerializeWertpapiere HBCI()");
+        }
         internal Single USDtoEuro(Single Kurs) {
             Single USKurs = 0;
             if (USKurs == 0) {
@@ -572,7 +570,7 @@ namespace MeineFinanzen.View {
             int index = dataGrid.ItemContainerGenerator.IndexFromContainer(row);
             return index;
             }
-        private void gridWertpapiere_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
+        private void GridWertpapiere_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is DataGridCell))
                 dep = VisualTreeHelper.GetParent(dep);
@@ -590,16 +588,15 @@ namespace MeineFinanzen.View {
             int nwp = -1;
             if (row1 != null) {
                 try {
-                    isi = ((Model.Wertpapier)(row1.Item)).ISIN;
-                    nam = ((Model.Wertpapier)(row1.Item)).Name;
+                    isi = ((Wertpapier)(row1.Item)).ISIN;
+                    nam = ((Wertpapier)(row1.Item)).Name;
                     } catch (Exception) {
                     //MessageBox.Show("gridWertpapiere_PreviewMouseDown() Fehler: " + ex);
                     return;
                     }
                 nro = FindRowIndex(row1);
-                //nwp = _tabwertpapiere._wertpapiere
                 int lfd = -1;
-                foreach (Model.Wertpapier wp in _tabwertpapiere._wertpapiere) {
+                foreach (Wertpapier wp in DgBanken._wertpapiere) {
                     ++lfd;
                     if (wp.ISIN == isi) {
                         nwp = lfd;
@@ -660,7 +657,7 @@ namespace MeineFinanzen.View {
                 }
             return child;
             }
-        private void gridWertpapiere_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e) {
+        private void GridWertpapiere_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e) {
             //Details.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));           
             }
         private void AlsTextRestore_Click(object sender, RoutedEventArgs e) {
@@ -688,8 +685,7 @@ namespace MeineFinanzen.View {
                 MessageBox.Show("MeineFinanzen HauptFenster.xaml.cs HauptFenster() Fehler DatasetSichernInXlm() in WindowClose() DataSetAdmin: " + obok);
                 this.Close();
                 }
-            Helpers.GlobalRef.g_Ein.SerializeWriteEinstellungen(Helpers.GlobalRef.g_Ein.strEinstellungen, Helpers.GlobalRef.g_Ein);
-            //Helpers.GlobalRef.g_WP.SerializeWertpapiere(filename, _tabwertpapiere._wertpapiere);
+            GlobalRef.g_Ein.SerializeWriteEinstellungen(GlobalRef.g_Ein.strEinstellungen, GlobalRef.g_Ein);
             Properties.Settings.Default.Save();
             App.Current.Shutdown();
             }
@@ -709,13 +705,13 @@ namespace MeineFinanzen.View {
             //Title = ((Model.BankKonto)(row1.Item)).KontoName 8;
             string kontoArt = ((Model.BankKonten)(row1.Item)).KontoArt8;
             if (kontoArt.Contains("Portfolio")) {
-                alleTabsHidden();
+                AlleTabsHidden();
                 tabControl1.SelectedItem = tabWertpapiere;
                 tabWertpapiere.Visibility = Visibility.Visible;
-                tabWertpap();
+                TabWertpap();
                 dgWertpapiere.UpdateLayout();
                 } else if (kontoArt.Contains("Giro")) {
-                alleTabsHidden();
+                AlleTabsHidden();
                 tabControl1.SelectedItem = tabKontoumsätze;
                 tabKontoumsätze.Visibility = Visibility.Visible;
                 ViewModel.TabKontoumsätze tabkto = new ViewModel.TabKontoumsätze(this);
@@ -724,7 +720,7 @@ namespace MeineFinanzen.View {
                 } else
                 MessageBox.Show("InnereDatagrid_PreviewMouseDown() Fehler: Unbekannte KontoArt : " + kontoArt);
             }
-        internal void openLogFile() {
+        internal void OpenLogFile() {
             swLog = new StreamWriter(Helpers.GlobalRef.g_Ein.myDepotPfad + @"\Log\logKontoUmsätzeHolen.txt");
             swLog.WriteLine("Start KontoumsätzeHolen(): ---------------------------------------- " + DateTime.Now);
             swLog.Flush();
@@ -755,18 +751,18 @@ namespace MeineFinanzen.View {
                 MessageBox.Show("Fehler: " + ex);
                 }
             }
-        private void btTest_Click(object sender, RoutedEventArgs e) {
+        private void BtTest_Click(object sender, RoutedEventArgs e) {
             //MeineFinanzen.Helpers.Extended.DiesUndDas.test7777(GridTabitemKontoumsatz, 1, 0);
             ÄnderungDurchClick();
             //GridFilterKategorienAnzeige.Height = 20;
             }
-        private void cmbSelectionChangedBetragVon(object sender, SelectionChangedEventArgs e) {
+        private void CmbSelectionChangedBetragVon(object sender, SelectionChangedEventArgs e) {
 
             }
         private void Initialized_cbBetragVon(object sender, EventArgs e) {
 
             }
-        private void cmbSelectionChangedBetragBis(object sender, SelectionChangedEventArgs e) {
+        private void CmbSelectionChangedBetragBis(object sender, SelectionChangedEventArgs e) {
 
             }
         private void Initialized_cbBetragBis(object sender, EventArgs e) {
@@ -777,9 +773,9 @@ namespace MeineFinanzen.View {
             Grid grid = sender as Grid;
             //Debug.WriteLine("{0} {1}", grid.Name, grid.ActualHeight);
             }
-        private void cbFilter2_Loaded(object sender, RoutedEventArgs e) {
+        private void CbFilter2_Loaded(object sender, RoutedEventArgs e) {
             cbFilter2.Items.Clear();
-            cbFilter2.Text = "InfoXXX";
+            cbFilter2.Text = "InfoXX";
             cbFilter2.Items.Add("Nicht gesetzt");
             cbFilter2.Items.Add("Datum von/bis");
             cbFilter2.Items.Add("Aktueller Monat(August)");
@@ -790,7 +786,7 @@ namespace MeineFinanzen.View {
             cbFilter2.Items.Add("Letztes Quartal(2)");
             cbFilter2.SelectedIndex = 0;
             }
-        private void cmbSelectionChangedFilter2(object sender, SelectionChangedEventArgs e) {
+        private void CmbSelectionChangedFilter2(object sender, SelectionChangedEventArgs e) {
             if (cbFilter2 == null || cbFilter2.SelectedItem == null)
                 return;
             string str = cbFilter2.SelectedItem.ToString();
@@ -829,8 +825,8 @@ namespace MeineFinanzen.View {
                    }
                }
            } */
-        private void dgBankenÜbersicht_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
-        private void dgBankenÜbersicht_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
+        private void DgBankenÜbersicht_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
+        private void DgBankenÜbersicht_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is DataGridCell))
                 dep = VisualTreeHelper.GetParent(dep);
@@ -848,11 +844,11 @@ namespace MeineFinanzen.View {
                     //Title = ((Model.BankKonto)(row1.Item)).KontoName 8;
                     }
                 //Title = ((Model.BankÜbersicht)(row1.Item)).BankName7;   // ist BankKonto. Kann nicht in BankÜbersicht umgew werden.
-                alleTabsHidden();
+                AlleTabsHidden();
                 tabControl1.SelectedItem = tabFinanzübersicht;
                 //tabFinanzübersicht.Visibility = Visibility.Visible;
                 //GridGesamtvermögen.Visibility = Visibility.Visible;
-                tabFinanzen();
+                TabFinanzen();
                 //dgFinanzübersicht.UpdateLayout();
                 } catch (Exception ex) {
                 MessageBox.Show("dgBankenÜbersicht_PreviewMouseDown Fehler: " + ex);
@@ -951,9 +947,9 @@ namespace MeineFinanzen.View {
              Model.BankÜbersicht item = (Model.BankÜbersicht)dgrow.Data-Context;            
              //Console.WriteLine("+++>(ind:{0} Bank:{1,-40} Konten:{2}   dgFinanzÜbersicht_LoadingRowDetails", ind, item.BankName7, item.OCBankKonten.Count);
          } */
-        private void dgFinanzÜbersicht_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+        private void DgFinanzÜbersicht_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             }
-        private void dgFinanzÜbersicht_Loaded(object sender, RoutedEventArgs e) {
+        private void DgFinanzÜbersicht_Loaded(object sender, RoutedEventArgs e) {
             }
         private void Jahreswechsel_Click(object sender, RoutedEventArgs e) {
             JahreswechselView jw = new JahreswechselView();
@@ -964,7 +960,7 @@ namespace MeineFinanzen.View {
             hg.ShowDialog();
             }
         private void TestWPAktualisieren_Click(Object sender, RoutedEventArgs e) {
-            foreach (Model.Wertpapier wp in _tabwertpapiere._wertpapiere) {
+            foreach (Wertpapier wp in DgBanken._wertpapiere) {
                 if (!wp.Name.Contains("#")) {
                     wp.Name += "#";
                     break;

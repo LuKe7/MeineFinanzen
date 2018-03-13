@@ -18,7 +18,7 @@
         <Button x:Name="btBearbeiten"
                 Content="   Bearbeiten"
                 Margin="45,70,109,322"
-                Click="btBearbeiten_Click"
+                Click="BtBearbeiten_Click"
                 HorizontalContentAlignment="Left"
                 FontSize="16"
                 BorderThickness="0"
@@ -28,7 +28,7 @@
                 Margin="45,204,109,188"
                 HorizontalContentAlignment="Left"
                 Background="{DynamicResource LightBrush}"
-                Click="btLöschen_Click"
+                Click="BtLöschen_Click"
                 FontSize="16"
                 BorderThickness="0" />
         <Button x:Name="btExport"
@@ -36,7 +36,7 @@
                 Margin="45,160,109,233"
                 HorizontalContentAlignment="Left"
                 Background="{DynamicResource LightBrush}"
-                Click="btExport_Click"
+                Click="BtExport_Click"
                 FontSize="16"
                 BorderThickness="0" />
         <Button x:Name="lbExportAlle"
@@ -44,7 +44,7 @@
                 Margin="45,115,109,277"
                 HorizontalContentAlignment="Left"
                 Background="{DynamicResource LightBrush}"
-                Click="lbExportAlle_Click"
+                Click="LbExportAlle_Click"
                 FontSize="16"
                 BorderThickness="0" />
         <Button x:Name="btSpalten_auswählen"
@@ -52,7 +52,7 @@
                 Margin="45,249,109,143"
                 HorizontalContentAlignment="Left"
                 Background="{DynamicResource LightBrush}"
-                Click="btSpalten_auswählen_Click"
+                Click="BtSpalten_auswählen_Click"
                 FontSize="16"
                 BorderThickness="0" />
         <Button x:Name="btInternet"
@@ -60,7 +60,7 @@
                 Margin="45,294,109,97"
                 HorizontalContentAlignment="Left"
                 Background="{DynamicResource LightBrush}"
-                Click="btInternet_Click"
+                Click="BtInternet_Click"
                 FontSize="16"
                 BorderThickness="0" />
         <Menu x:Name="cmWertpapiere"

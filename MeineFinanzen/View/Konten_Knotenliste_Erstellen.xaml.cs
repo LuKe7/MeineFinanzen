@@ -1,4 +1,4 @@
-﻿// 20.01.2018 -Konten_Knotenliste_Erstellen-
+﻿// 08.03.2018 -Konten_Knotenliste_Erstellen-
 // 05.01.2018 List PortFol.
 using System;
 using System.Windows;
@@ -39,6 +39,7 @@ namespace MeineFinanzen.View {
         string _curUrlSharpe = null;
 
         public PortFol _foundRow = new PortFol();
+        public PortFol _foundRow_Vor = new PortFol();
         int posx = -1;      //  e.ClientMousePosition.X;
         int posy = -1;
         System.Windows.Forms.HtmlElement _elem1 = null;
@@ -53,13 +54,13 @@ namespace MeineFinanzen.View {
             getxp = new GetFromXpath();
             wb1.ScriptErrorsSuppressed = true;
             wb1.ScrollBarsEnabled = true;
-            }
+        }
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             ConWrLi("---- -92- Konten_Knotenliste_Erstellen Window_Loaded");
             dtPortFol = DataSetAdmin.dsHier.Tables["tblPortFol"];       // dtPortFol geholt.
             liPortFol = dtPortFol.ToCollection<PortFol>();              // liPortFol erstellen.
             allesReset();       // Mit neu laden.
-            }
+        }
         private void NavigiereZu(string address) {
             if (string.IsNullOrEmpty(address))
                 return;
@@ -72,20 +73,19 @@ namespace MeineFinanzen.View {
             wb1.Navigate(new Uri(address));
             nInteractive = 0;
             //_navigiert = true;
-            }
+        }
         private void CloseWindow(object sender, System.ComponentModel.CancelEventArgs e) {
-            }
+        }
         private void wb1_DocumentTitleChanged(object sender, EventArgs e) {
             Title = wb1.DocumentTitle;
             addTextStr("wb1_DocumentTitleChanged: " + wb1.DocumentTitle);
-            }
+        }
         private void wb1_Document_Click(Object sender, System.Windows.Forms.HtmlElementEventArgs e) {
             if (e.ClientMousePosition.IsEmpty) {
                 _elem1 = null;
                 posx = -1;
                 posy = -1;
-                }
-            else {
+            } else {
                 posx = e.ClientMousePosition.X;
                 posy = e.ClientMousePosition.Y;
                 _elem1 = wb1.Document.GetElementFromPoint(e.ClientMousePosition); // Ruft das an den angegebenen Clientkoordinaten befindliche HTML-Element ab.                            
@@ -93,8 +93,8 @@ namespace MeineFinanzen.View {
                     addTextStr("wb1_Document_Click: " + _elem1.InnerText);
                 else
                     addTextStr("wb1_Document_Click: null");
-                }
             }
+        }
         /* //Console.WriteLine("_elem1.InnerText: {0}", _elem1.InnerText);
             //string htmlstr = wb1.DocumentText;
             //System.Windows.Forms.HtmlElement _elem7 = wb1.Document.GetElementById("q_price");
@@ -122,24 +122,21 @@ namespace MeineFinanzen.View {
         private void wb1_DocumentCompleted(object sender, System.Windows.Forms.WebBrowserDocumentCompletedEventArgs e) {
             if (wb1.ReadyState == System.Windows.Forms.WebBrowserReadyState.Complete) {
                 addTextStr("wb1-DocumentCompleted: " + wb1.ReadyState);
-                }
-            else if (wb1.ReadyState == System.Windows.Forms.WebBrowserReadyState.Interactive) {
+            } else if (wb1.ReadyState == System.Windows.Forms.WebBrowserReadyState.Interactive) {
                 nInteractive++;
                 addTextStr("wb1-DocumentCompleted: " + nInteractive + " " + wb1.ReadyState);
-                }
-            else if (wb1.ReadyState == System.Windows.Forms.WebBrowserReadyState.Loading) {
+            } else if (wb1.ReadyState == System.Windows.Forms.WebBrowserReadyState.Loading) {
                 addTextStr("wb1-DocumentCompleted: " + wb1.ReadyState);
-                }
-            else {
+            } else {
                 addTextStr("wb1-DocumentCompleted: " + wb1.ReadyState + " unbekannt!!!");
-                }
+            }
 
             if (wb1.Document != null)
                 addTextStr("wb1_DocumentCompleted: " + wb1.Document.Title);
             else
                 addTextStr("wb1_DocumentCompleted");
             wb1.Document.Click += new System.Windows.Forms.HtmlElementEventHandler(wb1_Document_Click);
-            }
+        }
         private void wb1_Navigating(object sender, System.Windows.Forms.WebBrowserNavigatingEventArgs e) { }
         private void btOk_Click(object sender, RoutedEventArgs e) {
             if (!boDgvRowAusgewählt)
@@ -149,14 +146,15 @@ namespace MeineFinanzen.View {
             if (cbKeinSharpe.IsChecked == true) {
                 _foundRow.WPUrlSharpe = "";
                 _foundRow.WPSharpe = 0;
-                }
+            }
+            _foundRow_Vor = _foundRow;
             addTextStr("btOk() _foundRow[\"WPKurs\"]: " + _foundRow.WPKurs.ToString());
             allesReset();
             wb1.Document.Click -= new System.Windows.Forms.HtmlElementEventHandler(wb1_Document_Click);
-            }
+        }
         private void btReset_Click(object sender, RoutedEventArgs e) {
             allesReset();
-            }
+        }
         private void allesReset() {
             _foundRow = null;
             _wertpapsynchro = (CollWertpapSynchro)Resources["wertpapsynchro"];
@@ -184,8 +182,8 @@ namespace MeineFinanzen.View {
                     WPXPathAend = wp.WPXPathAend,
                     WPXPathZeit = wp.WPXPathZeit,
                     WPXPathSharp = wp.WPXPathSharp
-                    });
-                }
+                });
+            }
             dgvUrls.ItemsSource = _wertpapsynchro;
             dgvUrls.UpdateLayout();
             _elem1 = null;
@@ -204,17 +202,17 @@ namespace MeineFinanzen.View {
             cbKeinSharpe.IsChecked = false;
             cbSharpe.IsChecked = false;
             NavigiereZu("https://www.google.de/");
-            }
+        }
         private void btGoHome_Click(object sender, RoutedEventArgs e) {
             //allesReset();
             wb1.Navigate(new Uri("https://www.google.de/"));
             addTextStr("btBrowserGoHome_Click https://www.google.de/");
-            }
+        }
         private void btURLneu_Click(object sender, RoutedEventArgs e) {
             URL_Neu();
-            }
+        }
         private void btBeenden_Click(object sender, RoutedEventArgs e) {
-            // liPortFol-Daten nach DataSetAdmin.dsHier.Tables["tblPortFol"];
+            Console.WriteLine("---- Konten_Knoten_Erstellen  btBeenden_Click");
             dtPortFol = DataSetAdmin.dsHier.Tables["tblPortFol"];       // nochmal rausziehen, da evtl. geändert.
             string strISIN = "";
             foreach (DataRow dtrow in dtPortFol.Rows) {
@@ -225,14 +223,14 @@ namespace MeineFinanzen.View {
                 if (lirow.WPStand != (DateTime)dtrow["WPStand"]) {
                     Console.WriteLine("++++ Stand alt: {0,-12} neu: {1,-12}", (DateTime)dtrow["WPStand"], lirow.WPStand);
                     dtrow["WPStand"] = lirow.WPStand;
-                    }
+                }
                 if (lirow.WPUrlText != (string)dtrow["WPUrlText"])
                     dtrow["WPUrlText"] = lirow.WPUrlText;
 
                 if (lirow.WPSharpe != (float)dtrow["WPSharpe"]) {
                     Console.WriteLine("++++ Sharpe alt: {0,-12} neu: {1,-12}", (float)dtrow["WPSharpe"], lirow.WPSharpe);
                     dtrow["WPSharpe"] = lirow.WPSharpe;
-                    }
+                }
                 if (lirow.WPXPathSharp != (string)dtrow["WPXPathSharp"])
                     dtrow["WPXPathSharp"] = lirow.WPXPathSharp;
 
@@ -248,7 +246,7 @@ namespace MeineFinanzen.View {
                 if (lirow.WPKurs != (float)dtrow["WPKurs"]) {
                     Console.WriteLine("++++ Kurs alt: {0,-12} neu: {1,-12}", (float)dtrow["WPKurs"], lirow.WPKurs);
                     dtrow["WPKurs"] = lirow.WPKurs;
-                    }
+                }
                 if (lirow.WPXPathKurs != (string)dtrow["WPXPathKurs"])
                     dtrow["WPXPathKurs"] = lirow.WPXPathKurs;
 
@@ -266,11 +264,28 @@ namespace MeineFinanzen.View {
 
                 if (lirow.WPXZeitY != (int)dtrow["WPXZeitY"])
                     dtrow["WPXZeitY"] = lirow.WPXZeitY;
-                }
+            }
             DataSetAdmin.dtPortFol = dtPortFol;
             DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             Close();
+        }
+        private void btPathDoppeln_Click(object sender, RoutedEventArgs e) {
+            // Der XPath aus _foundRow_Vor auf andere vergeben. XPath kommt aus: node = doc.GetElementbyId(uniqueId);
+            string xpath = _foundRow_Vor.WPXPathKurs;
+            Console.WriteLine("1: {0,-120} {1,-80} ", _foundRow_Vor.WPUrlText, _foundRow_Vor.WPXPathKurs);
+            foreach (PortFol wp in liPortFol) {
+                if (wp.WPISIN.Length < 12)
+                    continue;
+                if (wp.WPISIN.Equals(_foundRow_Vor.WPISIN))    // dieser nicht
+                    continue;
+                if (_foundRow_Vor.WPUrlText.Length < 31 || wp.WPUrlText.Length < 31)
+                    continue;
+                if (_foundRow_Vor.WPUrlText.Substring(0, 31) == wp.WPUrlText.Substring(0, 31)) {
+                    
+                    Console.WriteLine("2: {0,-120} {1,-80} ", wp.WPUrlText, wp.WPXPathKurs);
+                }
             }
+        }
         private void dgvUrls_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
             //ConWrLi("---- -93- dgvUrls_PreviewMouseDown");
             DependencyObject dep = (DependencyObject)e.OriginalSource;
@@ -528,7 +543,7 @@ namespace MeineFinanzen.View {
             txtBox.ScrollToEnd();
             txtBox.InvalidateVisual();
             }
-        }
+    }
     public class Person : INotifyPropertyChanged {
         // Ereignis
         public event PropertyChangedEventHandler PropertyChanged;

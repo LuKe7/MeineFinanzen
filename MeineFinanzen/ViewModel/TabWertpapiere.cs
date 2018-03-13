@@ -1,4 +1,4 @@
-﻿// 05.12.2017   -ViewModel-  TabWertpapiere.cs DataGrid 'dgWertpapiere' erstellen.
+﻿// 10.03.2018   -ViewModel-  TabWertpapiere.cs DataGrid 'dgWertpapiere' erstellen.
 // 19.02.2014 Text Zahlungen >= 8
 // public class Wertpapiere : ObservableCollection<Wertpapier>
 // Im folgenden Beispiel werden das Gruppieren, Sortieren und Filtern von Wertpapiere-Daten in einer
@@ -13,6 +13,9 @@
 // 19.10.2015 Mit Summe Depot. Korrigiert. 
 // 23.07.2016 Ren1J auf 12 Monate!!! berechnen.
 // 16.10.2016 Bei Giro-Konten den Kontostand/-Datum aus liba holen.
+// 03.03.2018 Ohne _wertpapiere, jetzt aus DgBanken...
+// 07.03.2018 _wertpapiere nach DgBanken verlegt
+// 10.03.2018 Mit CollectionViewSource.GetDefaultView(mw.dgWertpapiere.ItemsSource).Refresh();
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -23,10 +26,8 @@ using System.Xml.Serialization;
 using System.Collections;
 using MeineFinanzen.Model;
 using DataSetAdminNS;
-using System.Xml;
 namespace MeineFinanzen.ViewModel {
-    public class TabWertpapiere {
-        public CollWertpapiere _wertpapiere = null;
+    public class TabWertpapiere {      
         public double suZahlungenlfdJ = 0;
         public double suZahlungenAlle = 0;
         public double suErtrag = 0, suAktuWert = 0, suKaufWert = 0, su0101Wert = 0;     // Zeile
@@ -55,11 +56,13 @@ namespace MeineFinanzen.ViewModel {
         public void ErstelleWertpapiere(View.HauptFenster mw) {
             mw.tabWertpapiere.Visibility = Visibility.Visible;
             mw.dgWertpapiere.EnableRowVirtualization = false;
-            _wertpapiere = (CollWertpapiere)mw.Resources["wertpapiere"];
+            DgBanken._wertpapiere = (CollWertpapiere)mw.Resources["wertpapiereXXX"];
             if (mw.dgWertpapiere.Items.Count > 1)
-                _wertpapiere.Clear();
+                DgBanken._wertpapiere.Clear();
             ICollectionView cvWertpapiere = CollectionViewSource.GetDefaultView(mw.dgWertpapiere.ItemsSource);
-            cvWertpapiere.GroupDescriptions.Clear();
+            if (cvWertpapiere != null) {
+                cvWertpapiere.GroupDescriptions.Clear();
+            }            
             mw.dgWertpapiere.UpdateLayout();
             typeid = -1;
             FelderLöschen();
@@ -77,12 +80,12 @@ namespace MeineFinanzen.ViewModel {
                 aKName = Convert.ToString(DataSetAdmin.dvAnlKat[ak]["AKName"]);
                 if (typeid != (int)DataSetAdmin.dtPortFol.Rows[ir]["WPTypeID"]) {
                     //Console.WriteLine("typeid1 wechsel typeid:{0} ir:{1} aKName:{2} type:{3}", typeid, ir, aKName, typeid);
-                    anzeigenSummen2(aKName);
+                    AnzeigenSummen2(aKName);
                     typeid = (int)DataSetAdmin.dtPortFol.Rows[ir]["WPTypeID"];
                     ak = DataSetAdmin.dvAnlKat.Find(typeid);
                     aKKurz = Convert.ToString(DataSetAdmin.dvAnlKat[ak]["AKKurz"]);
                     aKName = Convert.ToString(DataSetAdmin.dvAnlKat[ak]["AKName"]);
-                    }
+                }
                 float anzahl = (float)DataSetAdmin.dtPortFol.Rows[ir]["WPAnzahl"];
                 name = (string)DataSetAdmin.dtPortFol.Rows[ir]["WPName"];
                 string iSIN = (string)DataSetAdmin.dtPortFol.Rows[ir]["WPISIN"];
@@ -97,10 +100,10 @@ namespace MeineFinanzen.ViewModel {
                             if (kontoNr == bako.KontoNr8) {
                                 aktKurs = Convert.ToDouble(bako.KontoValue8);
                                 break;
-                                }
                             }
                         }
                     }
+                }
                 kursVorher = Convert.ToDouble(DataSetAdmin.dtPortFol.Rows[ir]["WPKursVorher"]);
                 double ertrLZE = 0;
                 suAktuWert = anzahl * aktKurs;
@@ -109,19 +112,19 @@ namespace MeineFinanzen.ViewModel {
                 Single heute = 0;
                 try {
                     heute = (Single)DataSetAdmin.dtPortFol.Rows[ir]["WPProzentAenderung"];
-                    } catch (Exception) {
+                } catch (Exception) {
                     heute = 0;
-                    }
+                }
                 double rend = 0;
                 if (suKaufWert != 0) {
                     if (typeid == Anleihe)
                         rend = (suErtrag * 100 / suKaufWert);
                     else
                         rend = ((suAktuWert + suZahlungenAlle - suKaufWert) * 100 / suKaufWert);
-                    }
+                }
                 float rend1j;
                 //su0101Wert = (double)(DataSetAdmin.dtPortFol.Rows[ir]["WP0101Summe"]);
-                Wertpapier wp1 = hole0101Wertpapier(iSIN);
+                Wertpapier wp1 = Hole0101Wertpapier(iSIN);
                 su0101Wert = 0;
                 if (wp1 != null)
                     su0101Wert = wp1.Anzahl * wp1.AktKurs;
@@ -146,7 +149,7 @@ namespace MeineFinanzen.ViewModel {
                     suErtrag = 0;
                     depotID = (int)DataSetAdmin.dtPortFol.Rows[ir]["WPDepotID"];
                     //aktKurs = Convert.ToSingle(DataSetAdmin.dtPortFol.Rows[ir]["WPKtoKurs"]);                                        
-                    } else {
+                } else {
                     try {
                         kaufDatum = (DateTime)DataSetAdmin.dtPortFol.Rows[ir]["WPKaufDatum"];
                         kursZeit = (DateTime)DataSetAdmin.dtPortFol.Rows[ir]["WPStand"];
@@ -160,10 +163,10 @@ namespace MeineFinanzen.ViewModel {
                         //    sharpe = (Single)DataSetAdmin.dtPortFol.Rows[ir]["WPSharpe"];
                         sharpe = (Single)DataSetAdmin.dtPortFol.Rows[ir]["WPSharpe"];
                         url = (string)DataSetAdmin.dtPortFol.Rows[ir]["WPUrlText"];
-                        } catch (Exception ex) {
+                    } catch (Exception ex) {
                         MessageBox.Show("ErstelleWertpapiere() Fehler: " + ex);
-                        }
                     }
+                }
                 if (typeid == Anleihe) {
                     double EffZins = EffektivZins(name, anzahl, suKaufWert, anzahl * 100, bisDatum, zinssatz);
                     double stZins = StueckZins(name, anzahl, suKaufWert, anzahl * 100, bisDatum, zinssatz);
@@ -175,14 +178,14 @@ namespace MeineFinanzen.ViewModel {
                     //if (MyPortfolio.glGridAnleihenType == MyPortfolio.BerechnungsmethodeAktuellerWert)
                     suErtrag = suErtragAktWert;           // 2. Berechnung für:  Aktueller Wert.                        
                                                           //if (MyPortfolio.glGridAnleihenType == MyPortfolio.BerechnungsmethodeBesterWert)
-                        {
+                    {
                         if (ertrLZE > suErtrag)     // 3. Berechnung für:  Bester Wert von 1. und 2.
                             suErtrag = ertrLZE;
                         else
                             suErtrag = suErtragAktWert;
-                        }
                     }
-                _wertpapiere.Add(new Wertpapier {
+                }
+                DgBanken._wertpapiere.Add(new Wertpapier {
                     Anzahl = anzahl,
                     Name = name,
                     Heute = heute,
@@ -208,7 +211,7 @@ namespace MeineFinanzen.ViewModel {
                     Sharpe = sharpe,
                     URL = url,
                     isSumme = false
-                    });
+                });
                 suZahlungen2 += suZahlungenAlle;
                 if (typeid != GeldKto)
                     suKaufWert2 += suKaufWert;
@@ -231,11 +234,11 @@ namespace MeineFinanzen.ViewModel {
                 suKaufWert = 0;
                 su0101Wert = 0;
                 suErtrag = 0;
-                }   // ir ... dtPortFol.Rows.Count   
+            }   // ir ... dtPortFol.Rows.Count   
             // Ende Wertpapiere loop                                                                     
-            anzeigenSummen2(aKName);
+            AnzeigenSummen2(aKName);
             aKName = "EndSummen";
-            _wertpapiere.Add(new Wertpapier {
+            DgBanken._wertpapiere.Add(new Wertpapier {
                 Anzahl = 0,
                 Name = "Summe Depot",
                 Heute = 0,
@@ -261,7 +264,7 @@ namespace MeineFinanzen.ViewModel {
                 Sharpe = 0,
                 URL = "",
                 isSumme = true
-                });
+            });
 
             double re3 = 0.00;
             if (suKaufWert != 0.00)
@@ -293,10 +296,11 @@ namespace MeineFinanzen.ViewModel {
                 Sharpe = 0,
                 URL = "",
                 isSumme = true
-                };
-            _wertpapiere.Add(wp);
-            }
-        internal void anzeigenSummen2(string xname) {   
+            };
+            DgBanken._wertpapiere.Add(wp);
+            CollectionViewSource.GetDefaultView(mw.dgWertpapiere.ItemsSource).Refresh();
+        }
+        internal void AnzeigenSummen2(string xname) {
             name = "Summe " + aKName;
             suAktuWert3 += suAktuWert2;
             suZahlungen3 += suZahlungen2;
@@ -309,12 +313,12 @@ namespace MeineFinanzen.ViewModel {
                 suKaufWertWP += suKaufWert2;
                 su0101WertWP += su0101Wert2;
                 suErtragWP += suErtrag2;
-                }
+            }
             //string str1 = string.Format("{0,8:###0.00 ;###0.00-;0.00 }", suAktuWert3);
-            Console.WriteLine("anzeigenSummen2() aKName:{0,-30} suAktuWert2:{1,14} suAktuWert3:{2,14}", name,
-                string.Format("{0,12:#,##0.00 ;#,##0.00-;0.00 }", suAktuWert2),
-                string.Format("{0,12:#,##0.00 ;#,##0.00-;0.00 }", suAktuWert3));
-            _wertpapiere.Add(new Wertpapier {
+            //Console.WriteLine("anzeigenSummen2() aKName:{0,-30} suAktuWert2:{1,14} suAktuWert3:{2,14}", name,
+            //    string.Format("{0,12:#,##0.00 ;#,##0.00-;0.00 }", suAktuWert2),
+            //    string.Format("{0,12:#,##0.00 ;#,##0.00-;0.00 }", suAktuWert3));
+            DgBanken._wertpapiere.Add(new Wertpapier {
                 Anzahl = 0,
                 Name = name,
                 Heute = 0,
@@ -340,13 +344,13 @@ namespace MeineFinanzen.ViewModel {
                 Sharpe = 0,
                 URL = "",
                 isSumme = true
-                });
+            });
             suErtrag2 = 0;
             suAktuWert2 = 0;
             suKaufWert2 = 0;
             suZahlungen2 = 0;
             su0101Wert2 = 0;
-            }
+        }
         public void FelderLöschen() {
             suAktuWert = 0;      // Summe pro Zeile
             suKaufWert = 0;
@@ -373,7 +377,7 @@ namespace MeineFinanzen.ViewModel {
             //su0101WertOK = 0;
             //suErtragOK = 0;
 
-            }
+        }
         // http://www.stendal.hs-magdeburg.de/project/konjunktur/Fiwi/vorlesung/6.Semester/vorlesungsmaterial/T3%20Effektivzins.pdf
         // Bei Kauf/Verkauf zwischen den Zinszahlungen, bekommt der Verkäufer die entgangenen Zinsen anteilig vom Käufer bezahlt
         // Nominalzins =    8%              3,875
@@ -393,7 +397,7 @@ namespace MeineFinanzen.ViewModel {
                 strName, Zins.ToString("##0.00"), bisDatum.ToString(), EndWert.ToString("###,##0.00"),
                 stZins.ToString("0.00"));              */
             return stZins;
-            }
+        }
         public static double DateDiff(DateTime t1, DateTime t2) { // in Tagen!!!
             double ret = 0;
             double d1 = t1.ToFileTime();
@@ -401,7 +405,7 @@ namespace MeineFinanzen.ViewModel {
             double d = (d2 - d1) / (double)TimeSpan.TicksPerDay;
             ret = Convert.ToDouble(d);
             return ret;
-            }
+        }
         public static double EffektivZins(string strName, double Anzahl, double Kaufsumme, double EndWert, DateTime bisDatum, double Zins) {
             double nT = DateDiff(DateTime.Today, bisDatum);
             double nM = nT / 30;
@@ -415,7 +419,7 @@ namespace MeineFinanzen.ViewModel {
                     EndWert.ToString("###,##0.00"), EffZins.ToString("0.00"),
                     EffZinsen.ToString("#,##0.00"));  */
             return EffZins;
-            }
+        }
         internal void Zahlungen(string strisin, out double SuZahlungenlfdJ, out double SuZahlungenAlle) {
             SuZahlungenlfdJ = 0;
             SuZahlungenAlle = 0;
@@ -443,27 +447,27 @@ namespace MeineFinanzen.ViewModel {
                         DateTime secondDate = (DateTime)cRow["Datum"];
                         if (secondDate >= firstDatelfdJ) {
                             SuZahlungenlfdJ += (double)cRow["Betrag"];
-                            }
                         }
                     }
                 }
-            return;
             }
+            return;
+        }
         // Wertpapier vom Anfang dieses Jahr holen.  Oder doch 1 Ganzes Jahr???   
-        public Wertpapier holeWertpapier(string fiName, string isin) {
+        public Wertpapier HoleWertpapier(string fiName, string isin) {
             XmlSerializer xmlserializer = new XmlSerializer(typeof(CollWertpapiere));
             CollWertpapiere wp;
             string pfad = Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten";
 
             using (Stream reader = new FileStream(pfad + @"\" + fiName, FileMode.Open)) {
                 wp = (CollWertpapiere)xmlserializer.Deserialize(reader);
-                }
+            }
             foreach (Wertpapier wp1 in wp)
                 if (wp1.ISIN == isin)
                     return wp1;
             return null;
-            }
-        public Wertpapier hole0101Wertpapier(string isin) {
+        }
+        public Wertpapier Hole0101Wertpapier(string isin) {
             // wp ab 01.01 des Vorjahres holen.            
             XmlSerializer xmlserializer = new XmlSerializer(typeof(CollWertpapiere));
             Wertpapier wp;
@@ -478,15 +482,15 @@ namespace MeineFinanzen.ViewModel {
                 vgl = string.Compare(strvor1j, fi.Name);
                 if (vgl != 1) {
                     strvj = fi.Name;
-                    wp = holeWertpapier(fi.Name, isin);
+                    wp = HoleWertpapier(fi.Name, isin);
                     if (wp == null)
                         continue;
                     else
                         return wp;
-                    }
                 }
-            return null;
             }
+            return null;
+        }
         /* public Wertpapier hole0101Wertpapier_ALT(string isin) {
             XmlSerializer xmlserializer = new XmlSerializer(typeof(CollWertpapiere));
             CollWertpapiere wp;
@@ -512,7 +516,7 @@ namespace MeineFinanzen.ViewModel {
                     return wp1;
             return null;
         } */
-        public Wertpapier holeVortagesDatenXXXXXX() {
+        public Wertpapier HoleVortagesDatenXX() {
             // C :\U sers\LuKe\Documents\MeineFinanzen\MyDepot\KursDaten\PortFol_20151019 (2015_10_21 10_17_02 UTC).xml
             Wertpapier wpVorher = null;
             //string s = "";
@@ -528,7 +532,7 @@ namespace MeineFinanzen.ViewModel {
                         if (fsi.Name.Substring(0, 8) == "PortFol_")
                             if (fsi.Name.Contains(".xml"))
                                 nFiles++;                                            // nur Zählen 
-                }
+            }
             Console.WriteLine("nFiles: {0}", nFiles);
             arrFiles = new string[nFiles];
             int nF = 0;
@@ -544,10 +548,10 @@ namespace MeineFinanzen.ViewModel {
                                 //    continue;
                                 Console.WriteLine("{0} {1}", nF, fsi.Name);
                                 arrFiles[nF++] = fsi.Name.Substring(0, 16);           // füllen
-                                }
                             }
-                }
-            IComparer myComparer = new myReverserClass();
+                        }
+            }
+            IComparer myComparer = new MyReverserClass();
             Array.Sort(arrFiles, myComparer);
 
             // NOCH  pfad setzen
@@ -555,11 +559,11 @@ namespace MeineFinanzen.ViewModel {
             XmlSerializer ser = new XmlSerializer(typeof(CollWertpapiere));
             using (Stream rd = new FileStream(pfad, FileMode.Open)) {
                 wpVorher = (Wertpapier)ser.Deserialize(rd);
-                }
+            }
             //Debug.WriteLine(wpVorher[0]);
             return wpVorher;
-            }
-        public Wertpapier holeVortagesDatenALT() {
+        }
+        public Wertpapier HoleVortagesDatenALT() {
             // Suchen bis Datum kleiner ist als Heute.           
             Wertpapier wpVorher = null;
             string s = "";
@@ -571,22 +575,22 @@ namespace MeineFinanzen.ViewModel {
                 bool gef = File.Exists(pfad);
                 if (gef)
                     break;
-                }
+            }
             //while (!gefunden);       //!File.Exists(pfad));
             //XmlSerializer xs = new XmlSerializer(typeof(ObservableCollection<Wertpapier>));
             XmlSerializer ser = null;
             try {
                 ser = new XmlSerializer(typeof(CollWertpapiere));
-                } catch (Exception ex) {
+            } catch (Exception ex) {
                 MessageBox.Show("holeVortagesDaten() Fehler: " + ex);
                 return wpVorher;
-                }
+            }
             using (Stream rd = new FileStream(pfad, FileMode.Open)) {
                 wpVorher = (Wertpapier)ser.Deserialize(rd);
-                }
+            }
             //Debug.WriteLine(wpVorher[0]);
             return wpVorher;
-            }
+        }
         /* public static decimal HoleProzAend(string strLine)
         {
             decimal hProzAend = 0m;
@@ -618,14 +622,14 @@ namespace MeineFinanzen.ViewModel {
                 System.Windows.MessageBox.Show("HoleProzAend-Encoding-Fehler.");
             return hProzAend;
         } */
-        public class myReverserClass : IComparer {
+        public class MyReverserClass : IComparer {
             // Calls CaseInsensitiveComparer.Compare with the parameters reversed.
             int IComparer.Compare(Object x, Object y) {
                 return ((new CaseInsensitiveComparer()).Compare(x, y));
-                }
-            }
-        public void ConWrLi(string str1) {
-            Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
             }
         }
+        public void ConWrLi(string str1) {
+            Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
+        }
     }
+}

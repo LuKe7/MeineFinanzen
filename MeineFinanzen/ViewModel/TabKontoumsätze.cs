@@ -13,11 +13,11 @@ namespace MeineFinanzen.ViewModel {
         public TabKontoumsätze(View.HauptFenster mw) {
             _mw = mw;
             string strKto = _mw.cbKonten.SelectedValue.ToString();
-            List<Kontoumsatz> lku = KontoumsatzFüllen(strKto);
+            List<Kontoumsatz> lku = Kontoumsatz_Füllen(strKto);
             mw.gridKontoumsätze.ItemsSource = null;
             mw.gridKontoumsätze.ItemsSource = lku;
         }
-        private List<Kontoumsatz> KontoumsatzFüllen(string strKtoNr) {
+        private List<Kontoumsatz> Kontoumsatz_Füllen(string strKtoNr) {
             liKontoUms.Clear();
             DataTable dtKonto = new DataTable();
             dtKonto = DataSetAdmin.dtKontoumsätze.DefaultView.ToTable();
@@ -49,7 +49,7 @@ namespace MeineFinanzen.ViewModel {
                 }
             }
             catch (Exception ex) {
-                MessageBox.Show("KontoumsatzFüllen Fehler: " + ex);
+                MessageBox.Show("Kontoumsatz_Füllen Fehler: " + ex);
             }
             return liKontoUms;
         }

@@ -1,4 +1,4 @@
-﻿/* 09.02.2018 KontenSynchronisierenInt.xaml.cs
+﻿/* 08.03.2018 KontenSynchronisierenInt.xaml.cs
  * Never access UI objects on a thread that didn't create them.
  * Screen Scraping
  * 4 Werte in dtPortFol setzen: WPKurs WPStand WPProzentAenderung WPSharpe
@@ -48,64 +48,64 @@ namespace MeineFinanzen.View {
             set {
                 _progress = value;
                 RaisePropertyChanged("Progress");
-                }
             }
+        }
         private double _maximum;
         public double Maximum {
             get { return _maximum; }
             set {
                 _maximum = value;
                 RaisePropertyChanged("Maximum");
-                }
             }
+        }
         private double _minimum;
         public double Minimum {
             get { return _minimum; }
             set {
                 _minimum = value;
                 OnPropertyChanged();
-                }
             }
+        }
         private double _progress1;
         public double Progress1 {
             get { return _progress1; }
             set {
                 _progress1 = value;
                 RaisePropertyChanged("Progress1");
-                }
             }
+        }
         private double _maximum1;
         public double Maximum1 {
             get { return _maximum1; }
             set {
                 _maximum1 = value;
                 RaisePropertyChanged("Maximum1");
-                }
             }
+        }
         private double _minimum1;
         public double Minimum1 {
             get { return _minimum1; }
             set {
                 _minimum1 = value;
                 RaisePropertyChanged("Minimum1");
-                }
             }
+        }
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             var handler = PropertyChanged;
             if (handler != null)
                 handler(this, new PropertyChangedEventArgs(propertyName));
-            }
+        }
         protected void RaisePropertyChanged(string name) {
             //Console.WriteLine("RaisePropertyChanged: " + name);
             if (PropertyChanged != null) {
                 PropertyChanged(this, new PropertyChangedEventArgs(name));
-                }
             }
+        }
         internal void NotifyPropertyChanged(string propertyName) {
             Console.WriteLine("NotifyPropertyChanged: " + propertyName);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
+        }
         public void BeginEdit() { }
         public void CancelEdit() { }
         public void EndEdit() { }
@@ -143,9 +143,8 @@ namespace MeineFinanzen.View {
             DataContext = this;
             PrintTxtUnten("start -Statustext-           ");
             getxp = new GetFromXpath();
-            }
-        public void KontenSynchronisieren_Int(HauptFenster mw, bool laden) {   }
-        private void Window_Loaded(object sender, RoutedEventArgs e) {
+        }
+        public void Ausführen(HauptFenster mw, bool laden) {
             txtOben.Clear();
             wb1.ScriptErrorsSuppressed = true;
             txtOben.FontSize = 10;
@@ -158,8 +157,8 @@ namespace MeineFinanzen.View {
             if (dt == null) {
                 System.Windows.MessageBox.Show("MeineFinanzen HauptFenster.xaml.cs HauptFenster() Fehler HolenAusXml() DataSetAdmin");
                 System.Windows.MessageBox.Show("MyPortfolio Fehler!!  Dateien nicht geladen!!!!");
-                this.Close();
-                }
+                Close();
+            }
             PrintTxtUnten(dt.ToString());
             // DataColumn[] keys = new DataColumn[1];
             // keys[0] = DataSetAdmin.dtPortFol.Columns["WPIsin"];
@@ -200,23 +199,22 @@ namespace MeineFinanzen.View {
                 int typeid = (int)dr["WPTypeID"];
                 if (typeid > 10 && typeid < 80)
                     dttableNew.ImportRow(dr);
-                }
+            }
             liPortFol = dttableNew.ToCollection<PortFol>();              // liPortFol erstellen.
             progrBar.Maximum = liPortFol.Count;
             _portfol = liPortFol[0];
             Progress1 = 1;
             Minimum1 = 0;
             Maximum1 = liPortFol.Count;
-            losGehts(_lfdUrl, false);       // false = nicht nurSharpe.
-            }
-        internal void losGehts(int lfdUrl, bool nurSharpe) {
+            LosGehts(_lfdUrl, false);       // false = nicht nurSharpe.
+        }
+        internal void LosGehts(int lfdUrl, bool nurSharpe) {
             if (pgmaus)
                 return;
             if (nurSharpe) {
                 boSharp = false;
                 _url = (_portfol.WPUrlSharpe).Substring(0);
-                }
-            else {
+            } else {
                 boKurs = false;
                 boZeit = false;
                 boAend = false;
@@ -228,7 +226,7 @@ namespace MeineFinanzen.View {
                     pgmaus = true;
                     Close();
                     return;
-                    }
+                }
                 _portfol = liPortFol[lfdUrl];
                 _name = _portfol.WPName;
                 _url = (_portfol.WPUrlText).Substring(0);
@@ -244,8 +242,8 @@ namespace MeineFinanzen.View {
                 else {
                     if (_UrlSharpe == "")
                         boSharp = true;
-                    }
                 }
+            }
             wb1.GoHome();
             nInteractive = 0;
             navigateGestartet = true;
@@ -264,46 +262,40 @@ namespace MeineFinanzen.View {
             //Console.WriteLine("---- vor  Navigate: " + _url);
             uri_url = new Uri(_url);
             wb1.Navigate(uri_url);                          // Löst wb1_DocumentCompleted aus.              
-            //Console.WriteLine("---- nach Navigate: " + _url);
-            }
+                                                            //Console.WriteLine("---- nach Navigate: " + _url);
+        }
         private void wb1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e) {
             if (bo_ZeitSchwelle) {
                 TxtWrLi("bo_ZeitSchwelle");
-                verarbeiteDokument();
-                }
-            else if (e.Url.AbsolutePath != (sender as WebBrowser).Url.AbsolutePath) {
+                VerarbeiteDokument();
+            } else if (e.Url.AbsolutePath != (sender as WebBrowser).Url.AbsolutePath) {
                 TxtWrLi("Urls !=");
-                }
-            else if (!navigateGestartet) {
+            } else if (!navigateGestartet) {
                 TxtWrLi("navigateNICHTGestartet: " + wb1.ReadyState);      // nach dem Letzten WP.              
-                }
-            else if (wb1.ReadyState == WebBrowserReadyState.Complete) {
+            } else if (wb1.ReadyState == WebBrowserReadyState.Complete) {
                 TxtWrLi("Complete");
-                verarbeiteDokument();
-                }
-            else if (wb1.ReadyState == WebBrowserReadyState.Interactive) {
+                VerarbeiteDokument();
+            } else if (wb1.ReadyState == WebBrowserReadyState.Interactive) {
                 nInteractive++;
                 TxtWrLi("Interactive" + nInteractive);
                 if (nInteractive > 16) {
                     TxtWrLi("Interactive > 16");
-                    verarbeiteDokument();
-                    }
+                    VerarbeiteDokument();
                 }
-            else if (wb1.ReadyState == WebBrowserReadyState.Loading) {
+            } else if (wb1.ReadyState == WebBrowserReadyState.Loading) {
                 TxtWrLi("Loading");
-                }
-            else {
+            } else {
                 TxtWrLi("wb1-DocumentCompleted: " + wb1.ReadyState + " unbekannt!!!");
-                }
             }
-        private void verarbeiteDokument() { // Evtl. mehrere Durchläufe, evtl. wg. Sharpe/Fehler. 
+        }
+        private void VerarbeiteDokument() { // Evtl. mehrere Durchläufe, evtl. wg. Sharpe/Fehler. 
             stopWatch.Stop();
             stopWatch.Reset();
             wb1.DocumentCompleted -= new WebBrowserDocumentCompletedEventHandler(wb1_DocumentCompleted);
             bool nurSharpe = false;
             _nverarb++;                     // Anzahl Verarbeitungen pro WP. 1.mal von 0 auf 1.
-            navigateGestartet = false;                     
-           if (!boKurs)
+            navigateGestartet = false;
+            if (!boKurs)
                 boKurs = updKursHier();
             if (!boZeit)
                 boZeit = updZeitHier();
@@ -313,20 +305,19 @@ namespace MeineFinanzen.View {
                 if (_url == _UrlSharpe) {
                     PrintTxtUnten("URLScharpe ==");
                     boSharp = updSharpeHier();
-                    }
-                else {
+                } else {
                     PrintTxtUnten("URLScharpe <>");
                     _url = _UrlSharpe;
                     nurSharpe = true;
-                    }
                 }
+            }
             if ((boKurs & boZeit & boAend & boSharp) || (_nverarb >= 3)) {
                 Progress1 += 1;
                 ++_lfdUrl;
                 _nverarb = 0;
-                }
-            losGehts(_lfdUrl, nurSharpe);
             }
+            LosGehts(_lfdUrl, nurSharpe);
+        }
         public bool updKursHier() {
             if (wb1.Document == null)
                 return false;
@@ -342,28 +333,27 @@ namespace MeineFinanzen.View {
             if (kurs > 0) {
                 _portfol.WPKurs = kurs;
                 return true;
-                }
+            }
             PrintTxtOben(" Fehler-Kurs");
             return false;
-            }
+        }
         public bool updZeitHier() {
             if (wb1.Document == null)
                 return false;
-            string xpath = _portfol.WPXPathZeit;           
+            string xpath = _portfol.WPXPathZeit;
             if (xpath.Length > 10) {
                 DateTime zeit = getxp.GetZeitFromXpath(xpath, wb1, uri_url, _portfol);
                 string str3 = string.Format("{0}", zeit.ToString("dd.MM.yy")) + strFillB;
                 PrintTxtOben(str3.Substring(0, 8));
                 PrintTxtUntenNoCR(" Stand: " + str3.Substring(0, 8));
                 _portfol.WPStand = zeit;
-                }
-            else {
+            } else {
                 PrintTxtUnten("kein XPathZeit!!");
                 PrintTxtOben(" Fehler-Zeit");
                 return false;
-                }
-            return true;
             }
+            return true;
+        }
         public bool updAendHier() {
             if (wb1.Document == null)
                 return false;
@@ -386,14 +376,14 @@ namespace MeineFinanzen.View {
             if (aend != -1) {
                 _portfol.WPProzentAenderung = aend;
                 return true;
-                }
+            }
             PrintTxtOben(" Fehler-%Änd");
             return false;
-            }
+        }
         public bool updSharpeHier() {
             if (wb1.Document == null) {
                 return false;
-                }
+            }
             Single sharpVor = -1;
             if (_portfol.WPSharpe.ToString() == "")         // wg. null !!
                 sharpVor = 0;
@@ -405,7 +395,7 @@ namespace MeineFinanzen.View {
             if (xpath.Length < 20) {
                 PrintTxtOben(Environment.NewLine + "!!!!!!!!!!!!!!!!! xpathlLenght < 20:" + _url);
                 return false;
-                }
+            }
             float sharp = getxp.GetSharpFromXpath(xpath, wb1, uri_url, _portfol);
             string str3 = String.Format("{0,6:#0.00 ;#0.00-;0.00 }", sharp) + strFillB;
             PrintTxtUntenNoCR(" Sharpe:" + str3.Substring(0, 6) + " ReadyState: " + wb1.ReadyState);
@@ -413,43 +403,43 @@ namespace MeineFinanzen.View {
             if (sharp != -1) {
                 _portfol.WPSharpe = sharp;
                 return true;
-                }
+            }
             PrintTxtOben(" Fehler-Sharpe");
             return false;
-            }
+        }
         private void wb1_DocumentTitleChanged(object sender, EventArgs e) {
             //Title = "-KontenSynchronisierenInt- " + (sender as System.Windows.Forms.WebBrowser).DocumentTitle;
-            }
+        }
         private void acceptButton_Click(object sender, RoutedEventArgs e) {
             // Accept the dialog and return the dialog result
             this.DialogResult = true;
-            }
+        }
         private void wb1_Navigating(object sender, WebBrowserNavigatingEventArgs e) { }
         private void wb1_StatusTextChanged(object sender, EventArgs e) {
             if (wb1.StatusText.Length < 3)
                 return;
-            }
+        }
         private void btEnde_Click(object sender, RoutedEventArgs e) {
             Close();
-            }
+        }
         private void Grid1_Unloaded(object sender, RoutedEventArgs e) {
             DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
-            }
+        }
         private void PrintTxtOben(string str) {
             txtOben.AppendText(str);
             txtOben.ScrollToEnd();
             txtOben.InvalidateVisual();
-            }
+        }
         private void PrintTxtUnten(string str) {
             txtUnten.AppendText(Environment.NewLine + str);
             txtUnten.ScrollToEnd();
             txtUnten.InvalidateVisual();
-            }
+        }
         private void PrintTxtUntenNoCR(string str) {
             txtUnten.AppendText(str);
             txtUnten.ScrollToEnd();
             txtUnten.InvalidateVisual();
-            }
+        }
         internal void myTimer_Elapsed(object sender, ElapsedEventArgs e) {
             Progress = stopWatch.ElapsedMilliseconds;
             //ConWrLi("myTimer_Elapsed:" + string.Format("Progress:{0,6}", Progress));
@@ -458,9 +448,9 @@ namespace MeineFinanzen.View {
                 //lastPacketReceived = stopWatch.ElapsedMilliseconds;
                 bo_ZeitSchwelle = true;
                 //wb1.DocumentCompleted -= new WebBrowserDocumentCompletedEventHandler(wb1_DocumentCompleted);
-                verarbeiteDokument();
-                }
+                VerarbeiteDokument();
             }
+        }
         private void Window_Closing(object sender, CancelEventArgs e) {
             //DataSetAdmin.DatasetSichernInXml(D :xxx MeineFinanzen");
             MessageBoxResult result = System.Windows.MessageBox.Show("Schließen?", "Beenden",
@@ -470,7 +460,7 @@ namespace MeineFinanzen.View {
             if (result == MessageBoxResult.No)
                 e.Cancel = true;
             UpdatedtPortFol();
-            }
+        }
         private void UpdatedtPortFol() {    // WPKurs WPStand WPProzentAenderung WPSharpe
             // liPortFol-Daten nach DataSetAdmin.dsHier.Tables["tblPortFol"];
             dtPortFol = DataSetAdmin.dsHier.Tables["tblPortFol"];       // nochmal rausziehen, da evtl. geändert.
@@ -483,39 +473,38 @@ namespace MeineFinanzen.View {
                 if (lirow.WPStand != (DateTime)dtrow["WPStand"]) {
                     Console.WriteLine("++++ Stand alt: {0,-12} neu: {1,-12}", (DateTime)dtrow["WPStand"], lirow.WPStand);
                     dtrow["WPStand"] = lirow.WPStand;
-                    }
+                }
                 if (lirow.WPKurs != (float)dtrow["WPKurs"]) {
-                    Console.WriteLine("++++ Kurs alt: {0,-12} neu: {1,-12}", (float)dtrow["WPKurs"], lirow.WPKurs);
+                    Console.WriteLine("UpdatedtPortFol() Kurs alt: {0,-12} neu: {1,-12}", (float)dtrow["WPKurs"], lirow.WPKurs);
                     dtrow["WPKurs"] = lirow.WPKurs;
-                    }
+                }
                 if (lirow.WPProzentAenderung != (float)dtrow["WPProzentAenderung"])
                     dtrow["WPProzentAenderung"] = lirow.WPProzentAenderung;
 
                 if (dtrow["WPSharpe"] != dtrow["WPSharpe"])
                     dtrow["WPSharpe"] = lirow.WPSharpe;
-                }
+            }
             DataSetAdmin.dtPortFol = dtPortFol;
             DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
-            }
+        }
         private void warte(int ms) {
             Stopwatch sw = Stopwatch.StartNew();
             var delay = Task.Delay(ms).ContinueWith(_ => { sw.Stop(); return sw.ElapsedMilliseconds; });
-            }
+        }
         public void ConWrLi(string str1) {
             Console.WriteLine("{0,-80} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
-            }
+        }
         public void TxtWrLi(string str1) {
             try {
                 string str = string.Format("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
                 txtUnten.AppendText(Environment.NewLine + str);
                 txtUnten.ScrollToEnd();
                 txtUnten.InvalidateVisual();
-                }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 System.Windows.MessageBox.Show("Fehler TxtWrLi()" + ex);
-                }
             }
         }
+    }
     public class GetFromXpath {
         HtmlAgilityPack.HtmlDocument hdoc = new HtmlAgilityPack.HtmlDocument();
         public GetFromXpath() { }
@@ -525,7 +514,7 @@ namespace MeineFinanzen.View {
             if (node == null) {
                 System.Windows.MessageBox.Show("!!! Fehler GetPriceFromXpath() Node aus SelectSingleNode ist null!!! " + " " + url);
                 return price;
-                }
+            }
             string str2 = null;
             try {
                 str2 = node.TypedValue.ToString();   // Elemeniere alle /t und /n
@@ -545,23 +534,22 @@ namespace MeineFinanzen.View {
                 if (i1 >= 0)
                     str2 = str2.Substring(0, i1);
                 price = Convert.ToSingle(str2);   // 331,19&nbsp;€             
-                }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 System.Windows.MessageBox.Show("GetPriceFromXpath() catch Fehler: " + ex + " " + str2 + " " + url);
                 return -1;
-                }
-            return price;
             }
+            return price;
+        }
         public DateTime GetZeitFromXpath(string xpath, WebBrowser wb1, Uri url, PortFol datarow) {
             DateTime dt = new DateTime(1980, 1, 1);
             XPathNavigator node = GetFromXpathAlle(xpath, wb1);
             if (node == null) {
                 System.Windows.MessageBox.Show("!!! Fehler GetZeitFromXpath() Node aus SelectSingleNode ist null!!! " + " " + url);
                 return dt;
-                }
+            }
             int i1;
             string str2 = "";
-            string str1 = "";            
+            string str1 = "";
             try {
                 hdoc.LoadHtml(wb1.Document.GetElementsByTagName("body")[0].OuterHtml);
                 XPathNavigator docNav = hdoc.CreateNavigator();
@@ -571,7 +559,7 @@ namespace MeineFinanzen.View {
                     Console.WriteLine("GetZeitFromXpath hdoc.DocumentNode:" + hdoc.DocumentNode.ToString());
                     // NOCH System.Windows.MessageBox.Show("!!! Fehler GetZeitFromXpath() Node aus SelectSingleNode ist null!!! " + " " + url);
                     return dt;
-                    }
+                }
                 str2 = node.TypedValue.ToString().Trim();        // 06.03.2015
                 str1 = str2;
                 //Console.WriteLine("GetZeitFromXpath xpath:{0} url:{1} str1:{2} str2:{3} ", xpath, url, str1, str2);
@@ -587,13 +575,11 @@ namespace MeineFinanzen.View {
                     if (str2.Length == 8) {
                         str1 = str2.Substring(0, 6) + "20" + str2.Substring(6);
                         str2 = str1;
-                        }
                     }
-                else if (url.ToString().Contains("/snapshot")) {
+                } else if (url.ToString().Contains("/snapshot")) {
                     //Console.WriteLine("GetZeitFromXpath /snapshot");
-                    }
-                else if (url.ToString().Contains("/preise"))                   // 11,17&nbsp;€ 10:45 Uhr (09.03.)                
-                {
+                } else if (url.ToString().Contains("/preise"))                   // 11,17&nbsp;€ 10:45 Uhr (09.03.)                
+                  {
                     //Console.WriteLine("GetZeitFromXpath /preise");
                     i1 = str2.IndexOf('.');
                     if (i1 >= 0)
@@ -604,16 +590,14 @@ namespace MeineFinanzen.View {
                         str2 = str2.Substring(0, i1) + str.Substring(6, 4);
                         i1 = str1.IndexOf(':');
                         str2 += " " + str1.Substring(i1 - 2, 5);              // 10:45
-                        }
                     }
-                else if (url.ToString().Contains("/zertifikate"))              // Boerse Online  10:29 (26.03.2015)               
-                {
+                } else if (url.ToString().Contains("/zertifikate"))              // Boerse Online  10:29 (26.03.2015)               
+                  {
                     //Console.WriteLine("GetZeitFromXpath /zertifikate");
                     i1 = str2.IndexOf('.');
                     if (i1 >= 0)
                         str2 = str2.Substring(i1 - 2, 10) + " " + str2.Substring(0, 5);
-                    }
-                else if (url.ToString().Contains("boersennews.de/markt/anleihen/")) {
+                } else if (url.ToString().Contains("boersennews.de/markt/anleihen/")) {
                     //Console.WriteLine("GetZeitFromXpath boersennews.de/markt/anleihen/ url-->" + url);
                     // ALT: NORDDEUTSCHE LANDESBANK -GZ- NACHR.-MTN… Anleihenkurs:&nbsp;12:08 (Hannover, 15 Min. verzögert)
                     // NEU: NORDDEUTSCHE LANDESBANK -GZ- NACHR.-MTN… Anleihenkurs:&nbsp;30.10. (Stuttgart, 15 Min. verzögert)
@@ -626,8 +610,8 @@ namespace MeineFinanzen.View {
                             string strmm = str2.Substring(i1 + 1, 2);  //    08                        
                             string strDateTime = DateTime.Now.ToString("yyyy.MM.dd HH:mm:ss");          // "dd MMM HH:mm:ss", 
                             str2 = strDateTime.Substring(0, 10) + " " + strHH + ":" + strmm + ":00";    // 2015.09.29 12:22:00                       
-                            }
                         }
+                    }
                     if (str2.Contains("Stuttgart"))     // Anleihenkurs:&nbsp;30.10. (Stuttgart,
                     {
                         int i2 = str2.IndexOf(':');
@@ -638,33 +622,31 @@ namespace MeineFinanzen.View {
                             string strMM = str2.Substring(i1 + 1, 2);               // 10                        
                             string strdd = str2.Substring(i1 - 2, 2);               // 30                        
                             str2 = strDateTime.Substring(0, 10) + " " + "12" + ":" + "00" + ":00";    // 2015.09.29 12:00:00                       
-                            }
                         }
                     }
-                else if (url.ToString().Contains("www.sbroker.de")) {      // 02.08.16 / 15:15
+                } else if (url.ToString().Contains("www.sbroker.de")) {      // 02.08.16 / 15:15
                     int i2 = str2.IndexOf('/');
                     if (i2 >= 0) {
                         string str3 = str2.Substring(0, i2 - 1) + str2.Substring(i2 + 1);
                         str2 = str3;
-                        }
                     }
-                dt = Convert.ToDateTime(str2);
                 }
-            catch (Exception ex) {
+                dt = Convert.ToDateTime(str2);
+            } catch (Exception ex) {
                 Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!GetZeitFromXpath() Fehler.  str1:{0} str2:{1} url:{2}", str1, str2, url.ToString());
                 System.Windows.MessageBox.Show("GetZeitFromXpath() catch Fehler: " + ex + " " + url);
-                }
-            return dt;
             }
+            return dt;
+        }
         public Single GetAendFromXpath(string xpath, WebBrowser wb1, Uri url, PortFol datarow) {
             Single aend = -1; ;
             XPathNavigator node = GetFromXpathAlle(xpath, wb1);
             if (node == null) {
                 System.Windows.MessageBox.Show("!!! Fehler GetAendFromXpath() Node aus SelectSingleNode ist null!!! " + " " + url);
                 return aend;
-                }
-            string str2 = "";           
-            try {            
+            }
+            string str2 = "";
+            try {
                 str2 = (node.TypedValue.ToString()).Trim();       // +0,18 (+0,16%)&nbsp;  Oder: 0,21 EUR / 0,20%
                 string str1 = str2;
                 int i1 = -1;
@@ -687,16 +669,15 @@ namespace MeineFinanzen.View {
                 if (i1 >= 0)
                     str2 = str2.Substring(0, i1);
                 aend = Convert.ToSingle(str2);      // ±
-                }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 //Console.WriteLine("{0} {1} {2}", ex, url, str2);
                 System.Windows.MessageBox.Show("GetAendFromXpath() catch Fehler: " + ex + " " + url);
-                }
-            return aend;
             }
+            return aend;
+        }
         public XPathNavigator GetFromXpathAlle(string xpath, WebBrowser wb1) {
             XPathNavigator node = null;
-            try {         
+            try {
                 hdoc.LoadHtml(wb1.Document.GetElementsByTagName("body")[0].OuterHtml);
                 XPathNavigator docNav = hdoc.CreateNavigator();
                 node = docNav.SelectSingleNode(xpath);
@@ -704,23 +685,22 @@ namespace MeineFinanzen.View {
                 if (node == null) {
                     Console.WriteLine("GetFromXpathAlle node==null!!!:" + wb1.DocumentTitle);
                     Console.WriteLine("GetFromXpathAlle hdoc.DocumentNode:" + hdoc.DocumentNode.ToString());
-                    //System.Windows.MessageBox.Show("!!! Fehler GetFromXpathAlle() Node aus SelectSingleNode ist null!!! " + " " + wb1.Url);
+                    System.Windows.MessageBox.Show("!!! Fehler GetFromXpathAlle() Node aus SelectSingleNode ist null!!! " + " " + wb1.Url);
                     return node;
-                    }
                 }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 System.Windows.MessageBox.Show("GetFromXpathAlle() catch Fehler: " + ex);
                 return node;
-                }
-            return node;
             }
+            return node;
+        }
         public Single GetSharpFromXpath(string xpath, WebBrowser wb1, Uri url, PortFol datarow) {
             Single sharp = -1;
             XPathNavigator node = GetFromXpathAlle(xpath, wb1);
             if (node == null) {
                 System.Windows.MessageBox.Show("!!! Fehler GetSharpFromXpath() Node aus SelectSingleNode ist null!!! " + " " + url);
                 return sharp;
-                }          
+            }
             try {
                 string str2 = node.TypedValue.ToString();   // +1,14%
                 string str1 = str2;
@@ -735,18 +715,16 @@ namespace MeineFinanzen.View {
                     str2 = str2.Substring(0, i1);
                 try {
                     sharp = Convert.ToSingle(str2);             // 331,19&nbsp;€
-                    }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     System.Windows.Forms.MessageBox.Show("Fehler in GetSharpFromXpath: " + ex);
                     sharp = 0;
-                    }
+                }
                 //txtBox.AppendText(Environment.NewLine + "GetSharpFromXpath() sharp: " + sharp.ToString());
                 // }
-                }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 System.Windows.MessageBox.Show("GetSharpFromXpath() Fehler: " + ex);
-                }
-            return sharp;
             }
+            return sharp;
         }
     }
+}

@@ -1,4 +1,4 @@
-﻿// 30.01.2017 FinKontenÜbersicht 
+﻿// 08.03.2018 KontensynchronisierenSubsembly 
 // Aus FinPadForm erstellt 19.01.2014
 // Sub sembly FinTS(Financial Transaction Services) API.    Copyright © 2004-2012 Sub sembly GmbH
 // Financial Transaction Services, kurz FinTS, ist ein deutscher Standard für den Betrieb von Online-Banking.
@@ -6,16 +6,25 @@
 // 18.03.2014 Änderungen _Order...
 // 22.03.2015 schließt die form.
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml;
+using DataSetAdminNS;
+using MeineFinanzen.Helpers;
+using MeineFinanzen.Model;
+using MeineFinanzen.ViewModel;
 using Subsembly.FinTS;
 using Subsembly.FinTS.Admin;
 using Subsembly.FinTS.Forms;
 using Subsembly.Sepa;
 using Subsembly.Swift;
 namespace MeineFinanzen {
-    public partial class FinKontenÜbersicht : Form {    // Aus: -public class FinPadForm : Form-      erstellt
+    public partial class KontensynchronisierenSubsembly : Form {    // Aus: -public class FinPadForm : Form-      erstellt
         static public FinContact m_aContact;
         static public FinAcct m_aAcct;
         static FinAcctBalBuilder m_aAcctBalBuilder;
@@ -29,14 +38,14 @@ namespace MeineFinanzen {
         public string _pin = "xxxxx";              // Geändert!!!!
         public string _blz = "xxxxxxx";
         public string _ktoType = "xxxxx";         // Geändert!!!!
-        public FinKontenÜbersicht() {
+        public KontensynchronisierenSubsembly() {
             InitializeComponent();
         }
         private void NumericTextBox_KeyPress(object sender, KeyPressEventArgs e) {
         }
         protected override void OnLoad(EventArgs e) {
-            //private void FinKontenÜbersicht_Load(object sender, EventArgs e)  
-            ConWrLi("---- -40- Start FinKontenÜbersicht");
+            //private void KontensynchronisierenSubsembly_Load(object sender, EventArgs e)  
+            ConWrLi("---- -40- Start KontensynchronisierenSubsembly");
             int lfdnr = -1;             // Geändert!!!!
             int selectNr = 0;           // Geändert!!!!
             // Add all contacts that have been set up with the Sub sembly FinTS Admin to the selection box.
@@ -62,7 +71,7 @@ namespace MeineFinanzen {
             versionInfoLabel.Text = "Sub sembly FinTS API " + FinUtil.ApiVersion.ToString();
             //
             base.OnLoad(e);
-            ConWrLi("---- -48- Ende FinKontenÜbersicht");
+            ConWrLi("---- -48- Ende KontensynchronisierenSubsembly");
         }
         private void contactComboBox_SelectedIndexChanged(object sender, System.EventArgs e) {
             // Get the new contact selection.
@@ -73,7 +82,7 @@ namespace MeineFinanzen {
             _SelectContact(aContact);
 
         }
-        private void acctComboBox_TextChanged(object sender, System.EventArgs e) {
+        private void acctComboBox_TextChanged(object sender, EventArgs e) {
             _SelectAcctNo(acctComboBox.Text);
         }
         private void acctComboBox_SelectedIndexChanged(object sender, System.EventArgs e)   // Kontonummer
@@ -191,7 +200,7 @@ namespace MeineFinanzen {
             _AcceptAbleSepaRemitt();
         }
         private void _SelectAcctNo(string sAcctNo) {
-            //Debug.WriteLine("FinKontenÜbersicht-1 _SelectAcctNo({0})", sAcctNo);
+            //Debug.WriteLine("KontensynchronisierenSubsembly-1 _SelectAcctNo({0})", sAcctNo);
             if ((sAcctNo == null) || (sAcctNo == "")) {
                 m_aAcct = null;
                 return;
@@ -276,11 +285,11 @@ namespace MeineFinanzen {
 
             m_aContact.PIN = sPIN;
             FinScriptSendOrder.AutoCloseDocket = true;      // schließt form!!!!!.
-            //Debug.WriteLine(" {0} {1} FinKontenÜbersicht FinScriptSendOrder.Execute -vor-", DateTime.Now, m_aContact.ContactName);
+            //Debug.WriteLine(" {0} {1} KontensynchronisierenSubsembly FinScriptSendOrder.Execute -vor-", DateTime.Now, m_aContact.ContactName);
             //Application.DoEvents();
             FinScriptSendOrder.Execute(null, m_aContact, aOrder, sCustID);  // in aOrder : HKWPD Depotaufstellung anfordern.
             //Thread.Sleep(1000);
-            //Debug.WriteLine(" {0} {1} FinKontenÜbersicht FinScriptSendOrder.Execute -nach-", DateTime.Now, m_aContact.ContactName);
+            //Debug.WriteLine(" {0} {1} KontensynchronisierenSubsembly FinScriptSendOrder.Execute -nach-", DateTime.Now, m_aContact.ContactName);
             return true;
         }
         public string _FormatBalance(SwiftBalance aBal, string sText) {
@@ -981,5 +990,559 @@ namespace MeineFinanzen {
         private void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
         }
+    }
+    // 07.03.2018 VMKontenSynchronisierenSubsembly.cs
+    // Get Passw verändert. NOCH verbessern.
+    // SortFeld7 < 888 sind Banken.
+    public class VMKontenSynchronisierenSubsembly {
+        internal DgBanken _b;
+        public static DepotHolen _depHolen;
+        string pathMeineBilder;
+        public VMKontenSynchronisierenSubsembly() {
+            _b = GlobalRef.g_dgBanken;
+            pathMeineBilder = GlobalRef.g_Ein.strBilderPfad + @"\";
+            _depHolen = new DepotHolen();    // In VMKontenSynchronisierenSubsembly Grundwert
+        }
+        public void Ausführen(View.HauptFenster mw, bool laden) {
+            /* Verzeichnis: D :\MeineFinanzen\MyDepot\Log                                                                       
+            * --funktion--            -was-           -wohin-                                                                                
+            * KontoStändeFinCmd       Kontostände     \Kontenstände - sKontoNr-DateTime.csv balance   -contactname...               
+            * KontoUmsätzeFinCmdStmt  Kontoumsätze    \Umsätze-KontoNr-DateTime.csv         statement -contactname... 
+            *                                         \logKontoUmsätzeHolen.txt                                                                     
+            * DepotHolen_ausführen    WertpapierDepot dtWertpapSubsembly. (Mit angepasstem FinPadForm geholt)   */
+            if (!laden)
+                return;
+            ConWrLi("---- -20- Start VMKontenSynchronisierenSubsembly");
+            string[] strResult;
+            double BankBetrag = 0.00;
+            double GesamtBetrag = 0.00;
+            DgBanken._wertpapiere.Clear();
+            DgBanken.umsätze.Clear();
+            DgBanken.konten.Clear();
+            DgBanken.banken.Clear();                                                         // -ArrayOfBankÜbersicht                     
+            mw.OpenLogFile();
+            int anzBanken = 0;
+            DataSetAdmin.dtKontoumsätze.Clear();
+            DataSetAdmin.dtKontoumsätze.Columns.Clear();
+
+            DataSetAdmin.dtWertpapSubsembly = new DataTable("tblWertpapSubsembly");
+            DataSetAdmin.dtWertpapSubsembly.Columns.Clear();
+            DataSetAdmin.dtWertpapSubsembly.Rows.Clear();
+            DataSetAdmin.dtWertpapSubsembly.PrimaryKey = new DataColumn[] { DataSetAdmin.dtWertpapSubsembly.Columns["ISIN"] };
+
+            foreach (FinContact aContact in mw.liContacte) {                                 // Banken
+                Console.WriteLine("Bank: {0}", aContact.ContactName);
+                DgBanken.bank = new BankÜbersicht();                                         // -BankÜbersicht
+                DgBanken.bank.OCBankKonten = new ObservableCollection<BankKonten>();
+                DgBanken.banken.Add(DgBanken.bank);
+                DgBanken.bank.SortFeld7 = (anzBanken++ + 300).ToString();                    // aContact.BankCode;   50010517
+                DgBanken.bank.BankName7 = aContact.ContactName;                              // +BankName7         
+                string strImagePath = "";
+                if (aContact.ContactName.Contains("Spark"))
+                    strImagePath += "Spk";
+                else if (aContact.ContactName.Contains("DiBa")) // NOCH
+                    strImagePath += "DiBa";
+                else
+                    strImagePath += "nichts";
+                strImagePath += ".png";
+                DgBanken.bank.BildPfad7 = pathMeineBilder + strImagePath;                    // +BildPfad7 
+                // D :\Visual Studio 2015\Projects\SubsemblyFinTS\DiBa.png
+                DgBanken.bank.BLZ7 = aContact.BankCode;
+                DgBanken.bank.UserID7 = aContact.UserID;
+                DgBanken.bank.Datum7 = File.GetLastWriteTime(GlobalRef.g_Ein.myDepotPfad + @"Log\BankKontoStand.xml");
+                DgBanken.bank.Bearbeitungsart7 = "bearb...";
+                DgBanken.bank.FunktionenPfad7 = pathMeineBilder + "Aktualisieren1.png";
+                DgBanken.bank.Status7 = "sta";
+                _depHolen._bank = aContact.ContactName;
+                _depHolen._blz = aContact.BankCode;
+                _depHolen._pin = GetPasswort(_depHolen._blz);
+                foreach (FinAcctInfo aAcctInfo in aContact.UPD) {                   // Konten der Bank                          
+                    Console.WriteLine("   Konto: {0,-30} {1,-16} {2,-20}", aAcctInfo.AcctName, aAcctInfo.AcctTypeClass, aAcctInfo.AcctNo);
+                    if (aAcctInfo.AcctTypeClass.ToString().Contains("Portfolio")) {
+                        _b.Betrag = Convert.ToDouble(_depHolen.DepotHolen_ausführen()); // ===> Wertpapiere   Bank ---> dtWertpapSubsembly  <<Subsembly.FinTS>>                               
+                        WertpapSubsemblyToPortFol();                    // dtWertpapSubsembly ---> dtPortFol.
+                        mw._tabwertpapiere.ErstelleWertpapiere(mw);     // dtPortFol          ---> (CollWertpapiere)_wertpapiere     // aus dtWertpapSubsembly                   
+                        if (aAcctInfo.AcctName == "Wertpapierdepot") {
+                            if (DgBanken._wertpapiere.Count > 0) {
+                                DgBanken.konto.OCWertpap = new ObservableCollection<Wertpapier>(DgBanken._wertpapiere);
+                                mw.dgFinanzübersicht.RowDetailsVisibilityMode = System.Windows.Controls.DataGridRowDetailsVisibilityMode.Visible;
+                            }
+                        }
+                    } else if (aAcctInfo.AcctTypeClass.ToString().Contains("Giro")) {
+                        _depHolen._ktoNr = aAcctInfo.AcctNo;
+                        string sCmd = "";
+                        string strBank = _depHolen._bank;
+                        strBank.Replace(" ", "-");
+                        sCmd = "balance" + " -contactname " + strBank + " -pin " + _depHolen._pin + " -bankcode " + _depHolen._blz + " -acctno " + _depHolen._ktoNr;
+                        strResult = _b.KontoStändeFinCmd(sCmd, _depHolen._ktoNr);       // ===> Konto-Stände  Bank ---> @"Log\Kontenstände -" + sKontoNr
+                        if (strResult == null) {
+                            Console.WriteLine("strResult == null!!!!");
+                            _b.Betrag = 0;
+                        } else {
+                            _b.Betrag = Convert.ToDouble(strResult[5]);
+                            sCmd = "statement" + " -contactname " + _depHolen._bank + " -pin " + _depHolen._pin + " -acctno " + _depHolen._ktoNr;
+                            _b.KontoUmsätzeFinCmdStmt(sCmd, _depHolen._ktoNr);          // ===> Konto-Umsätze Bank ---> @"Log\Umsätze -" + sKontoNr 
+                        }
+                    } else {
+                        //Console.WriteLine("nix von Beiden!!!!" + aAcctInfo.AcctTypeClass.ToString());
+                        _b.Betrag = 0;
+                    }
+                    DgBanken.konto = new BankKonten();
+                    DgBanken.konto.KontoName8 = aAcctInfo.AcctName;                          // +KontoName 8                      
+                    DgBanken.konto.KontoArt8 = aAcctInfo.AcctTypeClass.ToString();           // +KontoArt8                    
+                    DgBanken.konto.KontoNr8 = aAcctInfo.AcctNo;                              // +KontoNr8                     
+                    DgBanken.konto.KontoValue8 = _b.Betrag;                                  // +KontoValue8                                  
+
+                    DateTime dt = File.GetLastWriteTime(Helpers.GlobalRef.g_Ein.myDepotPfad + @"Log\BankKontoStand.xml");// +KontoDatum8
+                    DgBanken.konto.KontoDatum8 = dt;
+
+                    List<Kontoumsatz> liku = _b.KontoumsatzFüllen(aAcctInfo.AcctNo);  // aus dtKontoumsätze
+                    if (liku.Count > 0) {
+                        DgBanken.konto.OCUmsätze = new ObservableCollection<Kontoumsatz>(liku);
+                        mw.dgFinanzübersicht.RowDetailsVisibilityMode = System.Windows.Controls.DataGridRowDetailsVisibilityMode.Visible;
+                    }
+
+                    DgBanken.konten.Add(DgBanken.konto);
+                    DgBanken.bank.OCBankKonten.Add(DgBanken.konto);
+                    BankBetrag += _b.Betrag;
+                    DgBanken.bank.BankValue7 = BankBetrag;                                   // +BankValue7
+                    GesamtBetrag += _b.Betrag;
+                    Console.WriteLine("GesamtBetrag: {0} BankBetrag: {1} Betrag: {2}", GesamtBetrag, BankBetrag, _b.Betrag);
+                }   // loop AcctInfo = Konten der Bank
+            }   //  loop Contact = Bank
+            ConWrLi("---- -26- In KontenSynchronisierenSubsembly");
+
+            DgBanken.bank = new BankÜbersicht();                                             // -BankÜbersicht
+            DgBanken.bank.OCBankKonten = new ObservableCollection<BankKonten>();
+            DgBanken.banken.Add(DgBanken.bank);
+            DgBanken.bank.SortFeld7 = "888";
+            DgBanken.bank.Bearbeitungsart7 = "bearb...";
+            DgBanken.bank.FunktionenPfad7 = pathMeineBilder + "Aktualisieren1.png";
+            DgBanken.bank.Datum7 = File.GetLastWriteTime(GlobalRef.g_Ein.myDepotPfad + @"Log\BankKontoStand.xml");
+            DgBanken.bank.BankName7 = "GeschlFonds";                                         // +BankName7     
+            DgBanken.bank.BildPfad7 = pathMeineBilder + "Aktualisieren1.png";                // +BildPfad7 
+            // @"C :\U sers\Public\Pictures\index.png";                 
+            DgBanken.bank.BankValue7 = _b.SummeGeschlFonds();                                // +BankValue7
+
+            DgBanken.bank = new BankÜbersicht();                                             // -BankÜbersicht
+            DgBanken.bank.OCBankKonten = new ObservableCollection<BankKonten>();
+            DgBanken.banken.Add(DgBanken.bank);
+            DgBanken.bank.SortFeld7 = "889";
+            DgBanken.bank.Bearbeitungsart7 = "bearb...";
+            DgBanken.bank.FunktionenPfad7 = pathMeineBilder + "Aktualisieren1.png";
+            DgBanken.bank.Datum7 = File.GetLastWriteTime(Helpers.GlobalRef.g_Ein.myDepotPfad + @"Log\BankKontoStand.xml");
+            DgBanken.bank.BankName7 = "Alle Konten";                                         // +BankName7     
+            DgBanken.bank.BildPfad7 = pathMeineBilder + "Aktualisieren1.png";                // +BildPfad7 
+            // @"C :\U sers\Public\Pictures\index.png";                
+            DgBanken.bank.BankValue7 = GesamtBetrag + _b.SummeGeschlFonds();                 // +BankValue7  NOCH
+            mw.swLog.Close();
+            string str = DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
+            if (str != null) {
+                MessageBox.Show("Fehler DatasetSichernInXml(): " + str);
+            } else {
+                Helpers.GlobalRef.g_Büb.SerializeWriteBankÜbersicht(Helpers.GlobalRef.g_Ein.myDepotPfad
+                    + @"\Daten\BankÜbersichtsDaten.xml", DgBanken.banken);
+                ConWrLi("---- -29- In KontenSynchronisierenSubsembly");
+            }
+
+            mw.dgBankenÜbersicht.UpdateLayout();
+            ConWrLi("---- -29b- In VMKontenSynchronisierenSubsembly vor neuStart");
+            mw.NeuStarten();
+            //testBankAnzeige();
+            ConWrLi("---- -29c- Fertig VMKontenSynchronisierenSubsembly nach neuStart");
+        }
+        public bool WertpapSubsemblyToPortFol() {  // Update von dtWertpapSubsembly ---> dtPortFol.          
+            if (DataSetAdmin.dtWertpapSubsembly.Columns.Count == 0)
+                return true;
+            DataTable dtt1 = new DataTable();
+            DataSetAdmin.dvWertpapSubsembly.Sort = "ISIN";
+            DataSetAdmin.dtWertpapSubsembly.DefaultView.Sort = "ISIN ASC";
+            dtt1 = DataSetAdmin.dtWertpapSubsembly.DefaultView.ToTable();
+            DataSetAdmin.dtWertpapSubsembly = dtt1;
+            DataView dvWertpapiereGesamt = new DataView(DataSetAdmin.dtWertpapSubsembly, "", "ISIN", DataViewRowState.CurrentRows);
+
+            DataTable dtt2 = new DataTable();
+            DataSetAdmin.dvPortFol.Sort = "WPISIN";
+            DataSetAdmin.dtPortFol.DefaultView.Sort = "WPISIN ASC";
+            dtt2 = DataSetAdmin.dtPortFol.DefaultView.ToTable();
+            DataSetAdmin.dtPortFol = dtt2;
+
+            string securityName = "";
+            string ISIN = "";
+            Single Price = -1;          // Kurs
+            string PriceCurrency = "";  // EUR oder USD oder so         
+            Single quantity = -1;       // Anzahl
+            double CostPriceRate = -1;  // Kaufsumme
+            string isinGes;
+            Single wpanzahl = -1;
+            string wpname = "";
+            string wpisin = "";
+            DateTime wpkaufdatum;
+            double wpkurs = 0;
+            double wpkaufsumme = 0;
+            double wpaktwert = 0;
+            Single HoldingValue = 0;
+            string HoldingCurrency = ""; // EUR
+            // Prüfen ob WP in dtWertpapSubsembly auch in dtPortFol sind.
+            PortFolDatensatz portfolNeu = new PortFolDatensatz();
+            foreach (DataRow rowGesamt in DataSetAdmin.dtWertpapSubsembly.Rows) {
+                isinGes = (string)rowGesamt["ISIN"];
+                int nPortfol = DataSetAdmin.dvPortFol.Find(isinGes);
+                //Debug.WriteLine("isinGes:{0} nPortfol:{1} SecurityName: {2}", isinGes, nPortfol, rowGesamt["SecurityName"]);
+                if (nPortfol < 0)           // Nicht, also in dtPortFol einfügen.
+                {
+                    DataRow newRow = DataSetAdmin.dtPortFol.NewRow();
+                    newRow = portfolNeu.dtPortFolAusdtGesamt(newRow, rowGesamt);
+
+                    newRow["WPName"] = rowGesamt["SecurityName"];
+                    newRow["WPIsin"] = rowGesamt["ISIN"];
+
+                    DataSetAdmin.dtPortFol.Rows.Add(newRow);
+                }
+            }
+            // Prüfen ob WP in dtPortFol auch in dvWertpapiereGesamt sind.
+            foreach (DataRow rowPortFol in DataSetAdmin.dtPortFol.Rows) {
+                wpname = (string)rowPortFol["WPName"];
+                wpisin = (string)rowPortFol["WPIsin"];
+                string wpid = rowPortFol["WPTypeID"].ToString();
+                if ((rowPortFol["WPTypeID"].ToString() == "80") ||
+                    (rowPortFol["WPTypeID"].ToString() == "10"))
+                    continue;
+                if (wpisin.Length < 9)
+                    continue;
+                int wpges = dvWertpapiereGesamt.Find(wpisin);
+                if (wpges == -1) {
+                    // Nicht, also aus aus dtPortFol löschen.
+                    MessageBox.Show("WertpapSubsemblyToPortFol() Löschen: " + wpname + " " + wpisin);
+                    try {
+                        DataSetAdmin.dtPortFol.Rows.Remove(rowPortFol);
+                    } catch (Exception ex) {
+                        MessageBox.Show("" + ex);
+                    }
+                    return false;
+                }
+                wpkaufdatum = (DateTime)rowPortFol["WPBisDatum"];
+                wpanzahl = Convert.ToSingle(rowPortFol["WPAnzahl"]);
+                quantity = Convert.ToSingle(dvWertpapiereGesamt[wpges]["quantity"]);
+
+                HoldingValue = Convert.ToSingle(dvWertpapiereGesamt[wpges]["HoldingValue"]);
+                wpaktwert = HoldingValue;
+                rowPortFol["WPAktWert"] = wpaktwert;
+                wpkaufsumme = Convert.ToDouble(rowPortFol["WPKaufsumme"]);
+                wpkurs = Convert.ToDouble(rowPortFol["WPKurs"]);
+                CostPriceRate = Convert.ToDouble(dvWertpapiereGesamt[wpges]["CostPriceRate"]);
+                //Debug.WriteLine("wpkaufsumme: {0} CostPriceRate: {1} Kaufsumme: {2}", wpkaufsumme, CostPriceRate, CostPriceRate * wpanzahl);               
+                if (rowPortFol["WPTypeID"].ToString() == "70")
+                    quantity /= 100;
+                securityName = (string)dvWertpapiereGesamt[wpges]["securityName"];
+                ISIN = (string)dvWertpapiereGesamt[wpges]["ISIN"];
+                Price = Convert.ToSingle(dvWertpapiereGesamt[wpges]["Price"].ToString());
+                PriceCurrency = dvWertpapiereGesamt[wpges]["PriceCurrency"].ToString();
+                HoldingCurrency = dvWertpapiereGesamt[wpges]["HoldingCurrency"].ToString();
+                if (wpanzahl != quantity) {
+                    //Debug.WriteLine("w:{0, -27} {1, -12} {2, -5} {3, -4}", wpname, wpisin, wpanzahl, wpges);
+                    //Debug.WriteLine("g:{0, -27} {1, -12} {2, -5} {3, -4}", securityName, ISIN, quantity, wpges);
+                    MessageBox.Show("WPAnzahl (" + wpname + ") wird übernommen! Alt: " + wpanzahl + " Neu: " + quantity);
+                    rowPortFol["WPAnzahl"] = quantity;
+                }
+                /* if (wpname != securityName)
+                {
+                    MessageBox.Show("WPName wird übernommen! Alt: " + wpname + " Neu: " + securityName);
+                    rowPortFol["WPName"] = securityName;
+                } */
+                if (CostPriceRate != 0) {
+                    if (wpkaufsumme != CostPriceRate * wpanzahl) {
+                        MessageBox.Show("WPKaufsumme (" + wpname + ") wird übernommen! Alt: " + wpkaufsumme + " Neu: " + CostPriceRate * wpanzahl);
+                        wpkaufsumme = CostPriceRate * wpanzahl;
+                    }
+                }
+                if (PriceCurrency == "")
+                    PriceCurrency = "EUR";
+                if (PriceCurrency == "USD") {
+                    //Price = _mw.USDtoEuro(Price);
+                    Price = Convert.ToSingle(HoldingValue) / quantity;      // NOCH
+                } else if (PriceCurrency == "EUR") { } else {
+                    MessageBox.Show("Update_Kaufdatum_KtoKurs Fehler: PriceCurrency: " + PriceCurrency);
+                    continue;
+                }
+                if (wpkurs != Price) {
+                    //MessageBox.Show("WPKurs (" + wpname + ") wird übernommen! Alt: " + wpkurs + " Neu: " + Price);
+                    rowPortFol["WPKurs"] = Price;
+                }
+                DateTime standBank = Convert.ToDateTime(dvWertpapiereGesamt[wpges]["QuotationDateOfPrice"].ToString());
+                DateTime dt = Convert.ToDateTime(rowPortFol["WPStand"]);
+                if (dt < standBank) {
+                    rowPortFol["WPStand"] = standBank;
+                    rowPortFol["WPKursVorher"] = Price;
+                    rowPortFol["WPStandVorher"] = standBank;
+                }
+                rowPortFol["WPKaufsumme"] = wpkaufsumme;
+                DateTime kaufdatum2 = (DateTime)dvWertpapiereGesamt[wpges]["MaturityDate"];         // Fälligkeitstag
+                if (kaufdatum2 == new DateTime(1980, 1, 1))
+                    continue;
+                //Debug.WriteLine("WPBisDatum        : {0} {1} {2} {3}", name1, isin1, kaufdatum1, kaufdatum2);
+                if (wpkaufdatum == kaufdatum2)
+                    continue;
+                //Debug.WriteLine("WPBisDatum updaten: {0} {1} {2}", name1, kaufdatum1, kaufdatum2);
+                rowPortFol["WPBisDatum"] = kaufdatum2;
+            }
+            return true;
+        }
+        public void ConWrLi(string str1) {
+            Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
+        }
+        public static string[] HoleFiles(string path, string searchPattern, SearchOption searchOption) {
+            string[] searchPatterns = searchPattern.Split('|');
+            List<string> files = new List<string>();
+            foreach (string sp in searchPatterns)
+                files.AddRange(Directory.GetFiles(path, sp, searchOption));
+            files.Sort();
+            return files.ToArray();
+        }
+        internal string GetPasswort(string blz) {
+            string path = GlobalRef.g_Ein.myDepotPfad + @"\daten";
+            string searchPattern = "dwp_*|*_";
+            string[] files = HoleFiles(path, searchPattern, SearchOption.TopDirectoryOnly);
+            string dwp = null;
+            string xmlblz = null;
+            foreach (string file in files) {
+                FileInfo fsi = new FileInfo(file);
+                if (!fsi.Name.Contains(".xml"))
+                    continue;
+                XmlTextReader reader = new XmlTextReader(path + "/" + fsi.Name);
+                while (reader.Read()) {
+                    switch (reader.NodeType) {
+                        case XmlNodeType.Element:
+                            if (reader.Name.Equals("Passworte"))
+                                continue;
+                            xmlblz = reader.Name;
+                            break;
+                        case XmlNodeType.Text:
+                            if (xmlblz.Equals("BLZ" + blz))
+                                dwp = reader.Value;
+                            break;
+                        case XmlNodeType.EndElement:
+                            //Console.Write("</" + reader.Name + ">");
+                            break;
+                    }
+                }
+            }
+            return dwp;
+        }
+    }
+    public class DepotHolen {
+        public DataSet dsWertpapiere;
+        static KontensynchronisierenSubsembly fkü;
+        public string _bank = "", _pin = "", _blz = "", _ktoNr = "", _ktoType = "";
+        Random rand = new Random();
+        public decimal total;
+        public DepotHolen() {
+            fkü = new KontensynchronisierenSubsembly {
+                _pin = "xxxx",
+                _blz = "xxxx",
+                _ktoType = "xxxx"
+            };
+            fkü.Show();             // führt dort OnLoad aus
+            fkü.Dispose();
+        }
+        public decimal DepotHolen_ausführen() {
+            ConWrLi("---- -30- Start DepotHolen_ausführen");
+            //Application.DoEvents();
+            //Debug.WriteLine("{0} mkDepot DepotHolen_ausführen( _ktoType:{1} BLZ:{2}", DateTime.Now, _ktoType, _blz);
+            fkü = new KontensynchronisierenSubsembly {
+                _pin = _pin,
+                _blz = _blz,
+                _ktoType = _ktoType
+            };
+            fkü.tabControl.SelectedTab = fkü.depotTabPage;
+            fkü.Show();             // führt dort OnLoad aus
+                                    // Debug.WriteLine("{0} mkDepot DepotHolen_ausführen( nach .Show", DateTime.Now);
+            FinContact xContact = (FinContact)fkü.contactComboBox.SelectedItem;
+            fkü._SelectContact(xContact);
+            int lfdnr = -1;
+            int selectNr = -1;
+            foreach (FinContact aContact in FinAdmin.DefaultFolder) {     // FinContactFolder.Default) {
+                ++lfdnr;
+                //Debug.WriteLine("{0} DepotHolen_ausführen( FinContact aContact.BankCode {1} ContactName {2}",
+                //   DateTime.Now, aContact.BankCode, aContact.ContactName);
+                // 50010517 ING-DiBa
+                // 21352240 Sparkasse-Holstein
+                if (aContact.BankCode == fkü._blz)
+                    selectNr = lfdnr;
+                fkü.contactComboBox.Items.Add(aContact);
+            }
+            if (fkü.contactComboBox.Items.Count == 0) {
+                System.Windows.MessageBox.Show("Bitte verwenden Sie den Sub sembly FinTS Admin um zuerst einen Bankkontakt einzurichten");
+            } else {
+                fkü.contactComboBox.SelectedIndex = selectNr;
+                fkü.pinTextBox.Text = fkü._pin;
+            }
+            fkü.versionInfoLabel.Text = "Sub sembly FinTS API " + FinUtil.ApiVersion.ToString();
+            fkü.tabControl.SelectedTab = fkü.depotTabPage;
+            //ro = -1;
+            //Debug.WriteLine("{0} mkDepot DepotHolen_ausführen( vor  fkü.m_aPortfListBuilder.Build", DateTime.Now);
+            FinPortfList aPortfListOrder = fkü.m_aPortfListBuilder.Build(KontensynchronisierenSubsembly.m_aAcct, null, FinExchRateQuality.Unknown, 0, null); // Build and send the balance inquiry.            
+            fkü._SendOrder(aPortfListOrder);
+            //Debug.WriteLine("{0} mkDepot DepotHolen_ausführen( nach _SendOrder", DateTime.Now);
+            SwiftStatementOfHoldings aStatementOfHoldings = aPortfListOrder.PortfSecuritiesList; // Provides access to the returned portfolio list (MT-535 or MT-571), if any.                       
+            if (aStatementOfHoldings.NumberOfFinancialInstruments > 0) {
+                total = FinToDtGesamt(aPortfListOrder);
+            }
+            fkü.Dispose();
+            fkü = null;
+            ConWrLi("---- -39- Ende DepotHolen_ausführen");
+            return total;
+        }
+        public decimal FinToDtGesamt(FinPortfList aPortfListOrder) {
+            SwiftStatementOfHoldings aStatementOfHoldings = aPortfListOrder.PortfSecuritiesList;    // Evaluate the returned data.                          
+            SwiftStatementOfHoldingsFinancialInstrument aFinancialInstrument1 = aStatementOfHoldings[0];
+            Object[] properties1 = aFinancialInstrument1.GetType().GetProperties();
+            DataColumn column;
+            Type typeInt32 = Type.GetType("System.Int32");
+            // ------ Spalten erstellen ------ 
+            foreach (Object prop in properties1) {
+                System.Reflection.PropertyInfo pif = (System.Reflection.PropertyInfo)prop;
+                Object val1 = pif.GetValue(aFinancialInstrument1, null);
+                Object val3 = pif.PropertyType;
+                //Console.WriteLine("dtWertpapSubsembly Spalten pif.Name:{0,-34} GetValue:{1,-24} PropertyType:{2}",
+                //    pif.Name, val1, val3);                
+                column = new DataColumn(pif.Name);
+                if (pif.PropertyType.Name == "String")
+                    column.DataType = System.Type.GetType("System.String");
+                else if (pif.PropertyType.Name == "Int32")
+                    column.DataType = System.Type.GetType("System.Int32");
+                else if (pif.PropertyType.Name == "Decimal")
+                    column.DataType = System.Type.GetType("System.Decimal");
+                else if (pif.PropertyType.Name == "SwiftDate")                  // 20140711 00000000               
+                    column.DataType = System.Type.GetType("System.DateTime");
+                else if (pif.PropertyType.Name == "SwiftTime")                  // 000000                
+                    column.DataType = System.Type.GetType("System.DateTime");
+                else {
+                    //Debug.WriteLine("kein type!! pif.Name:" + pif.Name + " PropertyType:" + pif.PropertyType.Name);
+                    column.DataType = System.Type.GetType("System.String");
+                }
+                DataSetAdmin.dtWertpapSubsembly.Columns.Add(column);
+            }
+            string sKto = aStatementOfHoldings.SecuritiesAccountNumber;
+            DataRow newRow;
+            decimal aktwert = 0;
+            int co = -1;
+            // ------ Zeilen erstellen ------
+            foreach (SwiftStatementOfHoldingsFinancialInstrument aFinancialInstrument in aStatementOfHoldings) {
+                newRow = DataSetAdmin.dtWertpapSubsembly.NewRow();
+                co = -1;
+                Object[] properties2 = aFinancialInstrument.GetType().GetProperties();
+                foreach (Object prop in properties2) {
+                    System.Reflection.PropertyInfo pif = (System.Reflection.PropertyInfo)prop;
+                    Object val1 = pif.GetValue(aFinancialInstrument, null);
+                    Object val3 = pif.PropertyType;
+                    //Console.WriteLine("dtWPGes pif.Name:{0,-34} GetValue:{1,-24} PropertyType:{2}", pif.Name, val1, val3); 
+                    ++co;
+                    try {
+                        if (pif.PropertyType.Name == "SwiftDate") {
+                            string str = val1.ToString();
+                            if (str == "00000000")
+                                newRow[co] = Convert.ToDateTime("01.01.1980");
+                            else
+                                newRow[co] = Convert.ToDateTime(str.Substring(6, 2) + "." + str.Substring(4, 2) + "." + str.Substring(0, 4) + " 12:00:00");
+                        } else if (pif.PropertyType.Name == "SwiftTime") {
+                            string str = val1.ToString();
+                            newRow[co] = Convert.ToDateTime("01.01.1980 " + str.Substring(4, 2) + ":" + str.Substring(0, 2));
+                        } else {
+                            newRow[co] = val1;
+                        }
+                    } catch (Exception ex) {
+                        //MessageBox.Show("Fehler in finToDtGesamt() : vale: " + val1.ToString() + " ex: " + ex);
+                        Console.WriteLine("Fehler in finToDtGesamt() : vale: " + val1.ToString() + " ex: " + ex);
+                        newRow[co] = Convert.ToDateTime("01.01.1980");
+                    }
+                }
+                DataSetAdmin.dtWertpapSubsembly.Rows.Add(newRow);
+                aktwert += (decimal)newRow["HoldingValue"]; // Value of the total holding.
+            }
+            return aktwert; // FALSCH: ab 02.2017 aStatementOfHoldings.TotalValue;
+        }
+        private void ConWrLi(string str1) {
+            Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
+        }
+        /*The interest amount that has been accrued in between coupon payment periods. Verbindlichkeiten aus aufgelaufenen Zinsen auf Einlagen
+              public decimal AccruedInterestAmount { get; }
+           The currency of the Sub sembly.Swift.SwiftStatementOfHoldingsFinancialInstrument.AccruedInterestAmount.
+              public string AccruedInterestCurrency { get; }
+           Buying date
+              public SwiftDate BuyingDate { get; }                    Kaufdatum
+           Cost Price Rate
+              public decimal CostPriceRate { get; }                   Rate
+           Cost price rate currency                                   Währung
+              public string CostPriceRateCurrency { get; }
+           The exchange rate that converts the currency of the price or quantity to
+           the currency of the portfolio.
+              public decimal ExchangeRate { get; }
+           The first currency of the Sub sembly.Swift.SwiftStatementOfHoldingsFinancialInstrument.ExchangeRate
+              public string ExchangeRateFirstCurrency { get; }
+           The second currency of the Sub sembly.Swift.SwiftStatementOfHoldingsFinancialInstrument.ExchangeRate
+              public string ExchangeRateSecondCurrency { get; }
+           The amount of the basic price of the future contract.
+              public decimal FutureContractBasicPrice { get; }
+           The currency of the basic price of the future contract.
+              public string FutureContractBasicPriceCurrency { get; }                         
+           Future Contract Expiry Date
+              public SwiftDate FutureContractExpiryDate { get; }
+           Future Contract Key
+              public string FutureContractKey { get; }
+           Unit/Contract size of the futures contract.
+              public string FutureContractSize { get; }
+           Future Contract Symbol
+              public string FutureContractSymbol { get; }            
+            Future contract underlying ISIN
+              public string FutureContractUnderlyingISIN { get; }
+           Future contract underlying WKN
+              public string FutureContractUnderlyingWKN { get; }
+           Future Contract Version: {"null", "0", "1", ... "9"}
+              public string FutureContractVersion { get; }
+           The currency of the Sub sembly.Swift.SwiftStatementOfHoldingsFinancialInstrument.HoldingValue.
+              public string HoldingCurrency { get; }
+           Value of the total holding.
+              public decimal HoldingValue { get; }                                                                                                 
+           Interest Rate (as a percentage in case of a interest-bearing securities).
+              public decimal InterestRate { get; }
+           The securities identification via an ISIN.
+              public string ISIN { get; }
+           Issuer Country
+              public string IssuerCountry { get; }
+           Maturity date
+              public SwiftDate MaturityDate { get; }                                          
+           Number of days used for calculating the accrued interest amount.
+              public int NumberOfDaysAccrued { get; }
+           Returns the number of sub balances.
+              public int NumberOfSubBalances { get; }
+           The origin of a price: ("LMAR", "THEO", "VEND" or null)
+              public string OriginOfPrice { get; }
+           The name of the stock exchange or null.
+              public string OriginOfPriceText { get; }
+           Price (percentage or amount). Zero if no price is available.
+              public decimal Price { get; }
+           Price currency. Null, if no price is available or if price is a percentage.
+              public string PriceCurrency { get; }
+           The type of the given Sub sembly.Swift.SwiftStatementOfHoldingsFinancialInstrument.Price.
+              public SwiftPriceType PriceType { get; }
+           Quantity (signed)
+              public decimal Quantity { get; }                                                                         
+           Quantity currency.
+              public string QuantityCurrency { get; }
+           Quantity type.
+              public SwiftQuantityType QuantityType { get; }
+           Quote Date of price.
+              public SwiftDate QuotationDateOfPrice { get; }
+           Quote Time of price.
+              public SwiftTime QuotationTimeOfPrice { get; }                          
+           Sector code in accordance with WM GD 200.
+              public string SectorCode { get; }                                                   
+           The securities name as a Sub sembly.Swift.SwiftTextLines instance.
+              public SwiftTextLines SecurityName { get; }
+           Type of security in accordance with WM GD 195
+              public string TypeOfSecurity { get; }
+           The securities identification via an WKN.
+              public string WKN { get; }     */
     }
 }

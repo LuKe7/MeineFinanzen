@@ -144,7 +144,7 @@ Woche:95 x:860.262 last_y:1166   */
             polyline.Points = points;
             graphArea.Children.Add(polyline);                       // Die Verbindungslinien            
             setText(80.00, 8.00, "Depotwerte wöchentlich", Colors.Black);
-            //CanvasXXX(); 
+            //CanvasXX(); 
             ConWrLi("---- -41- GeneriereGraph()");
         }
         private void AddMarkerTextToChart(double top, double markerTextValue) {

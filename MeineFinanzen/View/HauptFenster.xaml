@@ -1,4 +1,4 @@
-﻿<!-- 28.02.2018   -View-   HauptFenster.xaml -->
+﻿<!-- 09.03.2018   -View-   HauptFenster.xaml -->
 <Window x:Class="MeineFinanzen.View.HauptFenster"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,9 +7,7 @@
         xmlns:view="clr-namespace:MeineFinanzen.View"
         xmlns:model="clr-namespace:MeineFinanzen.Model"
         xmlns:dw="clr-namespace:DrWPF.Windows.Controls"
-        xmlns:helpers="clr-namespace:MeineFinanzen.Helpers"
-        xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+        xmlns:helpers="clr-namespace:MeineFinanzen.Helpers" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         mc:Ignorable="d"
         Title="MeineFinanzen"
@@ -27,9 +25,9 @@
         <view:DateConvert x:Key="dateConvert" />
         <view:DateConvertFi x:Key="dateConvertFi" />
         <view:ISINConverter x:Key="ISINConverter" />
-        <model:CollWertpapiere x:Key="wertpapiere" />
+        <model:CollWertpapiere x:Key="wertpapiereXXX" />
         <CollectionViewSource x:Key="cvsWertpapiere"
-                              Source="{StaticResource wertpapiere}"
+                              Source="{StaticResource wertpapiereXXX}"
                               Filter="CollectionViewSource_Filter">
             <CollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="Type" />
@@ -40,9 +38,9 @@
                 <PropertyGroupDescription PropertyName="AKName" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
-        <model:CollKontoumsätze x:Key="kontoumsätze" />
+        <model:CollKontoumsätze x:Key="kontoumsätzeXXX" />
         <CollectionViewSource x:Key="cvskontoumsätze"
-                              Source="{StaticResource kontoumsätze}" />
+                              Source="{StaticResource kontoumsätzeXXX}" />
         <view:NameToBrushConverter x:Key="NameToBrushConverter" />
         <DataTemplate x:Key="WertpapierDetail">
             <Border BorderThickness="1"
@@ -115,8 +113,7 @@
             </Setter>
         </Style>
         <!-- <local:OCKategorien x:Key="kategorien" /> 
-        <CollectionViewSource x:Key="cvskategorien"
-                              Source="{StaticResource kategorien}" /> -->
+        <CollectionViewSource x:Key="cvskategorien" Source="{StaticResource kategorien}" /> -->
         <Style x:Key="TreeViewItemStyle"
                TargetType="{x:Type TreeViewItem}">
             <Setter Property="IsExpanded"
@@ -230,7 +227,6 @@
                 <RowDefinition Height="0.3*" />
                 <RowDefinition Height="10*" />
             </Grid.RowDefinitions>
-            <!-- in DgBankenViewModel mw.dgBankenÜbersicht.ItemsSource = banken; -->
             <DataGrid x:Name="dgBankenÜbersicht"
                       Grid.Column="0"
                       Grid.Row="1"
@@ -244,9 +240,9 @@
                       RowDetailsVisibilityMode="Visible"
                       AutoGenerateColumns="False"
                       HorizontalAlignment="Left"
-                      PreviewMouseDown="dgBankenÜbersicht_PreviewMouseDown"
+                      PreviewMouseDown="DgBankenÜbersicht_PreviewMouseDown"
                       HeadersVisibility="None"                    
-                      SelectionChanged="dgBankenÜbersicht_SelectionChanged">
+                      SelectionChanged="DgBankenÜbersicht_SelectionChanged">
                 <DataGrid.RowStyle>
                     <Style TargetType="{x:Type DataGridRow}">
                         <Setter Property="FontWeight"
@@ -420,15 +416,15 @@
                       Width="80"
                       HorizontalAlignment="Left"
                       VerticalAlignment="Top"
-                      Loaded="cbKonten_Loaded"
-                      SelectionChanged="cbKonten_SelectionChanged" />
+                      Loaded="CbKonten_Loaded"
+                      SelectionChanged="CbKonten_SelectionChanged" />
             <ComboBox x:Name="cbNeueVerbindung"
                       Margin="1,0,0,0"
                       Grid.Column="0"
                       HorizontalAlignment="Left"
                       VerticalAlignment="Top"
-                      Loaded="cbNeueVerbindung_Loaded"
-                      SelectionChanged="cbNeueVerbindung_SelectionChanged" />
+                      Loaded="CbNeueVerbindung_Loaded"
+                      SelectionChanged="CbNeueVerbindung_SelectionChanged" />
             <TextBox x:Name="txbCPU"
                      Margin="10, 0"
                      VerticalAlignment="Top"
@@ -486,8 +482,8 @@
                                       Language="DE-de"
                                       VerticalAlignment="Top"
                                       RowDetailsVisibilityMode="Visible"
-                                      SelectionChanged="dgFinanzÜbersicht_SelectionChanged"
-                                      Loaded="dgFinanzÜbersicht_Loaded"
+                                      SelectionChanged="DgFinanzÜbersicht_SelectionChanged"
+                                      Loaded="DgFinanzÜbersicht_Loaded"
                                       AutoGenerateColumns="False"
                                       HorizontalAlignment="Left"
                                       BorderThickness="4.0"
@@ -799,7 +795,7 @@
                         <WebBrowser x:Name="wbAktuelles"
                                     Grid.Row="1"
                                     Width="996"
-                                    LoadCompleted="wbAktuelles_LoadCompleted"
+                                    LoadCompleted="WbAktuelles_LoadCompleted"
                                     HorizontalAlignment="Left" />
                         <!-- <Button Content="Group"
                                 Grid.Row="0"
@@ -838,16 +834,16 @@
                                       ScrollViewer.HorizontalScrollBarVisibility="Visible"
                                       RowDetailsVisibilityMode="VisibleWhenSelected"
                                       RowDetailsTemplate="{StaticResource WertpapierDetail}"
-                                      RowDetailsVisibilityChanged="gridWertpapiere_RowDetailsVisibilityChanged"
+                                      RowDetailsVisibilityChanged="GridWertpapiere_RowDetailsVisibilityChanged"
                                       ItemsSource="{Binding Source={StaticResource cvsWertpapiere}}"
                                       AutoGenerateColumns="False"
-                                      SelectionChanged="gridWertpapiere_SelectionChanged"
+                                      SelectionChanged="GridWertpapiere_SelectionChanged"
                                       SelectionUnit="FullRow"
-                                      LoadingRow="gridWertpapiere_LoadingRow"
+                                      LoadingRow="GridWertpapiere_LoadingRow"
                                       AlternatingRowBackground="#FFBBF0D1"
                                       HorizontalGridLinesBrush="#E600FA00"
                                       VerticalGridLinesBrush="#9B7D7B62"
-                                      PreviewMouseDown="gridWertpapiere_PreviewMouseDown">
+                                      PreviewMouseDown="GridWertpapiere_PreviewMouseDown">
                                 <DataGrid.RowStyle>
                                     <Style TargetType="{x:Type DataGridRow}">
                                         <Style.Triggers>
@@ -1189,8 +1185,8 @@
                                           IsEditable="true"
                                           Text="Info"
                                           HorizontalAlignment="Stretch"
-                                          Loaded="cbFilter2_Loaded"
-                                          SelectionChanged="cmbSelectionChangedFilter2"
+                                          Loaded="CbFilter2_Loaded"
+                                          SelectionChanged="CmbSelectionChangedFilter2"
                                           Background="Linen"
                                           SelectedIndex="0" />
                                 <DatePicker x:Name="datPicker1"
@@ -1227,7 +1223,7 @@
                                               AllowDrop="True"
                                               IsEditable="true"
                                               HorizontalAlignment="Stretch"
-                                              SelectionChanged="cmbSelectionChangedBetragVon"
+                                              SelectionChanged="CmbSelectionChangedBetragVon"
                                               Initialized="Initialized_cbBetragVon" />
                                     <Label Content="Betrag bis"
                                            Grid.Row="1"
@@ -1239,7 +1235,7 @@
                                               AllowDrop="True"
                                               IsEditable="true"
                                               HorizontalAlignment="Stretch"
-                                              SelectionChanged="cmbSelectionChangedBetragBis"
+                                              SelectionChanged="CmbSelectionChangedBetragBis"
                                               Initialized="Initialized_cbBetragBis" />
                                     <Label Content="Text"
                                            Grid.Row="2"
@@ -1280,7 +1276,7 @@
                                         Width="80"
                                         HorizontalAlignment="Left"
                                         Content="btTest"
-                                        Click="btTest_Click" />
+                                        Click="BtTest_Click" />
                                 <TextBox x:Name="TextBox1"
                                          Grid.Row="1"
                                          Text="A n z e i g e"

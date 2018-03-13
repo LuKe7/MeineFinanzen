@@ -100,8 +100,8 @@ namespace MeineFinanzen.View {
             //mw.TextBox1.Clear();
             List<Kategorie> liKategorie = new List<Kategorie>();
             Kategorie Kategorie0 = null;
-            List<Kategorie> lkuXXX = KategorienFüllen(liKategorie, ref Kategorie0);
-            return lkuXXX;
+            List<Kategorie> lkuXX = KategorienFüllen(liKategorie, ref Kategorie0);
+            return lkuXX;
         }
         public static List<Kategorie> KategorienFüllen(List<Kategorie> liKategorie, ref Kategorie Kategorie0) {
             Kategorie0 = new Kategorie("Kategorien");

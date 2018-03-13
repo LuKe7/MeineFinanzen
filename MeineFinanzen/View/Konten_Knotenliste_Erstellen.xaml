@@ -280,6 +280,10 @@
                     Content="Beenden"
                     Width="75"
                     Click="btBeenden_Click" />
+            <Button x:Name="btPathDoppeln"
+                    Content="PathDoppeln"
+                    Width="75"
+                    Click="btPathDoppeln_Click" />
         </StackPanel>
     </Grid>
 </Window>

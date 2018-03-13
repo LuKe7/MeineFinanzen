@@ -1,5 +1,5 @@
 ﻿namespace MeineFinanzen {
-    partial class FinKontenÜbersicht {
+    partial class KontensynchronisierenSubsembly {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -1190,7 +1190,7 @@
             this.statementButton.UseVisualStyleBackColor = false;
             this.statementButton.Click += new System.EventHandler(this.statementButton_Click);
             // 
-            // FinKontenÜbersicht
+            // KontensynchronisierenSubsembly
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -1198,8 +1198,8 @@
             this.Controls.Add(this.versionInfoLabel);
             this.Controls.Add(this.statusBar);
             this.Controls.Add(this.tabControl);
-            this.Name = "FinKontenÜbersicht";
-            this.Text = "FinKontenÜbersicht";
+            this.Name = "KontensynchronisierenSubsembly";
+            this.Text = "KontensynchronisierenSubsembly";
             this.groupBox3.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();

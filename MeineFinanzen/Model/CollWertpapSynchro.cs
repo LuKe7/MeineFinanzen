@@ -11,16 +11,8 @@ namespace MeineFinanzen.Model {
     // wenn Elemente hinzugefügt oder entfernt werden
     // bzw. wenn die gesamte Liste aktualisiert wird.
     // public class ObservableCollection<T> : Collection<T>, INotifyCollectionChanged, INotifyPropertyChanged
-    public class CollWertpapSynchro : ObservableCollection<WertpapSynchro>, IComparable, INotifyCollectionChanged, INotifyPropertyChanged {
+    public class CollWertpapSynchro : ObservableCollection<WertpapSynchro>, INotifyCollectionChanged, INotifyPropertyChanged {
         public CollWertpapSynchro() { }
-        public int CompareTo(object obj) {
-            if (obj == null)
-                return 1;
-            WertpapSynchro wp = obj as WertpapSynchro;
-            if (wp != null)
-                return wp.WPSURL.CompareTo(((WertpapSynchro)obj).WPSURL);
-            throw new NotImplementedException();
-        }
     }
     public class Person : INotifyPropertyChanged {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -30,31 +22,25 @@ namespace MeineFinanzen.Model {
                 PropertyChanged(this, e);
         }
         private string _Name;
-        public string Name
-        {
+        public string Name {
             get { return _Name; }
-            set
-            {
+            set {
                 _Name = value;
                 OnPropertyChanged(new PropertyChangedEventArgs("Name"));
             }
         }
         private int? _Alter;
-        public int? Alter
-        {
+        public int? Alter {
             get { return _Alter; }
-            set
-            {
+            set {
                 _Alter = value;
                 OnPropertyChanged(new PropertyChangedEventArgs("Alter"));
             }
         }
         private string _Adresse;
-        public string Adresse
-        {
+        public string Adresse {
             get { return _Adresse; }
-            set
-            {
+            set {
                 _Adresse = value;
                 OnPropertyChanged(new PropertyChangedEventArgs("Adresse"));
             }
@@ -67,11 +53,9 @@ namespace MeineFinanzen.Model {
         public DateTime WPSKursZeit { get; set; }
         public string WPSISIN { get; set; }
         private double _WPSKurs;
-        public double WPSKurs
-        {
+        public double WPSKurs {
             get { return _WPSKurs; }
-            set
-            {
+            set {
                 _WPSKurs = value;
                 OnPropertyChanged(new PropertyChangedEventArgs("WPSKurs"));
             }
@@ -107,14 +91,11 @@ namespace MeineFinanzen.Model {
             l.Add(ReadCustomer2());
             OnListChanged(resetEvent);
         }
-        public Customer this[int index]
-        {
-            get
-            {
+        public Customer this[int index] {
+            get {
                 return (Customer)(List[index]);
             }
-            set
-            {
+            set {
                 List[index] = value;
             }
         }
@@ -171,39 +152,30 @@ namespace MeineFinanzen.Model {
             OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, index));
         }
         // Implements IBindingList.
-        bool IBindingList.AllowEdit
-        {
+        bool IBindingList.AllowEdit {
             get { return true; }
         }
-        bool IBindingList.AllowNew
-        {
+        bool IBindingList.AllowNew {
             get { return true; }
         }
-        bool IBindingList.AllowRemove
-        {
+        bool IBindingList.AllowRemove {
             get { return true; }
         }
-        bool IBindingList.SupportsChangeNotification
-        {
+        bool IBindingList.SupportsChangeNotification {
             get { return true; }
         }
-        bool IBindingList.SupportsSearching
-        {
+        bool IBindingList.SupportsSearching {
             get { return false; }
         }
-        bool IBindingList.SupportsSorting
-        {
+        bool IBindingList.SupportsSorting {
             get { return false; }
         }
         // Events.
-        public event ListChangedEventHandler ListChanged
-        {
-            add
-            {
+        public event ListChangedEventHandler ListChanged {
+            add {
                 onListChanged += value;
             }
-            remove
-            {
+            remove {
                 onListChanged -= value;
             }
         }
@@ -214,16 +186,13 @@ namespace MeineFinanzen.Model {
             return c;
         }
         // Unsupported properties.
-        bool IBindingList.IsSorted
-        {
+        bool IBindingList.IsSorted {
             get { throw new NotSupportedException(); }
         }
-        ListSortDirection IBindingList.SortDirection
-        {
+        ListSortDirection IBindingList.SortDirection {
             get { throw new NotSupportedException(); }
         }
-        PropertyDescriptor IBindingList.SortProperty
-        {
+        PropertyDescriptor IBindingList.SortProperty {
             get { throw new NotSupportedException(); }
         }
         // Unsupported Methods.
@@ -268,31 +237,31 @@ namespace MeineFinanzen.Model {
         private bool inTxn = false;
         // Implements IEditableObject
         void IEditableObject.BeginEdit() {
-           Console.WriteLine("Start BeginEdit");
+            Console.WriteLine("Start BeginEdit");
             if (!inTxn) {
                 this.backupData = custData;
                 inTxn = true;
-               Console.WriteLine("BeginEdit - " + this.backupData.lastName);
+                Console.WriteLine("BeginEdit - " + this.backupData.lastName);
             }
-           Console.WriteLine("End BeginEdit");
+            Console.WriteLine("End BeginEdit");
         }
         void IEditableObject.CancelEdit() {
-           Console.WriteLine("Start CancelEdit");
+            Console.WriteLine("Start CancelEdit");
             if (inTxn) {
                 this.custData = backupData;
                 inTxn = false;
-               Console.WriteLine("CancelEdit - " + this.custData.lastName);
+                Console.WriteLine("CancelEdit - " + this.custData.lastName);
             }
-           Console.WriteLine("End CancelEdit");
+            Console.WriteLine("End CancelEdit");
         }
         void IEditableObject.EndEdit() {
-           Console.WriteLine("Start EndEdit" + this.custData.id + this.custData.lastName);
+            Console.WriteLine("Start EndEdit" + this.custData.id + this.custData.lastName);
             if (inTxn) {
                 backupData = new CustomerData();
                 inTxn = false;
-               Console.WriteLine("Done EndEdit - " + this.custData.id + this.custData.lastName);
+                Console.WriteLine("Done EndEdit - " + this.custData.id + this.custData.lastName);
             }
-           Console.WriteLine("End EndEdit");
+            Console.WriteLine("End EndEdit");
         }
         public Customer(string ID) : base() {
             this.custData = new CustomerData();
@@ -300,43 +269,32 @@ namespace MeineFinanzen.Model {
             this.custData.firstName = "";
             this.custData.lastName = "";
         }
-        public string ID
-        {
-            get
-            {
+        public string ID {
+            get {
                 return this.custData.id;
             }
         }
-        public string FirstName
-        {
-            get
-            {
+        public string FirstName {
+            get {
                 return this.custData.firstName;
             }
-            set
-            {
+            set {
                 this.custData.firstName = value;
             }
         }
-        public string LastName
-        {
-            get
-            {
+        public string LastName {
+            get {
                 return this.custData.lastName;
             }
-            set
-            {
+            set {
                 this.custData.lastName = value;
             }
         }
-        internal CustomersList Parent
-        {
-            get
-            {
+        internal CustomersList Parent {
+            get {
                 return parent;
             }
-            set
-            {
+            set {
                 parent = value;
             }
         }

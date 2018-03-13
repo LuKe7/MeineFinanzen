@@ -1,10 +1,11 @@
-﻿// 13.02.2018 DgBanken.cs 
+﻿// 03.03.2018 DgBanken.cs 
 // 28.11.2016 KontenSynchronisieren() hier.
 // 08.01.2017 Keine Extra-Zeilenende in Umsätze_....
 // 08.06.2017 depHolen._bank ohn Blanks.
 // 23.11.2017 xml-daten, von hbci4j erstellt, einlesen.
 // 06.12.2017 Anzahl und quantity sind Single nnicht int!!!
 // 28.12.2017 dtWertpapSubsembly hier löschen. Evtl. mehrere WPDepots.
+// 01.03.2018 2018-02-29 in 2018-03-01 umsetzen.
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,38 +15,41 @@ using System.Windows;
 using DataSetAdminNS;
 using MeineFinanzen.Model;
 using MeineFinanzen.Helpers;
+using System.Windows.Data;
+
 namespace MeineFinanzen.ViewModel {
     public class DgBanken {
         public static BankÜbersicht bank = new BankÜbersicht();
         public static BankKonten konto = new BankKonten();
         public static Kontoumsatz umsatz = new Kontoumsatz();
-        public static Wertpapier wertpap = new Wertpapier();
+        public static Kontenaufstellung ko4j = new Kontenaufstellung();
+
         public static List<BankÜbersicht> banken = new List<BankÜbersicht>();
         public static List<BankKonten> konten = new List<BankKonten>();
-        public static List<Kontoumsatz> umsätze = new List<Kontoumsatz>();
-        public static List<Wertpapier> wertpaps = new List<Wertpapier>();
-        public static Kontenaufstellung ko4j = new Kontenaufstellung();
+        public static List<Kontoumsatz> umsätze = new List<Kontoumsatz>();  
         public static List<Kontenaufstellung> ko4js = new List<Kontenaufstellung>();
+        public static CollWertpapiere _wertpapiere = new CollWertpapiere();
+
         public View.HauptFenster mw;
         public string sKontoNr;
         public double Betrag = 0.00;
-        public static Helpers.DepotHolen _depHolen;
+        public static DepotHolen _depHolen;
         //public string path MeineBilder = "";
         public DgBanken() {
             mw = GlobalRef.g_mw;
             //path MeineBilder = GlobalRef.g_Ein.strBilderPfad + @"\";
-            //_depHolen = new DepotHolen();    // In FinKontenÜbersicht Grundwerte setzen und ini depHolen.
             }
-        public void machdgbanken() {            
-            //ConWrLi("---- -x- DgBanken vor Deserialisierung -read-");
+        public void Machdgbanken() {            
+            ConWrLi("---- -x- DgBanken vor Deserialisierung -read-");
             GlobalRef.g_Büb = new BankÜbersicht();
             GlobalRef.g_Büb.DeserializeReadBankÜbersicht(GlobalRef.g_Ein.myDepotPfad + @"\Daten\BankÜbersichtsDaten.xml", out banken);
             mw.dgBankenÜbersicht.ItemsSource = null;
             mw.dgBankenÜbersicht.ItemsSource = banken;
             mw.tabControl1.SelectedItem = mw.tabFinanzübersicht;
             mw.dgBankenÜbersicht.EnableRowVirtualization = false;
-            testBankAnzeige();
-            }
+            CollectionViewSource.GetDefaultView(mw.dgWertpapiere.ItemsSource).Refresh();
+            //testBankAnzeige();
+        }
         public double SummeGeschlFonds() {
             double geschlfonds = 0.00;
             foreach (DataRow dr in DataSetAdmin.dtPortFol.Rows)
@@ -53,7 +57,7 @@ namespace MeineFinanzen.ViewModel {
                     geschlfonds += Convert.ToDouble(dr["WPKurs"].ToString());
             return geschlfonds;
             }
-        public List<Kontoumsatz> KontoumsatzFüllen(string strKtoNr) {
+        internal List<Kontoumsatz> KontoumsatzFüllen(string strKtoNr) {
             umsätze.Clear();
             DataTable dtKonto = new DataTable();
             dtKonto = DataSetAdmin.dtKontoumsätze.DefaultView.ToTable();
@@ -255,6 +259,8 @@ namespace MeineFinanzen.ViewModel {
                         strArray[2] = "2016-02-28";
                     if (strArray[2] == "2017-02-29")
                         strArray[2] = "2017-02-28";
+                    if (strArray[2] == "2018-02-29")
+                        strArray[2] = "2018-03-03";
                     //strArray = strLine.Split(seperator);  
 
                     DataSetAdmin.dtKontoumsätze.Rows.Add(strArray);

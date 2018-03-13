@@ -175,7 +175,7 @@ namespace MeineFinanzen.Model {
         bsHkorr = bsHeight / 1080;
         bsWkorr = bsWidth / 1920;
         string strrr = Environment.CurrentDirectory;            
-        // C :\U sers\LuKe\Documents\Visual Studio 2010\Projects\PortfolioManager\PortfolioManager\bin\DebugXXXXXXZZZ
+        // C :\U sers\LuKe\Documents\Visual Studio 2010\Projects\PortfolioManager\PortfolioManager\bin\DebugXXZZZ
         string[] Zeilen = null;            
         Zeilen = File.ReadAllLines(myDataPfad + @"MyDepot\Settings\Settings-Portfolio.txt");           
         strPortfolioGridFontName = AusTextDatenHolen(Zeilen, "Portfolio", "GridFontName");            

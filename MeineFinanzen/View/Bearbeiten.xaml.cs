@@ -27,7 +27,7 @@ namespace MeineFinanzen.View {
             _nro = nro;                 // Row-Nr in dgWertpapiere
             _nwp = nwp;                 // Nr in Wertpapiere
             InitializeComponent();
-            _wertpap = (Model.CollWertpapiere)mw.Resources["wertpapiere"];
+            _wertpap = (Model.CollWertpapiere)mw.Resources["wertpapiereXXX"];
         }
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             if (_isin == "") {

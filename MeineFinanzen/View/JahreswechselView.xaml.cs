@@ -17,7 +17,7 @@ namespace MeineFinanzen.View {
         public JahreswechselView(HauptFenster mw) {
             ConWrLi("---- -xx- JahreswechselView (HauptFenster mw)");
             _mw = mw;
-            _wertpap = (Model.CollWertpapiere)Resources["wertpapiere"];          
+            _wertpap = (Model.CollWertpapiere)Resources["wertpapiereXXX"];          
             InitializeComponent();
         }
         private void Window_Loaded(object sender, RoutedEventArgs e) {

@@ -1,4 +1,6 @@
 ﻿Model View ViewModel (MVVM)
+In DataSetAdmin HolenAusXml() dataset.xml + .xsd --> dtPortfol.
+In TabWertpapiere ErstelleWertpapiere() dtPortfol --> DgBanken._wertpapiere.
 
 DgBanken.cs
 // ===> Wertpapiere   Bank ---> dtWertpapSubsembly  <<Subsembly.FinTS>>                               
@@ -6,17 +8,29 @@ DgBanken.cs
 // ===> Konto-Umsätze Bank ---> @"Log\Umsätze -" + sKontoNr 
 View's
 	Bearbeiten
-	Einstellungen
+	EinstellungenView
 	EröffnungsView
 	GraphChart
 	GridKlick
+	HauptFenster
 	HistorieGesamt
 	Jahreswechsel
 	Kategorien
 	Konten_Knotenliste_Erstellen
-	KontenAusInternet
-	LoginView
-	HauptFenster
-	Splash
+	KontenAufstellungHBCI4j
+	KontenSynchronisierenHBCI4j
+	KontenSynchronisierenInt
+	KontenSynchronisierenSubsembly
+	LoginView	
+	SplashWindow
 	Zahlungen
 
+wertpapiereXXX:
+  HauptFenster.xaml(28):        <model:CollWertpapiere x:Key="wertpapiereXXX" />
+  HauptFenster.xaml(30):        Source="{StaticResource wertpapiereXXX}" 
+  TabWertpapiere.cs(58):        DgBanken._wertpapiere = (CollWertpapiere)Resources["wertpapiereXXX"];
+  JahreswechselView.xaml.cs(20):_wertpap =				(CollWertpapiere)Resources["wertpapiereXXX"];          
+  Bearbeiten.xaml.cs(30):       _wertpap =				(CollWertpapiere)Resources["wertpapiereXXX"];
+
+  Synchronisieren Internet
+  ========================

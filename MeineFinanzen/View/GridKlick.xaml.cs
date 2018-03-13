@@ -1,5 +1,9 @@
-﻿using System.Windows;
+﻿// 08.03.2018 GridKlick.cs
+// 03.03.2018 DgBanken.wertpap statt -wertpap.  NOCH
+using System.Windows;
 using System.Diagnostics;
+using MeineFinanzen.Helpers;
+using MeineFinanzen.ViewModel;
 namespace MeineFinanzen.View {   
     public partial class GridKlick : Window {
         internal static BearbeitenView bearb = null;
@@ -17,24 +21,24 @@ namespace MeineFinanzen.View {
             nro = nro1;
             nwp = nwp1;
         }
-        private void btSpalten_auswählen_Click(object sender, RoutedEventArgs e) {
+        private void BtSpalten_auswählen_Click(object sender, RoutedEventArgs e) {
         }
-        private void lbExportAlle_Click(object sender, RoutedEventArgs e) {
+        private void LbExportAlle_Click(object sender, RoutedEventArgs e) {
         }
-        private void btBearbeiten_Click(object sender, RoutedEventArgs e) {
+        private void BtBearbeiten_Click(object sender, RoutedEventArgs e) {
             bearb = new BearbeitenView(mw, isi, nro, nwp);
             bearb.Show();
             this.Close();
         }
-        private void btLöschen_Click(object sender, RoutedEventArgs e) {
+        private void BtLöschen_Click(object sender, RoutedEventArgs e) {
         }
-        private void btExport_Click(object sender, RoutedEventArgs e) {
+        private void BtExport_Click(object sender, RoutedEventArgs e) {
         }
-        private void btInternet_Click(object sender, RoutedEventArgs e) {
+        private void BtInternet_Click(object sender, RoutedEventArgs e) {
             if (isi == "") {
                 return;
             }
-            foreach (Model.Wertpapier wp in mw._tabwertpapiere._wertpapiere) {
+            foreach (Model.Wertpapier wp in DgBanken._wertpapiere) { // mw._tabwertpapiere._wertpapiere) {  // NOCH
                 if (isi != wp.ISIN)
                     continue;               
                 Process.Start(wp.URL);

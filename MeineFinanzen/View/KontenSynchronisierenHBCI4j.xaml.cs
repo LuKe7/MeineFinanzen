@@ -1,4 +1,4 @@
-﻿// 28.02.2018 KontenSynchronisierenHBCI4j.cs
+﻿// 07.03.2018 KontenSynchronisierenHBCI4j.cs
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -18,13 +18,14 @@ namespace MeineFinanzen.View {
         public KontenSynchronisierenHBCI4j() {
             InitializeComponent();
         }
-        private void Window_Loaded(Object sender, RoutedEventArgs e) {
+        private void Window_Loaded(Object sender, RoutedEventArgs e) { }
+        public void Ausführen(HauptFenster mw, bool laden) {
             /* Verzeichnis: @"\KursDaten\Depot-aus-hbci4j\"                                                                      
-             * --funktion--            -was-           -wohin-                                                                                
-             * KontoStändeFinCmd       Kontostände     \Kontenstände-sKontoNr-DateTime.csv               
-             * KontoUmsätzeFinCmdStmt  Kontoumsätze    \Umsätze-KontoNr-DateTime.csv     
-             *                                         \logKontoUmsätzeHolen.txt                                                                     
-             * DepotHolen_ausführen    WertpapierDepot dtWertpapHBCI4j (Mit angepasstem hbci4j geholt)   */
+            * --funktion--            -was-           -wohin-                                                                                
+            * KontoStändeFinCmd       Kontostände     \Kontenstände-sKontoNr-DateTime.csv               
+            * KontoUmsätzeFinCmdStmt  Kontoumsätze    \Umsätze-KontoNr-DateTime.csv     
+            *                                         \logKontoUmsätzeHolen.txt                                                                     
+            * DepotHolen_ausführen    WertpapierDepot dtWertpapHBCI4j (Mit angepasstem hbci4j geholt)   */
             string propDir = Helpers.GlobalRef.g_Ein.strHBCI4j; // C:\Users\LuKe/hbci4j-core/hbci4j-core-3.0.10/
             string datenDir = Helpers.GlobalRef.g_Ein.myDepotPfad + @"\KursDaten\Depot-aus-hbci4j\";
             //List<string> props = new List<string>();
