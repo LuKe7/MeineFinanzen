@@ -1,4 +1,4 @@
-﻿<!-- 09.01.2018   -View-   Konten_Knotenliste_Erstellen.xaml -->
+﻿<!-- 15.01.2018   -View-   Konten_Knotenliste_Erstellen.xaml -->
 <Window x:Class="MeineFinanzen.View.Konten_Knotenliste_Erstellen"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:winforms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
@@ -280,10 +280,10 @@
                     Content="Beenden"
                     Width="75"
                     Click="btBeenden_Click" />
-            <Button x:Name="btPathDoppeln"
-                    Content="PathDoppeln"
+            <Button x:Name="btXPathVerwalten"
+                    Content="XPathVerwalten"
                     Width="75"
-                    Click="btPathDoppeln_Click" />
+                    Click="btXPathVerwalten_Click" />
         </StackPanel>
     </Grid>
 </Window>

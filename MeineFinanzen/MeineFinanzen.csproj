@@ -192,6 +192,9 @@
     <Compile Include="View\SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\XPathVerwalten.xaml.cs">
+      <DependentUpon>XPathVerwalten.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Zahlungen.xaml.cs">
       <DependentUpon>Zahlungen.xaml</DependentUpon>
     </Compile>
@@ -263,6 +266,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\SplashWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\XPathVerwalten.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

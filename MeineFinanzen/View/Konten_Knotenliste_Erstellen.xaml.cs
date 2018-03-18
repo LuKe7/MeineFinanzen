@@ -1,5 +1,16 @@
-﻿// 08.03.2018 -Konten_Knotenliste_Erstellen-
+﻿// 18.03.2018 -Konten_Knotenliste_Erstellen-
 // 05.01.2018 List PortFol.
+
+// 15.03.2018 Verwaltung der URLs für die Synchronisation mit Daten aus dem Internet.
+// 1. Aufteilung der Url in bis zu 5 Teile wird in eine Liste/Tabelle gespeichert.
+//    Dabei werden keine doppelten Einträge gemacht.
+// 2. Nutzung dieser Liste zur vereinfachten XPath-Anpassung.
+//    Bei Änderung der Position des aktuellen Kurses im HTML-Dokument, wird XPathNavigator node geändert.
+//    Die Änderung der node wird nun in allen betroffenen URLs vollzogen.
+//    Betroffene URLs sind solche, die den Kurs an gleicher Position haben.
+// In diesem Program anlegen:
+// A: Liste aller URL-Teile.
+// B: In jedem WP zusätzlich 5 Einträge mit Verweis in die URL-Teile-Tabelle.
 using System;
 using System.Windows;
 using System.Data;
@@ -11,9 +22,12 @@ using System.ComponentModel;
 using DataSetAdminNS;
 using MeineFinanzen.Model;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Xml.Serialization;
+using System.IO;
 namespace MeineFinanzen.View {
     public partial class Konten_Knotenliste_Erstellen : Window {
-        public List<PortFol> liPortFol = new List<PortFol>();
+        public static List<PortFol>    liPortFol    = new List<PortFol>();  
         bool cbKeinSharpe_IsChecked = false;
         int nInteractive = 0;
         GetFromXpath getxp;
@@ -43,7 +57,7 @@ namespace MeineFinanzen.View {
         int posx = -1;      //  e.ClientMousePosition.X;
         int posy = -1;
         System.Windows.Forms.HtmlElement _elem1 = null;
-        DataTable dtPortFol = new DataTable();
+        public DataTable dtPortFol = new DataTable();
         PortFol pofo = new PortFol();
         public Konten_Knotenliste_Erstellen() { }
         public Konten_Knotenliste_Erstellen(HauptFenster mw) {
@@ -58,9 +72,33 @@ namespace MeineFinanzen.View {
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             ConWrLi("---- -92- Konten_Knotenliste_Erstellen Window_Loaded");
             dtPortFol = DataSetAdmin.dsHier.Tables["tblPortFol"];       // dtPortFol geholt.
-            liPortFol = dtPortFol.ToCollection<PortFol>();              // liPortFol erstellen.
-            allesReset();       // Mit neu laden.
+            liPortFol = dtPortFol.ToCollection<PortFol>();              // liPortFol erstellen.          
+            allesReset();                                               // Und neu laden.
         }
+        /*    public static List<T> ToList<T>(this DataTable table) where T : class, new() {
+                try {
+                    List<T> list = new List<T>();
+
+                    foreach (var row in table.AsEnumerable()) {
+                        T obj = new T();
+
+                        foreach (var prop in obj.GetType().GetProperties()) {
+                            try {
+                                PropertyInfo propertyInfo = obj.GetType().GetProperty(prop.Name);
+                                propertyInfo.SetValue(obj, Convert.ChangeType(row[prop.Name], propertyInfo.PropertyType), null);
+                            } catch {
+                                continue;
+                            }
+                        }
+
+                        list.Add(obj);
+                    }
+
+                    return list;
+                } catch {
+                    return null;
+                }
+            }  */
         private void NavigiereZu(string address) {
             if (string.IsNullOrEmpty(address))
                 return;
@@ -95,7 +133,7 @@ namespace MeineFinanzen.View {
                     addTextStr("wb1_Document_Click: null");
             }
         }
-        /* //Console.WriteLine("_elem1.InnerText: {0}", _elem1.InnerText);
+        /* Console.WriteLine("_elem1.InnerText: {0}", _elem1.InnerText);
             //string htmlstr = wb1.DocumentText;
             //System.Windows.Forms.HtmlElement _elem7 = wb1.Document.GetElementById("q_price");
             //Console.WriteLine("_elem7.InnerText: {0}", _elem7.InnerText);
@@ -164,7 +202,7 @@ namespace MeineFinanzen.View {
             foreach (PortFol wp in liPortFol) {
                 if (wp.WPISIN.Length != 12)
                     continue;
-                PortFol row = liPortFol.Find(x => x.WPISIN.Contains(wp.WPISIN));
+                //PortFol row = liPortFol.Find(x => x.WPISIN.Contains(wp.WPISIN));
                 _wertpapsynchro.Add(new WertpapSynchro {
                     WPSAnzahl = wp.WPAnzahl,
                     WPSName = wp.WPName,
@@ -212,7 +250,7 @@ namespace MeineFinanzen.View {
             URL_Neu();
         }
         private void btBeenden_Click(object sender, RoutedEventArgs e) {
-            Console.WriteLine("---- Konten_Knoten_Erstellen  btBeenden_Click");
+            // liPortFol-Daten nach DataSetAdmin.dsHier.Tables["tblPortFol"];
             dtPortFol = DataSetAdmin.dsHier.Tables["tblPortFol"];       // nochmal rausziehen, da evtl. geändert.
             string strISIN = "";
             foreach (DataRow dtrow in dtPortFol.Rows) {
@@ -269,22 +307,15 @@ namespace MeineFinanzen.View {
             DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             Close();
         }
-        private void btPathDoppeln_Click(object sender, RoutedEventArgs e) {
-            // Der XPath aus _foundRow_Vor auf andere vergeben. XPath kommt aus: node = doc.GetElementbyId(uniqueId);
-            string xpath = _foundRow_Vor.WPXPathKurs;
-            Console.WriteLine("1: {0,-120} {1,-80} ", _foundRow_Vor.WPUrlText, _foundRow_Vor.WPXPathKurs);
-            foreach (PortFol wp in liPortFol) {
-                if (wp.WPISIN.Length < 12)
-                    continue;
-                if (wp.WPISIN.Equals(_foundRow_Vor.WPISIN))    // dieser nicht
-                    continue;
-                if (_foundRow_Vor.WPUrlText.Length < 31 || wp.WPUrlText.Length < 31)
-                    continue;
-                if (_foundRow_Vor.WPUrlText.Substring(0, 31) == wp.WPUrlText.Substring(0, 31)) {
-                    
-                    Console.WriteLine("2: {0,-120} {1,-80} ", wp.WPUrlText, wp.WPXPathKurs);
-                }
-            }
+ 
+        private void btXPathVerwalten_Click(object sender, RoutedEventArgs e) {
+            // Alle mit diesem Eintrag bekommen von diesen den:
+            //      WPXPathKurs, WPXPathAend, WPXPathZeit oder WPXPathSharp gesetzt.
+            if (_foundRow_Vor.WPISIN == null)
+                return;
+            XPathVerwalten xpv = new XPathVerwalten();
+            xpv.Ausführen(this);
+            xpv.ShowDialog();                     
         }
         private void dgvUrls_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
             //ConWrLi("---- -93- dgvUrls_PreviewMouseDown");
@@ -315,10 +346,9 @@ namespace MeineFinanzen.View {
             if (e.RightButton == MouseButtonState.Pressed) {
                 // NOCH GridKlick gk = new View.GridKlick(this, _curIsin, nro, nwp);
                 // gk.ShowDialog();
-                }
-            else if (e.LeftButton == MouseButtonState.Pressed) {
+            } else if (e.LeftButton == MouseButtonState.Pressed) {
                 txtKurs.Text = ((WertpapSynchro)item).WPSKurs.ToString();
-                }
+            }
             txtKursZeit.Text = ((WertpapSynchro)item).WPSKursZeit.ToString();
             txtÄnderung.Text = ((WertpapSynchro)item).WPSProzentAenderung.ToString();
             txtUrlSharpe.Text = ((WertpapSynchro)item).WPURLSharp;
@@ -326,13 +356,13 @@ namespace MeineFinanzen.View {
             SetzefoundRow();
             if (e.LeftButton == MouseButtonState.Pressed) { }
             NavigiereZu(_curUrl);
-            }
+        }
         private void cbUrlLaden_Click(object sender, RoutedEventArgs e) {
             NavigiereZu(_curUrl);
-            }
+        }
         private void cbUrl_Click(object sender, RoutedEventArgs e) {
             URL_Neu();
-            }
+        }
         private void cbKurs_Click(object sender, RoutedEventArgs e) {
             cbKurs.IsChecked = false;
             if (!boDgvRowAusgewählt || _elem1 == null)
@@ -365,11 +395,10 @@ namespace MeineFinanzen.View {
                 ((WertpapSynchro)(dgRow1.Item)).WPXPathKurs = _xpkurs;
                 ((WertpapSynchro)(dgRow1.Item)).WPSKurs = _kurs;
                 addTextStr("cbKurs neu: " + _kurs.ToString());
-                }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 MessageBox.Show("Fehler in cbKurs_Click(): " + ex);
-                }
             }
+        }
         private void cbKursZeit_Click(object sender, RoutedEventArgs e) {
             cbKursZeit.IsChecked = false;
             if (!boDgvRowAusgewählt || _elem1 == null)
@@ -400,7 +429,7 @@ namespace MeineFinanzen.View {
             ((WertpapSynchro)(dgRow1.Item)).WPSURL = _curUrl;
             ((WertpapSynchro)(dgRow1.Item)).WPXPathZeit = _xpzeit;
             ((WertpapSynchro)(dgRow1.Item)).WPSKursZeit = _zeit;
-            }
+        }
         private void cbProzentAenderung_Click(object sender, RoutedEventArgs e) {
             cbProzentAenderung.IsChecked = false;
             if (!boDgvRowAusgewählt || _elem1 == null)
@@ -428,10 +457,10 @@ namespace MeineFinanzen.View {
             ((WertpapSynchro)(dgRow1.Item)).WPXPathAend = _xpaend;
             ((WertpapSynchro)(dgRow1.Item)).WPSProzentAenderung = _aend;
             addTextStr("cbProzentAenderung neu: " + _aend.ToString());
-            }
+        }
         private void cbUrlSharpeLaden_Click(object sender, RoutedEventArgs e) {
             NavigiereZu(_curUrlSharpe);
-            }
+        }
         private void cbUrlSharpe_Click(object sender, RoutedEventArgs e) {
             cbUrlSharpe.IsChecked = false;
             if (!boDgvRowAusgewählt)
@@ -443,7 +472,7 @@ namespace MeineFinanzen.View {
             txtUrlSharpe.Text = wb1.Url.ToString();
             _curUrlSharpe = txtUrlSharpe.Text.Trim();
             foundRow.WPUrlSharpe = _curUrlSharpe;
-            }
+        }
         private void cbSharpe_Click(object sender, RoutedEventArgs e) {
             cbSharpe.IsChecked = false;
             if (!boDgvRowAusgewählt || _elem1 == null)
@@ -468,18 +497,17 @@ namespace MeineFinanzen.View {
             _foundRow.WPUrlSharpe = _curUrl;                            // neu
             ((WertpapSynchro)(dgRow1.Item)).WPURLSharp = _curUrl;       // neu
             ((WertpapSynchro)(dgRow1.Item)).WPXPathSharp = _xpsharp;
-            ((WertpapSynchro)(dgRow1.Item)).WPSSharpe = _sharpe;            
-            }
+            ((WertpapSynchro)(dgRow1.Item)).WPSSharpe = _sharpe;
+        }
         private void cbKeinSharpe_Click(object sender, RoutedEventArgs e) {
             if (cbKeinSharpe_IsChecked == true) {
                 cbKeinSharpe.IsChecked = false;
-                }
-            else {
+            } else {
                 _foundRow.WPUrlSharpe = "";
                 _foundRow.WPSharpe = 0;
                 cbKeinSharpe_IsChecked = true;
-                }
             }
+        }
         private void URL_Neu() {
             cbUrl.IsChecked = true;
             _curUrl = wb1.Url.ToString();
@@ -488,18 +516,18 @@ namespace MeineFinanzen.View {
             if (foundRow == null)
                 return;
             foundRow.WPUrlText = _curUrl;
-            }
+        }
         public void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
-            }
+        }
         private int FindRowIndex(DataGridRow row) {
             DataGrid dataGrid = ItemsControl.ItemsControlFromItemContainer(row) as DataGrid;
             int index = dataGrid.ItemContainerGenerator.IndexFromContainer(row);
             return index;
-            }
+        }
         private void SetzefoundRow() {
             _foundRow = liPortFol.Find(x => x.WPISIN.Contains(_curIsin));
-            }
+        }
         public DataGridCell GetCell(int row, int column) {
             DataGridRow rowContainer = GetRow(row);
             if (rowContainer != null) {
@@ -508,20 +536,20 @@ namespace MeineFinanzen.View {
                 if (cell == null) {
                     dgvUrls.ScrollIntoView(rowContainer, dgvUrls.Columns[column]);
                     cell = (DataGridCell)presenter.ItemContainerGenerator.ContainerFromIndex(column);
-                    }
-                return cell;
                 }
-            return null;
+                return cell;
             }
+            return null;
+        }
         public DataGridRow GetRow(int index) {
             DataGridRow row = (DataGridRow)dgvUrls.ItemContainerGenerator.ContainerFromIndex(index);
             if (row == null) {
                 dgvUrls.UpdateLayout();
                 dgvUrls.ScrollIntoView(dgvUrls.Items[index]);
                 row = (DataGridRow)dgvUrls.ItemContainerGenerator.ContainerFromIndex(index);
-                }
-            return row;
             }
+            return row;
+        }
         public static T GetVisualChild<T>(Visual parent) where T : Visual {
             T child = default(T);
             int numVisuals = VisualTreeHelper.GetChildrenCount(parent);
@@ -530,19 +558,19 @@ namespace MeineFinanzen.View {
                 child = v as T;
                 if (child == null) {
                     child = GetVisualChild<T>(v);
-                    }
+                }
                 if (child != null) {
                     break;
-                    }
                 }
-            return child;
             }
+            return child;
+        }
         private void addTextStr(string str) {
             if (str.Length > 0)
                 txtBox.AppendText(Environment.NewLine + str);
             txtBox.ScrollToEnd();
             txtBox.InvalidateVisual();
-            }
+        } 
     }
     public class Person : INotifyPropertyChanged {
         // Ereignis
@@ -551,7 +579,7 @@ namespace MeineFinanzen.View {
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e) {
             if (PropertyChanged != null)
                 PropertyChanged(this, e);
-            }
+        }
 
         // Eigenschaften
         private string _Name;
@@ -560,8 +588,8 @@ namespace MeineFinanzen.View {
             set {
                 _Name = value;
                 OnPropertyChanged(new PropertyChangedEventArgs("Name"));
-                }
             }
+        }
 
         private int? _Alter;
         public int? Alter {
@@ -569,8 +597,8 @@ namespace MeineFinanzen.View {
             set {
                 _Alter = value;
                 OnPropertyChanged(new PropertyChangedEventArgs("Alter"));
-                }
             }
+        }
 
         private string _Adresse;
         public string Adresse {
@@ -578,7 +606,7 @@ namespace MeineFinanzen.View {
             set {
                 _Adresse = value;
                 OnPropertyChanged(new PropertyChangedEventArgs("Adresse"));
-                }
             }
         }
     }
+}

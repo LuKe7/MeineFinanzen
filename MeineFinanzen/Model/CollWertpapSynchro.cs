@@ -14,38 +14,6 @@ namespace MeineFinanzen.Model {
     public class CollWertpapSynchro : ObservableCollection<WertpapSynchro>, INotifyCollectionChanged, INotifyPropertyChanged {
         public CollWertpapSynchro() { }
     }
-    public class Person : INotifyPropertyChanged {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(PropertyChangedEventArgs e) {
-            if (PropertyChanged != null)
-                PropertyChanged(this, e);
-        }
-        private string _Name;
-        public string Name {
-            get { return _Name; }
-            set {
-                _Name = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Name"));
-            }
-        }
-        private int? _Alter;
-        public int? Alter {
-            get { return _Alter; }
-            set {
-                _Alter = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Alter"));
-            }
-        }
-        private string _Adresse;
-        public string Adresse {
-            get { return _Adresse; }
-            set {
-                _Adresse = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Adresse"));
-            }
-        }
-    }
     public class WertpapSynchro : INotifyPropertyChanged, IEditableObject {
         public float WPSAnzahl { get; set; }
         public string WPSName { get; set; }
@@ -81,6 +49,39 @@ namespace MeineFinanzen.Model {
         public void BeginEdit() { }
         public void CancelEdit() { }
         public void EndEdit() { }
+    }
+
+    public class Person : INotifyPropertyChanged {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(PropertyChangedEventArgs e) {
+            if (PropertyChanged != null)
+                PropertyChanged(this, e);
+        }
+        private string _Name;
+        public string Name {
+            get { return _Name; }
+            set {
+                _Name = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("Name"));
+            }
+        }
+        private int? _Alter;
+        public int? Alter {
+            get { return _Alter; }
+            set {
+                _Alter = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("Alter"));
+            }
+        }
+        private string _Adresse;
+        public string Adresse {
+            get { return _Adresse; }
+            set {
+                _Adresse = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("Adresse"));
+            }
+        }
     }
     public class CustomersList : CollectionBase, IBindingList {
         private ListChangedEventArgs resetEvent = new ListChangedEventArgs(ListChangedType.Reset, -1);

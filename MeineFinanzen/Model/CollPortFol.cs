@@ -1,11 +1,4 @@
-﻿// 13.03.2018   -Model-  CollPortFol.cs 
-// 13.03.2018 Die Url für KontenSynchronisierenInt NEU.
-//            z.B https://www.finanzen.net/fonds/sharperatio/whc_-_global_discovery
-//            1.WPUrlText1 enthält "https://www." 
-//            2.WPUrlText2 enthält "finanzen.net/"
-//            3.WPUrlText3 enthält "fonds/"
-//            4.WPUrlText4 enthält "sharperatio/"
-//            5.WPUrlText5 enthält "whc - global_discovery"
+﻿// 16.03.2018   -Model-  CollPortFol.cs 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,8 +18,8 @@ namespace MeineFinanzen.Model {
             if (wp != null)
                 return wp.WPDepotID.CompareTo(((PortFol)obj).WPDepotID);
             throw new NotImplementedException();
-            }
         }
+    }
     public class PortFol : INotifyPropertyChanged, IEditableObject {
         public PortFol() { }
         /* public string _name;
@@ -60,7 +53,7 @@ RaisePropertyChanged("Anzahl");
         public float WPSharpe { get; set; }
         public float WPVolatil { get; set; }
         public float WPPerfHeute { get; set; }
-        public string WPUrlText { get; set; }
+        public string WPUrlText { get; set; } 
         public string WPTextVorKurs { get; set; }
         public string WPUrlSharpe { get; set; }
         public string WPTextVorSharpe { get; set; }
@@ -82,17 +75,17 @@ RaisePropertyChanged("Anzahl");
 
             public override string ToString() {
                 return "ItemCode : " + ItemCode + ", Cost : " + Cost;
-                }
             }
+        }
         public event PropertyChangedEventHandler PropertyChanged;
         internal void NotifyPropertyChanged(string propertyName) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
+        }
         protected void RaisePropertyChanged(string name) {
             if (PropertyChanged != null) {
                 PropertyChanged(this, new PropertyChangedEventArgs(name));
-                }
             }
+        }
         public void BeginEdit() { }
         public void CancelEdit() { }
         public void EndEdit() { }
@@ -102,11 +95,11 @@ RaisePropertyChanged("Anzahl");
             try {
                 using (StreamReader _reader = new StreamReader(filename)) {
                     portfol = (List<PortFol>)xmlserializer.Deserialize(_reader);
-                    }
-                } catch (Exception ex) {
-                MessageBox.Show("Fehler: DeserializeReadPortFol -Read- " + ex);
                 }
+            } catch (Exception ex) {
+                MessageBox.Show("Fehler: DeserializeReadPortFol -Read- " + ex);
             }
+        }
         public void SortList(List<PortFol> objListPortFol, int mode) {
             /*  objListPortFol.Add(new PortFol(6, Convert.ToDateTime("06/06/2016"), "Aspirin"));
               objListPortFol.Add(new PortFol(2, Convert.ToDateTime("02/05/2016"), "xxxxxxx"));
@@ -120,23 +113,23 @@ RaisePropertyChanged("Anzahl");
                 objListPortFol.Sort((x, y) => x.WPName.CompareTo(y.WPName));
                 foreach (PortFol o in objListPortFol)
                     Console.WriteLine("WPTypeID = " + o.WPTypeID + " WPStand = " + o.WPStand.ToString() + " WPName = " + o.WPName);
-                }
+            }
             // mode 2
             if (mode == 2) {
                 Console.WriteLine("Sort the list by WPStand descending:");
                 objListPortFol.Sort((x, y) => y.WPStand.CompareTo(x.WPStand));
                 foreach (PortFol o in objListPortFol)
                     Console.WriteLine("WPTypeID = " + o.WPTypeID + " WPStand = " + o.WPStand.ToString() + " WPName = " + o.WPName);
-                }
+            }
             // mode 3
             if (mode == 3) {
                 Console.WriteLine("Sort the list by WPTypeID ascending:");
                 objListPortFol.Sort((x, y) => x.WPTypeID.CompareTo(y.WPTypeID));
                 foreach (PortFol o in objListPortFol)
                     Console.WriteLine("WPTypeID = " + o.WPTypeID + " WPStand = " + o.WPStand.ToString() + " WPName = " + o.WPName);
-                }
             }
         }
+    }
     public static class MyExtensionClass {
         public static List<T> ToCollection<T>(this DataTable dt) {
             List<T> lst = new List<T>();
@@ -160,17 +153,17 @@ RaisePropertyChanged("Anzahl");
                         if (daten.Length != 0) {
                             try {
                                 pc.SetValue(cn, item[pc.Name], null);
-                                } catch (ArgumentException) {
+                            } catch (ArgumentException) {
                                 Console.WriteLine("Fehler PropertyInfo Name : {0,-20} Daten: {1,-20} hex: {2:X,-20} {3}", pc.Name, daten, daten, typ);
                                 //MessageBox.Show("Fehler in MyExtensionClass ToCollection() pc.Name: " + pc.Name + " !!!!" + ex);
                                 pc.SetValue(cn, 0, null);
-                                }
                             }
                         }
                     }
-                lst.Add(cn);
                 }
-            return lst;
+                lst.Add(cn);
             }
+            return lst;
         }
     }
+}

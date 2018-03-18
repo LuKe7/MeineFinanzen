@@ -1,4 +1,4 @@
-﻿// 09.03.2018   -View-  HauptFenster.cs 
+﻿// 14.03.2018   -View-  HauptFenster.cs 
 // Tja, wenn man die Grundlagen nicht lernen will, stolpert man halt ständig beim Ausprobieren.
 // Wenn du eine DataTable an ein DG bindest, spiegelt der DefaultView der DT die Daten wieder. Mit allen Filter- und Sort-Angaben.
 // 16.11.2014 Ser/Deserialize 'Wertpapiere' zu/von Xml-Datei. 
@@ -108,7 +108,7 @@ namespace MeineFinanzen.View {
             _stopwatch.Start();
             _dgBanken = new DgBanken();
             _dgBanken.Machdgbanken();               // Mit DeSerialize banken also Read                   
-            _kosyErstellen = new Konten_Knotenliste_Erstellen(this);
+            
             GlobalRef.g_KoHBCI.Kontenaufstellung_ReadXml();
             //_kontenaufHBCI4j = new KontenaufstellungHBCI4j();
             ConWrLi("---- -4- Nach machdgbanken()");
@@ -426,7 +426,7 @@ namespace MeineFinanzen.View {
                      _myProcess.Refresh();
                  }
              } */
-
+            _kosyErstellen = new Konten_Knotenliste_Erstellen(this);
             _kosyErstellen.ShowDialog();
             NeuStarten();
             }
@@ -1288,7 +1288,7 @@ return;
                     sr.WriteLine(node.Header);
             }
         }  */
-        }
+    }
     public class IconPathConverter : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
             if (value == null || value is string && ((string)value).Length == 0)
