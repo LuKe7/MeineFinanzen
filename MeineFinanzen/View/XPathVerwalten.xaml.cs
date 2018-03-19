@@ -11,12 +11,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 namespace MeineFinanzen.View {
     public partial class XPathVerwalten : Window {
-        public static Wertpap       wertpap =   new Wertpap();
-        public static UrlTeile      urlteil =   new UrlTeile();
-        public static UrlIndex      urlindex =  new UrlIndex();
-        public static List<UrlTeile> liUrlTeile = new List<UrlTeile>();
-        public static List<Teil>    liTeile =   new List<Teil>();       
-        public static List<Wertpap> wertpaps =  new List<Wertpap>();
+        public static Wertpap       wertpap    = new Wertpap();
+        public static UrlTeil       urlteil    = new UrlTeil();
+        public static UrlIndex      urlindex   = new UrlIndex();
+        public static List<UrlTeil> liUrlTeile = new List<UrlTeil>();             
+        public static List<Wertpap> liWertpaps = new List<Wertpap>();
         public DataGridRow dgRow1;
         Konten_Knotenliste_Erstellen _mw = null;
         public XPathVerwalten() {
@@ -38,10 +37,11 @@ namespace MeineFinanzen.View {
             string[] strsplit, strsplit1;
             int n;
             liUrlTeile.Clear();           
-            wertpaps = new List<Wertpap>();
+            liWertpaps = new List<Wertpap>();
             // _mw._foundRow_Vor
+            int nn = -1;
             foreach (WertpapSynchro wps in _mw._wertpapsynchro) {
-                strUrl = wps.WPSURL;  // https://www.finanzen.net/fonds/sharperatio/spsw_-_whc_global_discovery
+                strUrl = wps.WPSURL;                // https://www.finanzen.net/fonds/sharperatio/spsw_-_whc_global_discovery
                 Console.WriteLine("{0,-120} ", strUrl);
                 if (strUrl.Length < 31) {
                     Console.WriteLine("URL-Länge < 31 !!!");
@@ -53,54 +53,54 @@ namespace MeineFinanzen.View {
                     n = SucheInUrl(teil7);
                     if (n >= 0) {
                         Console.Write("Drin:{0} {1} ", n, teil7);
-                    } else {
-                        Console.Write("Add:{0} {1} ", n, teil7);
-                        urlteil = new UrlTeile { Url = teil7 };
+                    } else {                        
+                        urlteil = new UrlTeil { Teil = teil7 };
                         liUrlTeile.Add(urlteil);
                         n = SucheInUrl(teil7);
+                        Console.Write("Add:{0} {1} ", n, teil7);
                     }
-                    urlindex.Index += n.ToString() + "/";
-                }            
-                //liUrlIndices.Add(urlindices);
-                //Console.WriteLine("{0}urlindices: {1}", Environment.NewLine, urlindices.Indices);
-                string teile = null;
-                Teil teil = new Teil { teil = strUrl };
-                liTeile.Add(teil);
-                strsplit1 = strUrl.Split(separators, StringSplitOptions.None);
-                foreach (string teil1 in strsplit1) {                // URL
-                    teilnr = SucheInUrl(teil1);
-                    Console.Write("{0}={1}/", teilnr, teil1);
-                    string str = teilnr + "=" + teil1 + "/";
-                    teil = new Teil {
-                        teil = str
-                    };
-                    teile += str;
-                    liTeile.Add(teil);                
+                    urlindex.Index = n.ToString();
+                }                                    
+                UrlTeil uteile = new UrlTeil();                
+                strsplit1 = strUrl.Split(separators, StringSplitOptions.None);               
+                foreach (string split in strsplit1) {                // URL
+                    teilnr = SucheInUrl(split);
+                    Console.Write("{0}={1}/", teilnr, split);
+                    uteile = new UrlTeil {
+                        Index = (++nn).ToString(),
+                        Teil = split,
+                        Color = "3"
+                    };           
                 }
+                liUrlTeile.Add(uteile);
                 wertpap = new Wertpap {
                     WPISIN = wps.WPSISIN,
                     WPName = wps.WPSName,
                     WPURL = strUrl,
                     WPXPathKurs = wps.WPXPathKurs,
                     WPURLIndices = urlindex.Index,
-                    WPURLTeile = teile,
+                    WPURLTeile = uteile.Teil,
                     WPColor = "1"
                 };
-                wertpaps.Add(wertpap);
-                Console.WriteLine("{0}Add Url wertpaps: {0}", Environment.NewLine, wps.WPSName);
-
+                liWertpaps.Add(wertpap);
+                Console.WriteLine("{0}Add Url wertpaps: {1}", Environment.NewLine, wps.WPSName);
             }
             Console.WriteLine();
-            dgvUrls.ItemsSource = wertpaps;
-            Console.WriteLine("wertpaps an dgvUrls gebunden: {0}", wertpaps.Count);
+            dgvUrls.ItemsSource = liWertpaps;
+            Console.WriteLine("wertpaps an dgvUrls gebunden: {0}", liWertpaps.Count);
             //dgvUrls.EnableRowVirtualization = false;
             dgvUrls.UpdateLayout();
+
+            dgvTeile.ItemsSource = liUrlTeile;
+            Console.WriteLine("liTeile an dgvTeile gebunden: {0}", liUrlTeile.Count);
+            //dgvTeile.EnableRowVirtualization = false;
+            dgvTeile.UpdateLayout();            
         }
         private int SucheInUrl(string str) {
             int n = -1;
-            foreach (UrlTeile ut in liUrlTeile) {
+            foreach (UrlTeil ut in liUrlTeile) {
                 n++;
-                if (ut.Url.Equals(str)) {
+                if (ut.Teil.Equals(str)) {
                     return n;
                 }
             }
@@ -126,11 +126,10 @@ namespace MeineFinanzen.View {
         }
         private void CloseWindow(object sender, System.ComponentModel.CancelEventArgs e) { }
     }
-    public class UrlTeile {
-        public string Url { get; set; }
-    }
-    public class Teil {
-        public string teil { get; set; }
+    public class UrlTeil {
+        public string Index { get; set; }
+        public string Teil { get; set; }
+        public string Color { get; set; }
     }
     public class Wertpap {
         public string WPName { get; set; }

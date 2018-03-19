@@ -25,7 +25,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="30*" />
-            <RowDefinition Height="2*" />
+            <RowDefinition Height="20*" />
         </Grid.RowDefinitions>
         <DataGrid  x:Name="dgvUrls"
                    Grid.Column="0"
@@ -54,12 +54,12 @@
                                     Value="White" />
                         </Trigger>
                         <DataTrigger Binding="{Binding WPColor}"
-                                     Value="2">
+                                     Value="1">
                             <Setter Property="Background"
-                                    Value="LightBlue" />
+                                    Value="White" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding WPColor}"
-                                     Value="1">
+                                     Value="2">
                             <Setter Property="Background"
                                     Value="LightSeaGreen" />
                         </DataTrigger>
@@ -92,6 +92,57 @@
                                     Binding="{Binding WPXPathSharp}" />
                 <DataGridTextColumn Header="WPURLSharp"
                                     Binding="{Binding WPURLSharp}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <DataGrid  x:Name="dgvTeile"
+                   Grid.Column="0"
+                   Grid.Row="1"
+                   Language="DE-de"
+                   RowDetailsVisibilityMode="VisibleWhenSelected"
+                   HorizontalAlignment="Left"
+                   ItemsSource="{Binding}"
+                   AutoGenerateColumns="False"
+                   SelectionUnit="FullRow"
+                   AlternatingRowBackground="#FFBBF0D1"
+                   HorizontalGridLinesBrush="#E600FA00"
+                   VerticalGridLinesBrush="#9B7D7B62"
+                   VerticalAlignment="Top"
+                   PreviewMouseDown="dgvUrls_PreviewMouseDown">
+            <DataGrid.RowStyle>
+                <Style TargetType="{x:Type DataGridRow}">
+                    <Setter Property="FontWeight"
+                            Value="Normal" />
+                    <Setter Property="Foreground"
+                            Value="Black" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected"
+                                 Value="True">
+                            <Setter Property="Background"
+                                    Value="White" />
+                        </Trigger>
+                        <DataTrigger Binding="{Binding Color}"
+                                     Value="1">
+                            <Setter Property="Background"
+                                    Value="White" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Color}"
+                                     Value="2">
+                            <Setter Property="Background"
+                                    Value="LightSeaGreen" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Color}"
+                                     Value="3">
+                            <Setter Property="Background"
+                                    Value="LemonChiffon" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Index"
+                                    Binding="{Binding Index}" />
+                <DataGridTextColumn Header="Teile"
+                                    Binding="{Binding Teil}" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
