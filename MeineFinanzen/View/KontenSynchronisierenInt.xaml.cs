@@ -39,6 +39,8 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using MeineFinanzen.Model;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Windows.Threading;
 namespace MeineFinanzen.View {
     public partial class KontenSynchronisierenInt : Window, INotifyPropertyChanged, IEditableObject {
         public List<PortFol> liPortFol = new List<PortFol>();
@@ -139,7 +141,7 @@ namespace MeineFinanzen.View {
         public Uri uri_url = null;
         public KontenSynchronisierenInt() {
             InitializeComponent();
-            progrBar = new System.Windows.Controls.ProgressBar();
+            //progrBar = new System.Windows.Controls.ProgressBar();
             DataContext = this;
             PrintTxtUnten("start -Statustext-           ");
             getxp = new GetFromXpath();
@@ -440,7 +442,12 @@ namespace MeineFinanzen.View {
             txtUnten.ScrollToEnd();
             txtUnten.InvalidateVisual();
         }
+        protected void DoEvents() {
+            if (System.Windows.Application.Current != null)
+                System.Windows.Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new ThreadStart(delegate { }));
+        }
         internal void myTimer_Elapsed(object sender, ElapsedEventArgs e) {
+            DoEvents();                         
             Progress = stopWatch.ElapsedMilliseconds;
             //ConWrLi("myTimer_Elapsed:" + string.Format("Progress:{0,6}", Progress));
             if (stopWatch.ElapsedMilliseconds > threshold) {

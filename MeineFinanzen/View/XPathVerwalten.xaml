@@ -1,10 +1,9 @@
 ﻿<Window x:Class="MeineFinanzen.View.XPathVerwalten"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:winforms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:view="clr-namespace:MeineFinanzen.View"
-        xmlns:model="clr-namespace:MeineFinanzen.Model"
         mc:Ignorable="d"
         Title="XPathVerwalten"
         WindowState="Maximized"
@@ -14,22 +13,31 @@
         HorizontalAlignment="Left"
         FontFamily="Tahoma"
         Closing="CloseWindow">
-    <Window.Resources>
-        <view:SignedConvert x:Key="SignedConvert" />
-        <view:DateConvert x:Key="dateConvert" />
-    </Window.Resources>
     <Grid x:Name="GridÜberAlles"
           Background="Lavender">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20*" />
+            <ColumnDefinition Width="20*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="3*" />
             <RowDefinition Height="30*" />
-            <RowDefinition Height="20*" />
+            <RowDefinition Height="30*" />
         </Grid.RowDefinitions>
+        <!--Ein Element, mit dem Sie ein Windows Forms-Steuerelement auf einer WPF-Seite hosten können.-->
+        <WindowsFormsHost x:Name="wfh1"
+                          Grid.Column="0"
+                          Grid.Row="1">
+            <!-- Mit winforms: könnt ihr eine Form auswählen und mit 
+                 x: den Namen FieldModifier oder UID festlegen-->
+            <winforms:WebBrowser x:Name="wb1"
+                                 DocumentTitleChanged="wb1_DocumentTitleChanged"
+                                 DocumentCompleted="wb1_DocumentCompleted"                                
+                                 Navigating="wb1_Navigating" />
+        </WindowsFormsHost>
         <DataGrid  x:Name="dgvUrls"
-                   Grid.Column="0"
-                   Grid.Row="0"
+                   Grid.Column="1"
+                   Grid.Row="1"
                    Language="DE-de"
                    RowDetailsVisibilityMode="VisibleWhenSelected"
                    HorizontalAlignment="Left"
@@ -76,10 +84,10 @@
                                     Binding="{Binding WPName}" />
                 <DataGridTextColumn Header="ISIN"
                                     Binding="{Binding WPISIN}" />
+                <DataGridTextColumn Header="Type"
+                                    Binding="{Binding WPType}" />
                 <DataGridTextColumn Header="Indices"
                                     Binding="{Binding WPURLIndices}" />
-                <DataGridTextColumn Header="Teile"
-                                    Binding="{Binding WPURLTeile}" /> 
                 <DataGridTextColumn Header="URL"
                                     Binding="{Binding WPURL}" />
                 <DataGridTextColumn Header="WPXPathKurs"
@@ -95,8 +103,8 @@
             </DataGrid.Columns>
         </DataGrid>
         <DataGrid  x:Name="dgvTeile"
-                   Grid.Column="0"
-                   Grid.Row="1"
+                   Grid.Column="1"
+                   Grid.Row="2"
                    Language="DE-de"
                    RowDetailsVisibilityMode="VisibleWhenSelected"
                    HorizontalAlignment="Left"
@@ -145,5 +153,30 @@
                                     Binding="{Binding Teil}" />
             </DataGrid.Columns>
         </DataGrid>
+        <TextBox Name="txtBox"
+                 Grid.Column="0"
+                 Grid.Row="2"
+                 HorizontalAlignment="Left"
+                 TextWrapping="Wrap"
+                 Text="TxtBox"
+                 VerticalAlignment="Top"
+                 ScrollViewer.CanContentScroll="True"
+                 VerticalScrollBarVisibility="Visible" />
+        <Button Name="BtPrintDom"
+                Content="PrintDom"
+                HorizontalAlignment="Left"
+                Width="75"
+                Margin="0,0,0,5"
+                Click="BtPrintDom_Click" />
+        <Button Content="Button"
+                HorizontalAlignment="Left"
+                Margin="97,0,0,0"
+                VerticalAlignment="Top"
+                Width="75" />
+        <Button Content="Button"
+                HorizontalAlignment="Left"
+                Margin="209,0,0,0"
+                VerticalAlignment="Top"
+                Width="75" />
     </Grid>
 </Window>

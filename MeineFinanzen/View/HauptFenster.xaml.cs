@@ -1,4 +1,4 @@
-﻿// 14.03.2018   -View-  HauptFenster.cs 
+﻿// 30.03.2018   -View-  HauptFenster.cs 
 // Tja, wenn man die Grundlagen nicht lernen will, stolpert man halt ständig beim Ausprobieren.
 // Wenn du eine DataTable an ein DG bindest, spiegelt der DefaultView der DT die Daten wieder. Mit allen Filter- und Sort-Angaben.
 // 16.11.2014 Ser/Deserialize 'Wertpapiere' zu/von Xml-Datei. 
@@ -37,7 +37,8 @@ namespace MeineFinanzen.View {
         internal KontenSynchronisierenHBCI4j _kosyHBCI4j;
         internal VMKontenSynchronisierenSubsembly _kosySubsembly;
         internal KontenSynchronisierenInt _kosyInt;
-        internal Konten_Knotenliste_Erstellen _kosyErstellen;
+        internal KontenSynchronisierenInt2 _kosyInt2;
+        internal Konten_Knotenliste_Erstellen _kosyErstellen;      
         internal StreamWriter swLog;
         internal DateTime _Datum;
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
@@ -434,9 +435,13 @@ namespace MeineFinanzen.View {
             if (_boAktualisieren)
                 return;
             _boAktualisieren = true;
-            _kosyInt = new KontenSynchronisierenInt(); // ===> Wertpapiere Internet ---> dtPortFol Kurs Änd% ÄndDat Sharpe 
-            _kosyInt.Ausführen(this, true);  // Kehrt vorzeitig zurück. Wenn fertig: Rest starten s.u.       
+            _kosyInt = new KontenSynchronisierenInt();  // ===> Wertpapiere Internet ---> dtPortFol Kurs Änd% ÄndDat Sharpe 
+            _kosyInt.Ausführen(this, true);             // Kehrt SOFORT zurück. Wenn fertig: Rest starten s.u.       
             }
+        private void KontenSynchronisierenInt2_Click(object sender, RoutedEventArgs e) {
+            _kosyInt2 = new KontenSynchronisierenInt2();
+            _kosyInt2.Show();             // Nicht Modal, kehrt zurück.
+        }
         private void KontenSynchronisierenInt_Fertig() {
             WertPapStart();
             GlobalRef.g_dgBanken.Machdgbanken();

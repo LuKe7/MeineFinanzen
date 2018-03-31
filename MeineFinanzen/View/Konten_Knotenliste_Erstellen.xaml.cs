@@ -1,4 +1,4 @@
-﻿// 18.03.2018 -Konten_Knotenliste_Erstellen-
+﻿// 21.03.2018 -Konten_Knotenliste_Erstellen-
 // 05.01.2018 List PortFol.
 
 // 15.03.2018 Verwaltung der URLs für die Synchronisation mit Daten aus dem Internet.
@@ -11,23 +11,20 @@
 // In diesem Program anlegen:
 // A: Liste aller URL-Teile.
 // B: In jedem WP zusätzlich 5 Einträge mit Verweis in die URL-Teile-Tabelle.
-using System;
-using System.Windows;
-using System.Data;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.ComponentModel;
 using DataSetAdminNS;
 using MeineFinanzen.Model;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Xml.Serialization;
-using System.IO;
+using System.ComponentModel;
+using System.Data;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Media;
 namespace MeineFinanzen.View {
     public partial class Konten_Knotenliste_Erstellen : Window {
-        public static List<PortFol>    liPortFol    = new List<PortFol>();  
+        public static List<PortFol> liPortFol = new List<PortFol>();
         bool cbKeinSharpe_IsChecked = false;
         int nInteractive = 0;
         GetFromXpath getxp;
@@ -53,7 +50,6 @@ namespace MeineFinanzen.View {
         string _curUrlSharpe = null;
 
         public PortFol _foundRow = new PortFol();
-        public PortFol _foundRow_Vor = new PortFol();
         int posx = -1;      //  e.ClientMousePosition.X;
         int posy = -1;
         System.Windows.Forms.HtmlElement _elem1 = null;
@@ -63,8 +59,8 @@ namespace MeineFinanzen.View {
         public Konten_Knotenliste_Erstellen(HauptFenster mw) {
             ConWrLi("---- -91- Konten_Knotenliste_Erstellen");
             _mw = mw;
-            _wertpapsynchro = (CollWertpapSynchro)mw.Resources["wertpapsynchro"];
             InitializeComponent();
+            _wertpapsynchro = (CollWertpapSynchro)Resources["wertpapsynchro"];
             getxp = new GetFromXpath();
             wb1.ScriptErrorsSuppressed = true;
             wb1.ScrollBarsEnabled = true;
@@ -185,7 +181,6 @@ namespace MeineFinanzen.View {
                 _foundRow.WPUrlSharpe = "";
                 _foundRow.WPSharpe = 0;
             }
-            _foundRow_Vor = _foundRow;
             addTextStr("btOk() _foundRow[\"WPKurs\"]: " + _foundRow.WPKurs.ToString());
             allesReset();
             wb1.Document.Click -= new System.Windows.Forms.HtmlElementEventHandler(wb1_Document_Click);
@@ -195,7 +190,6 @@ namespace MeineFinanzen.View {
         }
         private void allesReset() {
             _foundRow = null;
-            _wertpapsynchro = (CollWertpapSynchro)Resources["wertpapsynchro"];
             if (dgvUrls.Items.Count > 1)
                 _wertpapsynchro.Clear();
             dgvUrls.UpdateLayout();
@@ -307,15 +301,12 @@ namespace MeineFinanzen.View {
             DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             Close();
         }
- 
         private void btXPathVerwalten_Click(object sender, RoutedEventArgs e) {
             // Alle mit diesem Eintrag bekommen von diesen den:
-            //      WPXPathKurs, WPXPathAend, WPXPathZeit oder WPXPathSharp gesetzt.
-            if (_foundRow_Vor.WPISIN == null)
-                return;
+            //      WPXPathKurs, WPXPathAend, WPXPathZeit oder WPXPathSharp gesetzt.           
             XPathVerwalten xpv = new XPathVerwalten();
             xpv.Ausführen(this);
-            xpv.ShowDialog();                     
+            xpv.ShowDialog();
         }
         private void dgvUrls_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
             //ConWrLi("---- -93- dgvUrls_PreviewMouseDown");
@@ -570,7 +561,7 @@ namespace MeineFinanzen.View {
                 txtBox.AppendText(Environment.NewLine + str);
             txtBox.ScrollToEnd();
             txtBox.InvalidateVisual();
-        } 
+        }
     }
     public class Person : INotifyPropertyChanged {
         // Ereignis

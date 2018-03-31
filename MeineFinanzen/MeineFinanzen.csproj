@@ -150,6 +150,9 @@
     <Compile Include="View\EinstellungenView.xaml.cs">
       <DependentUpon>EinstellungenView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\KontenSynchronisierenInt2.xaml.cs">
+      <DependentUpon>KontenSynchronisierenInt2.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\KontenSynchronisierenSubsembly.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -235,6 +238,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\KontenSynchronisierenHBCI4j.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\KontenSynchronisierenInt2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

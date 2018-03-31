@@ -1,18 +1,28 @@
-﻿// 09.11.2016   -Model-  CollWertpapSynchro.cs 
+﻿// 27.11.2016   -Model-  CollWertpapSynchro.cs 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Collections.Specialized;
-using System.Diagnostics;
+using System.Data;
+using System.Linq;
+using System.Reflection;
 namespace MeineFinanzen.Model {
     // ObservableCollection: Stellt eine dynamische Datenauflistung dar,
     // die Benachrichtigungen bereitstellt,
     // wenn Elemente hinzugefügt oder entfernt werden
     // bzw. wenn die gesamte Liste aktualisiert wird.
     // public class ObservableCollection<T> : Collection<T>, INotifyCollectionChanged, INotifyPropertyChanged
-    public class CollWertpapSynchro : ObservableCollection<WertpapSynchro>, INotifyCollectionChanged, INotifyPropertyChanged {
+    public class CollWertpapSynchro : ObservableCollection<WertpapSynchro>, IComparable {
         public CollWertpapSynchro() { }
+        public int CompareTo(object obj) {
+            if (obj == null)
+                return 1;
+            WertpapSynchro wp = obj as WertpapSynchro;
+            if (wp != null)
+                return wp.WPSISIN.CompareTo(((WertpapSynchro)obj).WPSISIN);
+            throw new NotImplementedException();
+        }
     }
     public class WertpapSynchro : INotifyPropertyChanged, IEditableObject {
         public float WPSAnzahl { get; set; }
@@ -36,6 +46,7 @@ namespace MeineFinanzen.Model {
         public string WPXPathZeit { get; set; }
         public string WPXPathSharp { get; set; }
         public string WPURLSharp { get; set; }
+        public string WPSColor { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e) {
             if (PropertyChanged != null)
@@ -49,8 +60,7 @@ namespace MeineFinanzen.Model {
         public void BeginEdit() { }
         public void CancelEdit() { }
         public void EndEdit() { }
-    }
-
+    }   
     public class Person : INotifyPropertyChanged {
         public event PropertyChangedEventHandler PropertyChanged;
 
