@@ -993,6 +993,10 @@ namespace MeineFinanzen.View {
             koauf.dgKontenaufstellung.EnableRowVirtualization = false;
             koauf.Show();
             }
+        private void VorgabeParameterErstellenInt2_Click(object sender, RoutedEventArgs e) {
+            _kosyInt2 = new KontenSynchronisierenInt2();
+            _kosyInt2.VorgabeParameterBearbeiten();             
+        }
         /* private void InnereDatagridBanken3_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e) {
 DataGridRow dgrow = e.Row as DataGridRow;
 Model.Umsatz ums = (Model.Umsatz)dgrow.Data-Context;

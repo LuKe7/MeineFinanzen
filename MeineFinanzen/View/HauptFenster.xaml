@@ -190,6 +190,8 @@
                               Click="KontenSynchronisierenInt_Click" />
                     <MenuItem Header="Konten Synchronisieren Internet-2"
                               Click="KontenSynchronisierenInt2_Click" />
+                    <MenuItem Header="VorgabeParameter erstellen Int-2"
+                              Click="VorgabeParameterErstellenInt2_Click" />
                     <MenuItem Header="Konten Synchronisieren Subsembly"
                               Click="KontenSynchronisierenSubsembly_Click" />
                     <MenuItem Header="Konten Synchronisieren HBCI4j"

@@ -1,4 +1,4 @@
-﻿// 31.03.2018 KontenSynchronisierenInt2.xaml.cs
+﻿// 01.04.2018 KontenSynchronisierenInt2.xaml.cs
 // _wertpapsynchro wird aus dtPortFol gefüllt.
 // LosGehts - NavigiereZu - DocumentCompleted - SearchWebPage - LosGehts usw
 // https://www.finanzen.net/        fonds/      spsw_-_whc_global_discovery
@@ -21,6 +21,7 @@
 using DataSetAdminNS;
 using MeineFinanzen.Model;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
@@ -28,12 +29,17 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Xml;
+using System.Xml.Serialization;
 namespace MeineFinanzen.View {
     public partial class KontenSynchronisierenInt2 : Window, INotifyPropertyChanged, IEditableObject {
         public CollWertpapSynchro _wertpapsynchro = null;
+        public static VorgabeInt2 Vorg = new VorgabeInt2();
+        public static List<VorgabeInt2> liVorg = new List<VorgabeInt2>();
         private double _progress;
         public double Progress {
             get { return _progress; }
@@ -88,7 +94,83 @@ namespace MeineFinanzen.View {
             _wertpapsynchro = (CollWertpapSynchro)Resources["wertpapsynchro"];
             PrintTxtUnten("start -Statustext-           ");
         }
-        private void Window_Loaded(object sender, RoutedEventArgs e) {
+        public void VorgabeParameterBearbeiten() {
+            DateTime dt = DataSetAdmin.HolenAusXml(Helpers.GlobalRef.g_Ein.myDataPfad);
+            if (dt == null) {
+                System.Windows.MessageBox.Show("MeineFinanzen VorgabeParameterBearbeiten.xaml.cs Fehler HolenAusXml() DataSetAdmin");
+                System.Windows.MessageBox.Show("MeineFinanzen Fehler!!  Dateien nicht geladen!!!!");
+                Close();
+            }
+            string VorgabeFile = Helpers.GlobalRef.g_Ein.myDepotPfad +
+                @"\Einstellungen\VorgabeParameterInt2.xml";
+
+            MyXmlData ExampleData = new MyXmlData();
+            XmlWriterSettings settings1 = new XmlWriterSettings();
+            settings1.Indent = true;
+
+            // Create the XmlDocument.
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml("<item><name>wrench</name></item>");
+
+            // Add a price element.
+            XmlElement newElem = doc.CreateElement("price");
+            newElem.InnerText = "10.95";
+            doc.DocumentElement.AppendChild(newElem);
+
+            // Save the document to a file. White space is
+            // preserved (no white space).
+            doc.PreserveWhitespace = true;
+            doc.Save("data.xml");
+
+        }
+
+
+        XmlWriter xmlWriter = XmlWriter.Create("example.xml", settings1);
+            xmlWriter.WriteStartElement(ExampleData);
+
+            VorgabeInt2 vg2 = new VorgabeInt2();
+            if(!File.Exists(VorgabeFile))
+                File.Create(VorgabeFile);                        
+            XmlReaderSettings settings2 = new XmlReaderSettings();
+            settings2.ConformanceLevel = ConformanceLevel.Fragment;
+            settings2.IgnoreWhitespace = true;
+            settings2.IgnoreComments = true;
+            XmlReader xmlReader = XmlReader.Create(VorgabeFile, settings2);
+
+            while (xmlReader.Read()) {
+                if (xmlReader.IsStartElement()) {
+                    if (xmlReader.IsEmptyElement)
+                        Console.WriteLine("<{0}/>", xmlReader.Name);
+                    else {
+                        Console.Write("<{0}> ", xmlReader.Name);
+                        xmlReader.Read(); // Read the start tag.
+                        if (xmlReader.IsStartElement())  // Handle nested elements.
+                            Console.Write("\r\n<{0}>", xmlReader.Name);
+                        Console.WriteLine(xmlReader.ReadString());  //Read the text content of the element.
+                    }
+                }
+                if (xmlReader.HasAttributes) {
+                    Console.WriteLine("Attributes of <" + xmlReader.Name + ">");
+                    while (xmlReader.MoveToNextAttribute()) {
+                        Console.WriteLine(" {0}={1}", xmlReader.Name, xmlReader.Value);
+                    }
+                    // Move the reader back to the element node.
+                    xmlReader.MoveToElement();
+                }
+            }
+
+            while (xmlReader.Read()) {
+                if ((xmlReader.NodeType == XmlNodeType.Element) && (xmlReader.Name == "Artikel")) {
+                    if (xmlReader.HasAttributes) {
+                        xmlReader.GetAttribute("aktueller");
+                        xmlReader.GetAttribute("preis"));
+                        Console.WriteLine("");
+                    }
+                }
+            }           
+            vg2.DeserializeVorgabeInt2(VorgabeFile, out Vorg);
+        }
+        public void Ausführen() {           
             txtOben.Clear();
             wb1.ScriptErrorsSuppressed = true;
             txtOben.FontSize = 10;
@@ -103,6 +185,9 @@ namespace MeineFinanzen.View {
                 System.Windows.MessageBox.Show("MyPortfolio Fehler!!  Dateien nicht geladen!!!!");
                 Close();
             }
+            string VorgabeFile = Helpers.GlobalRef.g_Ein.myDepotPfad + @"\Einstellungen\VorgabeParameterInt2.xml";
+            VorgabeInt2 vg2 = new VorgabeInt2();
+            vg2.DeserializeVorgabeInt2(VorgabeFile, out Vorg);
             PrintTxtUnten(dt.ToString());
             // DataColumn[] keys = new DataColumn[1];
             // keys[0] = DataSetAdmin.dtPortFol.Columns["WPIsin"];
@@ -388,15 +473,5 @@ namespace MeineFinanzen.View {
         }
         private void dgvUrls_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
         }
-    }
-    public class VorgabeInt2 {
-        public string Url1 { get; set; }
-        public string Url2 { get; set; }
-        public string Boxanfang { get; set; }
-        public string Ausschluss1 { get; set; }
-        public string Wert1 { get; set; }
-        public string Wert2 { get; set; }
-        public string Wert3 { get; set; }
-        public string Wert4 { get; set; }
-    }
+    }  
 }

@@ -10,10 +10,9 @@ using System.Windows;
 using System.Xml.Serialization;
 namespace MeineFinanzen.Model {
     public class CollKontenaufstellung : ObservableCollection<CollKontenaufstellung> {
-        public CollKontenaufstellung()        //  : base()
-       {
+        public CollKontenaufstellung() {
             //Add(new CollKontenaufstellung("", "", "", "", "", "", "", "", "", "", "", ""));                      
-            }
+        }
         //LUTZ KEMPS UND MONIKA KEMPS   9432438765   21352240   GiroOnline  DE     1004902 null  EUR     NOLADE21HOL DE85213522400001004902    Girokonto null
         //Name                          CustomerID   BLZ        Type        Ctry   Number  Subnr Curr    BIC         IBAN                      AccTy    Name2
         XmlSerializer xmlserializer = new XmlSerializer(typeof(Kontenaufstellung));
@@ -23,27 +22,27 @@ namespace MeineFinanzen.Model {
                 using (StreamWriter wr = new StreamWriter(filename, false))     // false == nicht append                                                                           
                 {
                     xmlserializer.Serialize(wr, ko);
-                    }
-                } catch (Exception ex) {
-                MessageBox.Show("Fehler: in SerializeWriteKontenaufstellung_HBCI4j() " + ex + Environment.NewLine + filename);
                 }
+            } catch (Exception ex) {
+                MessageBox.Show("Fehler: in SerializeWriteKontenaufstellung_HBCI4j() " + ex + Environment.NewLine + filename);
             }
+        }
         public void DeserializeReadKontenaufstellung_HBCI4j(string filename, out Kontenaufstellung kohbci) {
             // Read
             kohbci = null;
             try {
                 using (StreamReader _reader = new StreamReader(filename)) {
                     kohbci = (Kontenaufstellung)xmlserializer.Deserialize(_reader);
-                    }
-                } catch (Exception ex) {
-                MessageBox.Show("Fehler: DeserializeReadKontenaufstellung_HBCI4j(): " + ex);
                 }
-            AktualisiereKontenaufstellung_HBCI4jDaten(filename, kohbci);
+            } catch (Exception ex) {
+                MessageBox.Show("Fehler: DeserializeReadKontenaufstellung_HBCI4j(): " + ex);
             }
+            AktualisiereKontenaufstellung_HBCI4jDaten(filename, kohbci);
+        }
         private void AktualisiereKontenaufstellung_HBCI4jDaten(string filename, Kontenaufstellung kohbci) {
             FileInfo fiExe = (new FileInfo(Assembly.GetEntryAssembly().Location));
             DateTime dtLeUmw = File.GetLastWriteTime(fiExe.FullName);
-            }
+        }
         public void Kontenaufstellung_ReadXml() {
             string datenDir = Helpers.GlobalRef.g_Ein.myDepotPfad + @"\KursDaten\Depot-aus-hbci4j\";
             // laden aus datenDir
@@ -61,12 +60,12 @@ namespace MeineFinanzen.Model {
                 DeserializeReadKontenaufstellung_HBCI4j(fi.FullName, out DgBanken.ko4j);
                 //Console.WriteLine("{0,-28} {1,-16} {2,10} {3}", ko4j.Name, ko4j.BLZ, ko4j.Number, ko4j.Type);
                 DgBanken.ko4js.Add(DgBanken.ko4j);
-                }   // foreach FileInfo  
-            }
+            }   // foreach FileInfo  
+        }
         public void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
-            }
         }
+    }
     public class Kontenaufstellung {        //: INotifyPropertyChanged, IEditableObject {
         public string Name { get; set; }
         public string Customerid { get; set; }
@@ -93,5 +92,5 @@ namespace MeineFinanzen.Model {
         public void BeginEdit() { }
         public void CancelEdit() { }
         public void EndEdit() { }  */
-        }
     }
+}

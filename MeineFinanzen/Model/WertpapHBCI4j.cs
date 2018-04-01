@@ -47,7 +47,6 @@ namespace MeineFinanzen.Model {
                 System.Windows.MessageBox.Show("Fehler: in SerializeWriteWertpapHBCI4j() " + ex + Environment.NewLine + filename);
                 }
             }
-
         public void DeserializeReadWertpapHBCI4j(string filename, out WertpapHBCI4j wphbci) {   //List<WertpapHBCI4j> wphbci) {
             // Read
             wphbci = null;
