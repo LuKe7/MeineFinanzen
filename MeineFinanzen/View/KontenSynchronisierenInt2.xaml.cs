@@ -104,70 +104,7 @@ namespace MeineFinanzen.View {
             string VorgabeFile = Helpers.GlobalRef.g_Ein.myDepotPfad +
                 @"\Einstellungen\VorgabeParameterInt2.xml";
 
-            MyXmlData ExampleData = new MyXmlData();
-            XmlWriterSettings settings1 = new XmlWriterSettings();
-            settings1.Indent = true;
-
-            // Create the XmlDocument.
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml("<item><name>wrench</name></item>");
-
-            // Add a price element.
-            XmlElement newElem = doc.CreateElement("price");
-            newElem.InnerText = "10.95";
-            doc.DocumentElement.AppendChild(newElem);
-
-            // Save the document to a file. White space is
-            // preserved (no white space).
-            doc.PreserveWhitespace = true;
-            doc.Save("data.xml");
-
-        }
-
-
-        XmlWriter xmlWriter = XmlWriter.Create("example.xml", settings1);
-            xmlWriter.WriteStartElement(ExampleData);
-
             VorgabeInt2 vg2 = new VorgabeInt2();
-            if(!File.Exists(VorgabeFile))
-                File.Create(VorgabeFile);                        
-            XmlReaderSettings settings2 = new XmlReaderSettings();
-            settings2.ConformanceLevel = ConformanceLevel.Fragment;
-            settings2.IgnoreWhitespace = true;
-            settings2.IgnoreComments = true;
-            XmlReader xmlReader = XmlReader.Create(VorgabeFile, settings2);
-
-            while (xmlReader.Read()) {
-                if (xmlReader.IsStartElement()) {
-                    if (xmlReader.IsEmptyElement)
-                        Console.WriteLine("<{0}/>", xmlReader.Name);
-                    else {
-                        Console.Write("<{0}> ", xmlReader.Name);
-                        xmlReader.Read(); // Read the start tag.
-                        if (xmlReader.IsStartElement())  // Handle nested elements.
-                            Console.Write("\r\n<{0}>", xmlReader.Name);
-                        Console.WriteLine(xmlReader.ReadString());  //Read the text content of the element.
-                    }
-                }
-                if (xmlReader.HasAttributes) {
-                    Console.WriteLine("Attributes of <" + xmlReader.Name + ">");
-                    while (xmlReader.MoveToNextAttribute()) {
-                        Console.WriteLine(" {0}={1}", xmlReader.Name, xmlReader.Value);
-                    }
-                    // Move the reader back to the element node.
-                    xmlReader.MoveToElement();
-                }
-            }
-
-            while (xmlReader.Read()) {
-                if ((xmlReader.NodeType == XmlNodeType.Element) && (xmlReader.Name == "Artikel")) {
-                    if (xmlReader.HasAttributes) {
-                        xmlReader.GetAttribute("aktueller");
-                        xmlReader.GetAttribute("preis"));
-                        Console.WriteLine("");
-                    }
-                }
-            }           
             vg2.DeserializeVorgabeInt2(VorgabeFile, out Vorg);
         }
         public void Ausführen() {           
