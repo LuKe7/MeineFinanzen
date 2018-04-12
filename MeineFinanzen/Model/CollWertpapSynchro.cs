@@ -1,4 +1,4 @@
-﻿// 27.11.2016   -Model-  CollWertpapSynchro.cs 
+﻿// 03.04.2018   -Model-  CollWertpapSynchro.cs 
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -47,6 +47,7 @@ namespace MeineFinanzen.Model {
         public string WPXPathSharp { get; set; }
         public string WPURLSharp { get; set; }
         public string WPSColor { get; set; }
+        public string WPSVorgabeInt2 { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e) {
             if (PropertyChanged != null)

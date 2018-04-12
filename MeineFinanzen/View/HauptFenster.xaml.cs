@@ -38,7 +38,8 @@ namespace MeineFinanzen.View {
         internal VMKontenSynchronisierenSubsembly _kosySubsembly;
         internal KontenSynchronisierenInt _kosyInt;
         internal KontenSynchronisierenInt2 _kosyInt2;
-        internal Konten_Knotenliste_Erstellen _kosyErstellen;      
+        internal Konten_Knotenliste_Erstellen _kosyErstellen;
+        internal VorgabeInt2 _vorInt2;    
         internal StreamWriter swLog;
         internal DateTime _Datum;
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
@@ -440,7 +441,7 @@ namespace MeineFinanzen.View {
             }
         private void KontenSynchronisierenInt2_Click(object sender, RoutedEventArgs e) {
             _kosyInt2 = new KontenSynchronisierenInt2();
-            _kosyInt2.Show();             // Nicht Modal, kehrt zurück.
+            _kosyInt2.Ausführen();
         }
         private void KontenSynchronisierenInt_Fertig() {
             WertPapStart();
@@ -610,7 +611,7 @@ namespace MeineFinanzen.View {
                     }
                 cell2 = GetCell(nro, 0);
                 if (e.RightButton == MouseButtonState.Pressed) {
-                    GridKlick gk = new View.GridKlick(this, isi, nro, nwp);
+                    GridKlick gk = new GridKlick(this, isi, nro, nwp);
                     gk.ShowDialog();
                     } else if (e.LeftButton == MouseButtonState.Pressed) {
                     if (_isGroup) {
@@ -994,8 +995,11 @@ namespace MeineFinanzen.View {
             koauf.Show();
             }
         private void VorgabeParameterErstellenInt2_Click(object sender, RoutedEventArgs e) {
-            _kosyInt2 = new KontenSynchronisierenInt2();
-            _kosyInt2.VorgabeParameterBearbeiten();             
+            _vorInt2 = new VorgabeInt2();
+            _vorInt2.Show();             // Nicht Modal, kehrt zurück.
+        }
+        private void InnereDatagrid_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
+
         }
         /* private void InnereDatagridBanken3_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e) {
 DataGridRow dgrow = e.Row as DataGridRow;

@@ -1,4 +1,4 @@
-﻿// 01.04.2018 KontenSynchronisierenInt2.xaml.cs
+﻿// 02.04.2018 KontenSynchronisierenInt2.xaml.cs
 // _wertpapsynchro wird aus dtPortFol gefüllt.
 // LosGehts - NavigiereZu - DocumentCompleted - SearchWebPage - LosGehts usw
 // https://www.finanzen.net/        fonds/      spsw_-_whc_global_discovery
@@ -17,7 +17,7 @@
 // .Wert2       'Kurszeit'
 // .Wert3       'Kurs'
 // .Wert4       ''
-// Im Wertpapier wird also die Nr des VorgabeParameterSatzes und Url3 gespeichert.
+// Im Wertpapier wird also die Nr des VorgabeParameterSatzes und Url 3.Teil gespeichert.
 using DataSetAdminNS;
 using MeineFinanzen.Model;
 using System;
@@ -38,8 +38,8 @@ using System.Xml.Serialization;
 namespace MeineFinanzen.View {
     public partial class KontenSynchronisierenInt2 : Window, INotifyPropertyChanged, IEditableObject {
         public CollWertpapSynchro _wertpapsynchro = null;
-        public static VorgabeInt2 Vorg = new VorgabeInt2();
-        public static List<VorgabeInt2> liVorg = new List<VorgabeInt2>();
+        public static Model.VorgabeInt2 Vorg = new Model.VorgabeInt2();
+        public static List<Model.VorgabeInt2> liVorg = new List<Model.VorgabeInt2>();
         private double _progress;
         public double Progress {
             get { return _progress; }
@@ -93,20 +93,7 @@ namespace MeineFinanzen.View {
             DataContext = this;
             _wertpapsynchro = (CollWertpapSynchro)Resources["wertpapsynchro"];
             PrintTxtUnten("start -Statustext-           ");
-        }
-        public void VorgabeParameterBearbeiten() {
-            DateTime dt = DataSetAdmin.HolenAusXml(Helpers.GlobalRef.g_Ein.myDataPfad);
-            if (dt == null) {
-                System.Windows.MessageBox.Show("MeineFinanzen VorgabeParameterBearbeiten.xaml.cs Fehler HolenAusXml() DataSetAdmin");
-                System.Windows.MessageBox.Show("MeineFinanzen Fehler!!  Dateien nicht geladen!!!!");
-                Close();
-            }
-            string VorgabeFile = Helpers.GlobalRef.g_Ein.myDepotPfad +
-                @"\Einstellungen\VorgabeParameterInt2.xml";
-
-            VorgabeInt2 vg2 = new VorgabeInt2();
-            vg2.DeserializeVorgabeInt2(VorgabeFile, out Vorg);
-        }
+        }     
         public void Ausführen() {           
             txtOben.Clear();
             wb1.ScriptErrorsSuppressed = true;
@@ -121,10 +108,7 @@ namespace MeineFinanzen.View {
                 System.Windows.MessageBox.Show("MeineFinanzen HauptFenster.xaml.cs HauptFenster() Fehler HolenAusXml() DataSetAdmin");
                 System.Windows.MessageBox.Show("MyPortfolio Fehler!!  Dateien nicht geladen!!!!");
                 Close();
-            }
-            string VorgabeFile = Helpers.GlobalRef.g_Ein.myDepotPfad + @"\Einstellungen\VorgabeParameterInt2.xml";
-            VorgabeInt2 vg2 = new VorgabeInt2();
-            vg2.DeserializeVorgabeInt2(VorgabeFile, out Vorg);
+            }       
             PrintTxtUnten(dt.ToString());
             // DataColumn[] keys = new DataColumn[1];
             // keys[0] = DataSetAdmin.dtPortFol.Columns["WPIsin"];
