@@ -831,7 +831,7 @@ namespace MeineFinanzen.View {
                    }
                }
            } */
-        private void DgBankenÜbersicht_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
+        private void DgBankenÜbersicht_SelectionChanged(object sender, SelectionChangedEventArgs e) {  }
         private void DgBankenÜbersicht_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is DataGridCell))
@@ -998,10 +998,7 @@ namespace MeineFinanzen.View {
             _vorInt2 = new VorgabeInt2();
             _vorInt2.Show();             // Nicht Modal, kehrt zurück.
         }
-        private void InnereDatagrid_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
-
-        }
-        /* private void InnereDatagridBanken3_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e) {
+/* private void InnereDatagridBanken3_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e) {
 DataGridRow dgrow = e.Row as DataGridRow;
 Model.Umsatz ums = (Model.Umsatz)dgrow.Data-Context;
 Console.WriteLine("InnereDatagridBanken3_RowDetailsVisibilityChanged:{0} Name1:{1}", ums.Kontonummer, ums.Name1);
