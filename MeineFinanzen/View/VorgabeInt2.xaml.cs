@@ -1,4 +1,4 @@
-﻿// 11.04.2018 VorgabeInt2.xaml.cs
+﻿// 14.04.2018 VorgabeInt2.xaml.cs
 // VorgabeParameter für KontenSynchronisierung über Internet 2.Version(Über Textsuche in Elementen...).
 // Die Wertpapiere suchen sich ihren Parametersatz selbst. Über Url1 + Url2 !!!!
 // Erstellen dieser Sätze, falls sie nicht vorhanden sind.
@@ -38,11 +38,9 @@ using MeineFinanzen.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -51,13 +49,12 @@ namespace MeineFinanzen.View {
     public partial class VorgabeInt2 : Window {
         public string strAnzeige { get; set; }
         public static List<Wertpap> liWertpaps = new List<Wertpap>();
-        public CollWertpapSynchro _wertpapsynchro = null;
+        public CollWertpapSynchroNeu _wertpapsynchroneu = null;
         public static Model.VorgabeInt2 Vorg = new Model.VorgabeInt2();
         public static List<Model.VorgabeInt2> liVorg = new List<Model.VorgabeInt2>();
         DataTable dtPortFol = new DataTable();
         DataTable dtVorgabe = new DataTable();
         DataTable dtVorgabeLoop = new DataTable();
-        WertpapSynchro wpsyn = new WertpapSynchro();
         public System.Windows.Controls.DataGridRow dgRow1 = null;               // Diese Zeile in dgvUrl wurde angeklickt.      
         string _Url1, _Url2, _BoxAnfang, _TxtKurse, _TxtKurszeit, _TxtKursdatum, _TxtKurs; // Diese Zeile in dgvVorgabe wurde angeklickt.
         string _ColHeaderVorgabe;                       // Diese Spalte in dgvVorgabe wurde angeklickt.
@@ -66,7 +63,8 @@ namespace MeineFinanzen.View {
             //txtAnzeige.Multiline = true;
             strAnzeige = "Hier stehen Anweisungen und so ....";
             DataContext = this;
-            _wertpapsynchro = (CollWertpapSynchro)Resources["wertpapsynchro"];
+            // Get a reference to the CollWertpapSynchro collection.
+            _wertpapsynchroneu= (CollWertpapSynchroNeu)Resources["wertpapsynchron"];
             wb1.ScriptErrorsSuppressed = true;
         }
         private void Window_Loaded(object sender, RoutedEventArgs e) {
@@ -87,29 +85,29 @@ namespace MeineFinanzen.View {
                 Close();
             }
             dtPortFol = DataSetAdmin.dsHier.Tables["tblPortFol"];       // dtPortFol geholt.                
-            foreach (DataRow dr in dtPortFol.Rows) {                    // _wertpapsynchro erstellen
+            foreach (DataRow dr in dtPortFol.Rows) {                    // _wertpapsynchroneu erstellen
                 int typeid = (int)dr["WPTypeID"];
                 if (typeid <= 10 || typeid >= 80)
                     continue;
                 if (dr["WPISIN"].ToString().Length != 12)
                     continue;
-                _wertpapsynchro.Add(new WertpapSynchro {
-                    WPSAnzahl = Convert.ToSingle(dr["WPAnzahl"]),
-                    WPSName = dr["WPName"].ToString(),
-                    WPSKursZeit = Convert.ToDateTime(dr["WPStand"]),
-                    WPSISIN = dr["WPISIN"].ToString(),
+                _wertpapsynchroneu.Add(new WertpapSynchroNeu {
+                    WPVAnzahl = Convert.ToSingle(dr["WPAnzahl"]),
+                    WPVName = dr["WPName"].ToString(),
+                    WPVKursZeit = Convert.ToDateTime(dr["WPStand"]),
+                    WPVISIN = dr["WPISIN"].ToString(),
 
-                    WPSURL = dr["WPUrlText"].ToString(),
-                    WPSKurs = Convert.ToDouble(dr["WPKurs"]),
-                    WPSProzentAenderung = Convert.ToDouble(dr["WPProzentAenderung"]),
-                    WPSType = Convert.ToInt32(dr["WPTypeID"]),
-                    WPSSharpe = Convert.ToSingle(dr["WPSharpe"]),
+                    WPVURL = dr["WPUrlText"].ToString(),
+                    WPVKurs = Convert.ToDouble(dr["WPKurs"]),
+                    WPVProzentAenderung = Convert.ToDouble(dr["WPProzentAenderung"]),
+                    WPVType = Convert.ToInt32(dr["WPTypeID"]),
+                    WPVSharpe = Convert.ToSingle(dr["WPSharpe"]),
 
-                    WPURLSharp = dr["WPUrlSharpe"].ToString(),
-                    WPSColor = "1"
+                    WPVURLSharp = dr["WPUrlSharpe"].ToString(),
+                    WPVColor = "1"
                 });
             }
-            dgvUrls.ItemsSource = _wertpapsynchro;
+            dgvUrls.ItemsSource = _wertpapsynchroneu;
             dgvUrls.UpdateLayout();
             dtVorgabe = DataSetAdmin.dsHier.Tables["tblVorgabeInt2"];   // dtVorgabeInt2 geholt. 
             // dtVorgabe.Clear();
@@ -146,8 +144,8 @@ namespace MeineFinanzen.View {
             // ---- In dgvUrl Color auf 'Eingefügt' setzen, wenn kein Vogabesatz vorhanden.
             string[] splitUrls = null;
             string[] splitVorg = null;
-            foreach (WertpapSynchro wps in _wertpapsynchro) {
-                splitUrls = wps.WPSURL.Split('/');
+            foreach (WertpapSynchroNeu wps in _wertpapsynchroneu) {
+                splitUrls = wps.WPVURL.Split('/');
                 bool gef = false;
                 foreach (Model.VorgabeInt2 vg in liVorg) {
                     splitVorg = vg.Url1.Split('/');            // https leer www.finanzen.net leer                      
@@ -159,7 +157,7 @@ namespace MeineFinanzen.View {
                 }
                 if (!gef) {
                     // ---- Und jetzt fehlenden Satz in liVorg erstellen. ----                    
-                    string[] splitUrls2 = wps.WPSURL.Split('/');
+                    string[] splitUrls2 = wps.WPVURL.Split('/');
                     Vorg = new Model.VorgabeInt2 {
                         Url1 = splitUrls2[0] + "//" + splitUrls2[2] + "/",
                         Url2 = splitUrls2[3],
@@ -176,7 +174,7 @@ namespace MeineFinanzen.View {
                 }
             }
             dgvUrls.ItemsSource = null;
-            dgvUrls.ItemsSource = _wertpapsynchro;
+            dgvUrls.ItemsSource = _wertpapsynchroneu;
             dgvUrls.EnableRowVirtualization = false;
             dgvUrls.UpdateLayout();
             dgvVorgabeInt2.ItemsSource = null;
@@ -233,7 +231,7 @@ namespace MeineFinanzen.View {
             DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
         }
         private void dgvUrls_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
-            _ColHeaderVorgabe = null;                   // Muß noch angeklickt werden.
+            _ColHeaderVorgabe = null;                   // Muß noch geklickt werden.
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is System.Windows.Controls.DataGridCell))
                 dep = VisualTreeHelper.GetParent(dep);
@@ -247,30 +245,30 @@ namespace MeineFinanzen.View {
             if (dgRow1 == null)
                 return;
             string strType = dgRow1.Item.GetType().ToString();
-            if (strType != "MeineFinanzen.Model.WertpapSynchro") {
+            if (strType != "MeineFinanzen.Model.WertpapSynchroNeu") {
                 strAnzeige = "Bitte dgvUrl anklicken!";
                 DataContext = null;
                 DataContext = this;
                 return;
             }
             System.Windows.Controls.DataGrid dataGrid = System.Windows.Controls.ItemsControl.ItemsControlFromItemContainer(dgRow1) as System.Windows.Controls.DataGrid;
-            var item = dataGrid.ItemContainerGenerator.ItemFromContainer(dgRow1);
-            Console.WriteLine("cell1.Column.Header: {0}", cell1.Column.Header);
-            //_ColHeader = cell1.Column.Header.ToString();
-            //_curName = ((WertpapSynchro)item).WPSName;
-            //_curIsin = ((WertpapSynchro)item).WPSISIN;
-            //_curUrl = ((WertpapSynchro)item).WPSURL;
-            if (((WertpapSynchro)item).WPSColor == "3") {
+            WertpapSynchroNeu wpsn = (WertpapSynchroNeu)dataGrid.ItemContainerGenerator.ItemFromContainer(dgRow1);
+            Console.WriteLine("cell1.Column.Header: {0} Color: {1}", cell1.Column.Header, wpsn.WPVColor);            
+            if (wpsn.WPVColor == "3") {
                 strAnzeige = "Diese Zeile hat schon eine Vorgabe!";
             } else {
                 strAnzeige = "Für diese Zeile eine Vorgabe bearbeiten oder erstellen.";
             }
-            _Url1 = ((WertpapSynchro)item).WPSURL;
-            if (dgRow1.DetailsVisibility == Visibility.Collapsed) {
-                dgRow1.DetailsVisibility = Visibility.Visible;
-            } else {
+            _Url1 = wpsn.WPVURL;
+            if (dgRow1.DetailsVisibility == Visibility.Visible) {           
                 dgRow1.DetailsVisibility = Visibility.Collapsed;
+                dgRow1.Background = new SolidColorBrush(Colors.BlanchedAlmond);
+                DataContext = null;
+                DataContext = this;
+                return;
             }
+            dgRow1.DetailsVisibility = Visibility.Visible;
+            dgRow1.Background = new SolidColorBrush(Colors.LightYellow);
             DataContext = null;
             DataContext = this;
             //wb1.LoadCompleted += (s, e) =>  {
@@ -278,20 +276,20 @@ namespace MeineFinanzen.View {
             wb1.Navigate(new Uri(_Url1));
             while (wb1.IsBusy || wb1.ReadyState != WebBrowserReadyState.Complete) {
                 DoEvents();
-            }
-            // ---- Zu diesem WP in dgvVorgabe die richtige Zeile farblich hervorheben.
+            }           
             _BoxAnfang = "row quotebox";
             _TxtKurse = "Kurse";
             _TxtKurszeit = "Kurszeit";
             _TxtKursdatum = "Kursdatum";
             _TxtKurs = "Kurs";
-            bool bol = SearchWebPage(_Url1, _BoxAnfang, _TxtKurse, _TxtKurszeit, _TxtKursdatum, _TxtKurs);
-            if (bol)
-                System.Windows.MessageBox.Show("Ok, hat geklappt!!");
-            else
-                System.Windows.MessageBox.Show("Nee, hat nicht geklappt!!");
+            bool bol = SearchWebPage(_Url1, _BoxAnfang, _TxtKurse, _TxtKurszeit, _TxtKursdatum, _TxtKurs, wpsn);
+            if (bol) {
+                AddTextStr("Ok, hat geklappt.");
+            } else
+                AddTextStr("!!!! Nee, hat nicht geklappt!!!!");
         }
-        private bool SearchWebPage(string url1, string boxanfang, string txtkurse, string txtkurszeit, string txtkursdatum, string txtkurs) {
+        private bool SearchWebPage(string url1, string boxanfang, string txtkurse, string txtkurszeit, string txtkursdatum,
+            string txtkurs, WertpapSynchroNeu wpsneu) {
             if (wb1.Document == null)
                 return false;
             String pattBetrag = @"(\d+)([,])(\d+)(\d+)";                                // 9,99
@@ -299,9 +297,8 @@ namespace MeineFinanzen.View {
             String pattZeit = @"(\d+)(\d+)([:])(\d+)(\d+)([:])(\d+)(\d+)";              // 99:99:99
             HtmlElementCollection elemColl = null;
             HtmlDocument doc = wb1.Document;
-            if (doc != null) {
-                AddTextStr("--- Start ---" + wb1.Document.Url);
-            }
+            if (doc != null)
+                AddTextStr("--- Start ---" + wb1.Document.Url);            
             elemColl = doc.GetElementsByTagName("body");
             string strInnerText = "";
             string strKursdatum = "";
@@ -311,7 +308,7 @@ namespace MeineFinanzen.View {
             string[] strarr1;
             string[] strarr2;
             string[] strarr3;
-            string strf = "";
+            string strf = "";           
             foreach (HtmlElement elem in elemColl) {                    // Ein Element (Node)
                 if (!elem.InnerHtml.Contains(boxanfang))
                     continue;
@@ -319,10 +316,7 @@ namespace MeineFinanzen.View {
                 strInnerText = elem.InnerText;                               // Beginn Box 'row quotebox'
                 strInnerText = Regex.Replace(strInnerText, "[\x00-\x1F]+", "/");
                 string[] strZeilenTeile = strInnerText.Split('/');
-                Console.Write("---- {0,2} {1,5} {2,-80} BoxAnf:{3}", elem.Children.Count, elem.InnerHtml.Length, wb1.Document.Url, boxanfang);
-                if (url1.Contains("deka")) {
-                    //SetDataRowColor("1");
-                }
+                Console.Write("---- {0,2} {1,5} {2,-80} BoxAnf:{3}", elem.Children.Count, elem.InnerHtml.Length, wb1.Document.Url, boxanfang);                
                 int nn = 0;
                 strKursdatum = "";
                 strKurszeit = "";
@@ -364,16 +358,16 @@ namespace MeineFinanzen.View {
                     return false;
                 string[] strarrx = strKurs.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
                 if (strKurs.Length > 0) {
-                    wpsyn.WPSKurs = Convert.ToDouble(strarrx[0]);
+                    wpsneu.WPVKursNeu = Convert.ToDouble(strarrx[0]);
                     // 128,96 2,33 1,84
                 }
                 if (strarrx.Length > 1)
-                    wpsyn.WPSProzentAenderung = Convert.ToDouble(strarrx[1]);
+                    wpsneu.WPVProzentAenderung = Convert.ToDouble(strarrx[1]);
                 if (strarrx.Length > 2)
-                    wpsyn.WPSProzentAenderung = Convert.ToDouble(strarrx[2]);
+                    wpsneu.WPVProzentAenderung = Convert.ToDouble(strarrx[2]);
                 strarrx = strKursdatum.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
-                wpsyn.WPSKursZeit = Convert.ToDateTime(strarrx[0]);
-                Console.WriteLine("§{0,7} {1} {2}", wpsyn.WPSKurs, wpsyn.WPSProzentAenderung, wpsyn.WPSKursZeit);
+                wpsneu.WPVKursZeit = Convert.ToDateTime(strarrx[0]);
+                Console.WriteLine("§{0,7} {1} {2}", wpsneu.WPVKursNeu, wpsneu.WPVProzentAenderung, wpsneu.WPVKursZeit);
                 //Progress++;
                 return true;
             }                   // foreach (HtmlElement elem in elemColl)
@@ -432,9 +426,11 @@ namespace MeineFinanzen.View {
             if (System.Windows.Application.Current != null)
                 System.Windows.Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new ThreadStart(delegate { }));
         }
-        private void AddTextStr(string str) {
-            txtAnzeige.Text += Environment.NewLine + str;
+        private void AddTextStr(string str) {          
+            txtAnzeige.AppendText(Environment.NewLine + str);
+            txtAnzeige.ScrollToEnd();
             txtAnzeige.InvalidateVisual();
+            DoEvents();
         }
     }
 }

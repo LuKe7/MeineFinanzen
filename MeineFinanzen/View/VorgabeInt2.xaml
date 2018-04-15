@@ -17,44 +17,18 @@
         FontFamily="Tahoma"
         Closing="Close_Window">
     <Window.Resources>
-        <model:CollWertpapSynchro x:Key="wertpapsynchro" />
+        <model:CollWertpapSynchroNeu x:Key="wertpapsynchron" />
         <CollectionViewSource x:Key="cvsWertpapSynchro"
-                              Source="{StaticResource wertpapsynchro}">
+                              Source="{StaticResource wertpapsynchron}">
             <CollectionViewSource.SortDescriptions>
-                <scm:SortDescription PropertyName="WPSURL" />
+                <scm:SortDescription PropertyName="WPVURL" />
             </CollectionViewSource.SortDescriptions>
             <CollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="WPSURL" />
+                <PropertyGroupDescription PropertyName="WPVURL" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
         <local:SignedConvert x:Key="SignedConvert" />
         <local:DateConvert x:Key="dateConvert" />
-        <DataTemplate x:Key="UrlsDetail">
-            <Border BorderThickness="1"
-                    Background="BlanchedAlmond"
-                    Padding="10">
-                <StackPanel Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontSize="12"
-                                   Text="Name: "
-                                   VerticalAlignment="Center" />
-                        <TextBlock FontSize="16"
-                                   Foreground="MidnightBlue"
-                                   Text="{Binding WPSName}"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontSize="12"
-                                   Text="ISIN: "
-                                   VerticalAlignment="Center" />
-                        <TextBlock FontSize="16"
-                                   Foreground="MidnightBlue"
-                                   Text="{Binding WPSISIN}"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-        </DataTemplate>
     </Window.Resources>
     <Grid x:Name="Grid1">
         <Grid.ColumnDefinitions>
@@ -63,13 +37,11 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="3*" />
-            <RowDefinition Height="4*" />
+            <RowDefinition Height="3*" />
             <RowDefinition Height="30*" />
-            <RowDefinition Height="4*" />
-            <RowDefinition Height="12*" />
-            <RowDefinition Height="12*" />
-            <RowDefinition Height="0*" />
-            <RowDefinition Height="0*" />
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="8*" />
+            <RowDefinition Height="10*" />
         </Grid.RowDefinitions>
         <!--Ein Element, mit dem Sie ein Windows Forms-Steuerelement auf einer WPF-Seite hosten können.-->
         <WindowsFormsHost x:Name="wfh1"
@@ -112,7 +84,7 @@
         <Label Content="WertPapiere"
                Grid.Column="1"
                Grid.Row="1"
-               FontSize="18"
+               FontSize="15"
                FontWeight="Bold"
                HorizontalAlignment="Center" />
         <DataGrid x:Name="dgvUrls"
@@ -121,7 +93,6 @@
                   Language="DE-de"
                   SelectionMode="Extended"
                   RowDetailsVisibilityMode="VisibleWhenSelected"
-                  RowDetailsTemplate="{StaticResource UrlsDetail}"
                   HorizontalAlignment="Left"
                   ItemsSource="{Binding Source={StaticResource cvsWertpapSynchro}}"
                   AutoGenerateColumns="False"
@@ -129,6 +100,41 @@
                   HorizontalGridLinesBrush="#E600FA00"
                   VerticalGridLinesBrush="#9B7D7B62"
                   PreviewMouseDown="dgvUrls_PreviewMouseDown">
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <Border BorderThickness="1"
+                            Background="BlanchedAlmond"
+                            VerticalAlignment="Top"
+                            Padding="8">
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Name: " />
+                                <TextBlock Text="{Binding WPVName}" />
+                                <TextBlock Text=" ISIN: " />
+                                <TextBlock Text="{Binding WPVISIN}" />
+                                <TextBlock Text=" KursAlt: " />
+                                <TextBlock Text="{Binding WPVKurs}" />
+                                <TextBlock Text=" : " />
+                                <TextBlock Text="{Binding WPVKursNeu}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="KursZeit: " />
+                                <TextBlock Text="{Binding WPVKursZeit}" />
+                                <TextBlock Text=" : " />
+                                <TextBlock Text="{Binding WPVKursZeitNeu}" />
+                                <TextBlock Text=" ProzentAenderung: " />
+                                <TextBlock Text="{Binding WPVProzentAenderung}" />
+                                <TextBlock Text=" : " />
+                                <TextBlock Text="{Binding WPVProzentAenderungNeu}" />
+                                <TextBlock Text="    Sharpe: " />
+                                <TextBlock Text="{Binding WPVSharpe}" />
+                                <TextBlock Text=" : " />
+                                <TextBlock Text="{Binding WPVSharpeNeu}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
                     <Setter Property="FontWeight"
@@ -141,27 +147,27 @@
                             <Setter Property="Background"
                                     Value="White" />
                         </Trigger>
-                        <DataTrigger Binding="{Binding WPSColor}"
+                        <DataTrigger Binding="{Binding WPVColor}"
                                      Value="1">
                             <Setter Property="Background"
                                     Value="White" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding WPSColor}"
+                        <DataTrigger Binding="{Binding WPVColor}"
                                      Value="2">
                             <Setter Property="Background"
                                     Value="LightSeaGreen" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding WPSColor}"
+                        <DataTrigger Binding="{Binding WPVColor}"
                                      Value="3">
                             <Setter Property="Background"
                                     Value="LemonChiffon" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding WPSColor}"
+                        <DataTrigger Binding="{Binding WPVColor}"
                                      Value="4">
                             <Setter Property="Background"
                                     Value="AliceBlue" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding WPSColor}"
+                        <DataTrigger Binding="{Binding WPVColor}"
                                      Value="5">
                             <Setter Property="Background"
                                     Value="Beige" />
@@ -171,13 +177,13 @@
             </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name"
-                                    Binding="{Binding WPSName}" />
+                                    Binding="{Binding WPVName}" />
                 <DataGridTextColumn Header="ISIN"
-                                    Binding="{Binding WPSISIN}" />
+                                    Binding="{Binding WPVISIN}" />
                 <DataGridTextColumn Header="Type"
-                                    Binding="{Binding WPSType}" />
+                                    Binding="{Binding WPVType}" />
                 <DataGridTextColumn Header="URL"
-                                    Binding="{Binding WPSURL}" />
+                                    Binding="{Binding WPVURL}" />
             </DataGrid.Columns>
             <DataGrid.GroupStyle>
                 <!-- Style for groups at top level. -->
@@ -221,7 +227,7 @@
                    Grid.Column="1"
                    Grid.Row="3"
                    FontWeight="Bold"
-                   FontSize="18"
+                   FontSize="15"
                    HorizontalAlignment="Center" />
         <DataGrid x:Name="dgvVorgabeInt2"
                   Grid.Column="1"
@@ -288,19 +294,11 @@
                                     Binding="{Binding Vg2Color}" />
             </DataGrid.Columns>
         </DataGrid>
-        <StackPanel VerticalAlignment="Top"
-                    Grid.Column="1"
-                    Grid.Row="5"
-                    HorizontalAlignment="Left">
-            <ScrollViewer HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch" >
-                <TextBlock Name="txtAnzeige"                        
-                           Background="#f0f0f0"
-                           ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                           ScrollViewer.VerticalScrollBarVisibility="Visible"
-                           IsManipulationEnabled="True"     >                
-                          AnzeigeBereich.</TextBlock>
-            </ScrollViewer>
-        </StackPanel>
+        <TextBox x:Name="txtAnzeige"
+                 Grid.Column="1"
+                 Grid.Row="5"
+                 Background="#f0f0f0"
+                 VerticalScrollBarVisibility="Visible"
+                 HorizontalScrollBarVisibility="Visible"></TextBox>
     </Grid>
 </Window>

@@ -133,7 +133,8 @@
     <Compile Include="Model\CollKontoumsätze.cs" />
     <Compile Include="Model\CollPortFol.cs" />
     <Compile Include="Model\CollUser.cs" />
-    <Compile Include="Model\VorgabeInt2.cs" />
+    <Compile Include="Model\CollVorgabeInt2.cs" />
+    <Compile Include="Model\CollWertpapSynchroNeu.cs" />
     <Compile Include="Model\WertpapHBCI4j.cs" />
     <Compile Include="Model\CollWertpapSynchro.cs" />
     <Compile Include="Model\CollZahlungen.cs" />
