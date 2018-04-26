@@ -1,0 +1,436 @@
+﻿<Window x:Class="MeineFinanzen.View.URLsVerwalten"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:winforms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:local="clr-namespace:MeineFinanzen.View"
+        xmlns:model="clr-namespace:MeineFinanzen.Model"
+        mc:Ignorable="d"
+        Title="URLsVerwalten"
+        WindowState="Maximized"
+        Loaded="Window_Loaded"
+        xml:lang="de-DE"
+        FontSize="13"
+        HorizontalAlignment="Left"
+        FontFamily="Tahoma"
+        Closing="Close_Window">
+    <Window.Resources>
+        <local:OCBoxanfang x:Key="myBoxanfang" />
+        <local:OCAusschluss1 x:Key="myAusschluss1" />
+        <local:OCWert1 x:Key="myWert1" />
+        <local:CompleteConverter x:Key="completeConverter" />
+        <model:CollWertpapSynchroNeu x:Key="wertpapsynchron" />
+        <CollectionViewSource x:Key="cvsWertpapSynchro"
+                              Source="{StaticResource wertpapsynchron}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="WPVURL" />
+            </CollectionViewSource.SortDescriptions>
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="WPVURL" />
+                <PropertyGroupDescription PropertyName="WPVColor" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+        <model:CollURLsVerwalten x:Key="collvorgabeInt2" />
+        <CollectionViewSource x:Key="cvsCollVorgabeInt2"
+                              Source="{StaticResource collvorgabeInt2}" />
+        <local:SignedConvert x:Key="SignedConvert" />
+        <local:DateConvert x:Key="dateConvert" />
+    </Window.Resources>
+    <Grid x:Name="GridBeide">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10*" />
+            <ColumnDefinition MinWidth="5"
+                              Width="5" />
+            <ColumnDefinition Width="10*" />
+        </Grid.ColumnDefinitions>
+        <GridSplitter ShowsPreview="True"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Stretch"
+                      Grid.Column="1"
+                      ResizeBehavior="PreviousAndNext"
+                      Width="5"
+                      Background="LightBlue" />
+        <Grid x:Name="GridLinks"
+              Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="30*" />
+            </Grid.RowDefinitions>
+            
+            <!--Ein Element, mit dem Sie ein Windows Forms-Steuerelement auf einer WPF-Seite hosten können.-->
+            <WindowsFormsHost x:Name="wfh1"
+                              Grid.Row="1">
+                <!-- Mit winforms: könnt ihr eine Form auswählen und mit 
+                 x: den Namen FieldModifier oder UID festlegen-->
+                <winforms:WebBrowser x:Name="wb1"
+                                     DocumentTitleChanged="wb1_DocumentTitleChanged"
+                                     DocumentCompleted="wb1_DocumentCompleted"
+                                     Navigating="wb1_Navigating" />
+            </WindowsFormsHost>
+        </Grid>
+        <Grid x:Name="GridRechts"
+              Grid.Column="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="6*" />
+                <RowDefinition Height="30*" />
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="80" />
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="10*" />
+            </Grid.RowDefinitions>
+            <Menu DockPanel.Dock="Top"
+                  Grid.Column="0"
+                  Grid.Row="0"
+                  x:Name="mnuMenu1"
+                  FontSize="14">
+                <MenuItem Header="_WebBrowser">
+                    <MenuItem Header="_Search"
+                              Click="searchButton_Click"></MenuItem> />
+                    <MenuItem Header="_GoHome"
+                              Click="homeButton_Click" />
+                    <Separator />
+                    <MenuItem Header="_Speichern" />
+                    <MenuItem Header="Speichern _unter ..." />
+                    <Separator />
+                    <MenuItem Header="_Senden an">
+                        <MenuItem Header="_Mail" />
+                        <MenuItem Header="_Desktop" />
+                    </MenuItem>
+                    <MenuItem Header="_Beenden"
+                              Click="_Beenden_Click" />
+                </MenuItem>
+                <MenuItem Header="_Extras">
+                    <MenuItem Header="_Abmelden"
+                              Click="Abmelden_Click" />
+                </MenuItem>
+                <MenuItem Header="_Hilfe" />
+            </Menu>
+            <Menu DockPanel.Dock="Top"
+                  Grid.Row="0"
+                  x:Name="mnuMenu2"
+                  FontSize="14">
+                <MenuItem Header="_Datei">
+                    <MenuItem Header="_Neu" />
+                    <MenuItem Header="_Öffnen" />
+                    <Separator />
+                    <MenuItem Header="_Speichern" />
+                    <MenuItem Header="Speichern _unter ..." />
+                    <Separator />
+                    <MenuItem Header="_Senden an">
+                        <MenuItem Header="_Mail" />
+                        <MenuItem Header="_Desktop" />
+                    </MenuItem>
+                    <MenuItem Header="_Beenden"
+                              Click="_Beenden_Click" />
+                </MenuItem>
+                <MenuItem Header="_Extras">
+                    <MenuItem Header="_Abmelden"
+                              Click="Abmelden_Click" />
+                </MenuItem>
+                <MenuItem Header="_Hilfe" />
+            </Menu>
+            <TextBox Name="TxtMeldung"
+                     Grid.Column="1"
+                     Grid.Row="1"
+                     TextWrapping="Wrap"
+                     Background="LightGreen"
+                     Foreground="DarkBlue"
+                     VerticalScrollBarVisibility="Visible"
+                     HorizontalScrollBarVisibility="Visible"></TextBox>
+            <DataGrid x:Name="dgvUrls"
+                      Grid.Column="1"
+                      Grid.Row="2"
+                      Language="DE-de"
+                      SelectionMode="Extended"
+                      RowDetailsVisibilityMode="Collapsed"
+                      HorizontalAlignment="Left"
+                      ItemsSource="{Binding Source={StaticResource cvsWertpapSynchro}}"
+                      AutoGenerateColumns="False"
+                      SelectionUnit="FullRow"
+                      HorizontalGridLinesBrush="Black"
+                      VerticalGridLinesBrush="Black"
+                      PreviewMouseDown="dgvUrls_PreviewMouseDown">
+                <DataGrid.ContextMenu>
+                    <ContextMenu Name="DatagridContextMenu"
+                                 Closed="myMenuButton_ContextMenu_Closed">
+                        <MenuItem Header="URL neu"
+                                  Click="dgvUrls_Neu_Click" />
+                        <MenuItem Header="URL bearbeiten"
+                                  Click="dgvUrls_bearbeiten_Click" />
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+                <DataGrid.RowDetailsTemplate>
+                    <DataTemplate>
+                        <Border BorderThickness="1"
+                                Background="LightGreen"
+                                VerticalAlignment="Top"
+                                Padding="8">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Grid.Column="1"
+                                               Grid.Row="7"
+                                               TextWrapping="Wrap">
+                                <Run Foreground="DarkBlue"
+                                        Text="{Binding WPVName}"></Run>
+                                <Run Foreground="DarkBlue"
+                                        Text="{Binding WPVISIN}"></Run>
+                                    
+                                <Run Text="{Binding WPVKurs, ConverterCulture=de-DE, StringFormat=\{0:###\,##0.00 \}}"></Run>                                    
+                                <Run FontWeight="Bold"
+                                        Text="{Binding WPVKursNeu, ConverterCulture=de-DE, StringFormat=\{0:###\,##0.00 \}}"></Run>
+                                    
+                                <LineBreak />                                                                    
+                                    
+                                <Run Text="{Binding WPVKursZeit, StringFormat=\{0:dd/MM/yy HHmm\}}"
+                                        Foreground="{Binding WPVKursZeit, Converter={StaticResource dateConvert}}"></Run>                                    
+                                <Run FontWeight="Bold"
+                                        Text="{Binding WPVKursZeitNeu, StringFormat=\{0:dd/MM/yy HHmm\}}"
+                                        Foreground="{Binding WPVKursZeitNeu, Converter={StaticResource dateConvert}}"></Run>
+                                    
+                                %Ä:
+                                <Run Text="{Binding WPVProzentAenderung, ConverterCulture=de-DE, StringFormat=\{0:###\,##0.00 \}}"></Run>                                
+                                <Run FontWeight="Bold"
+                                        Text="{Binding WPVProzentAenderungNeu, ConverterCulture=de-DE, StringFormat=\{0:###\,##0.00 \}}"
+                                        Foreground="{Binding WPVProzentAenderungNeu, Converter={StaticResource SignedConvert}}"></Run>
+                                    
+                                Sharpe:
+                                <Run Text="{Binding WPVSharpe, ConverterCulture=de-DE, StringFormat=\{0:###\,##0.00 \}}"></Run>                                     
+                                <Run FontWeight="Bold"
+                                        Text="{Binding WPVSharpeNeu, ConverterCulture=de-DE, StringFormat=\{0:###\,##0.00 \}}"
+                                        Foreground="{Binding WPVSharpeNeu, Converter={StaticResource SignedConvert}}"></Run></TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </DataGrid.RowDetailsTemplate>
+                <DataGrid.RowStyle>
+                    <Style TargetType="{x:Type DataGridRow}">
+                        <Setter Property="FontWeight"
+                                Value="Normal" />
+                        <Setter Property="Foreground"
+                                Value="Black" />
+                        <Setter Property="Background"
+                                Value="White" />
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected"
+                                     Value="True">
+                                <Setter Property="Background"
+                                        Value="White" />
+                            </Trigger>
+                            <DataTrigger Binding="{Binding WPVColor}"
+                                         Value="1">
+                                <Setter Property="Background"
+                                        Value="White" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding WPVColor}"
+                                         Value="2">
+                                <Setter Property="Background"
+                                        Value="LightSeaGreen" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding WPVColor}"
+                                         Value="3">
+                                <Setter Property="Foreground"
+                                        Value="Red" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding WPVColor}"
+                                         Value="4">
+                                <Setter Property="Background"
+                                        Value="AliceBlue" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding WPVColor}"
+                                         Value="5">
+                                <Setter Property="Background"
+                                        Value="Beige" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name"
+                                        Binding="{Binding WPVName}" />
+                    <DataGridTextColumn Header="ISIN"
+                                        Binding="{Binding WPVISIN}" />
+                    <DataGridTextColumn Header="Type"
+                                        Binding="{Binding WPVType}" />
+                    <DataGridTextColumn Header="URL"
+                                        Binding="{Binding WPVURL}" />
+                    <DataGridTextColumn Header="Color"
+                                        Binding="{Binding WPVColor}" />
+                </DataGrid.Columns>
+                <DataGrid.GroupStyle>
+                    <!-- Style for groups at top level. -->
+                    <GroupStyle>
+                        <GroupStyle.ContainerStyle>
+                            <Style TargetType="{x:Type GroupItem}">
+                                <Setter Property="Margin"
+                                        Value="0,0,0,5" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type GroupItem}">
+                                            <Expander IsExpanded="True"
+                                                      BorderBrush="Black"
+                                                      Foreground="Black"
+                                                      BorderThickness="1,1,1,1"
+                                                      Background="GhostWhite"
+                                                      FontWeight="DemiBold"
+                                                      FontSize="9">
+                                                <Expander.Header>
+                                                    <DockPanel>
+                                                        <TextBlock FontWeight="UltraBlack"
+                                                                   Text="{Binding WPVName}"
+                                                                   Margin="32,0,0,0"
+                                                                   Width="200"
+                                                                   Height="13"
+                                                                   FontSize="11"
+                                                                   FontStyle="Italic" />
+                                                    </DockPanel>
+                                                </Expander.Header>
+                                                <ItemsPresenter Margin="0,0,0,0" />
+                                            </Expander>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </GroupStyle.ContainerStyle>
+                    </GroupStyle>
+                    <!-- Style for groups under the top level. -->
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <DockPanel Background="LightBlue">
+                                    <TextBlock Text="{Binding Path=WPVColor, Converter={StaticResource completeConverter}}"
+                                               Foreground="Blue"
+                                               Margin="30,0,0,0"
+                                               Width="100" />
+                                    <TextBlock Text="{Binding Path=ItemCount}"
+                                               Foreground="Blue" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </DataGrid.GroupStyle>
+            </DataGrid>
+            <Label     Content="URLsVerwalten - Parameter"
+                       Grid.Column="1"
+                       Grid.Row="3"
+                       FontWeight="Bold"
+                       FontSize="15"
+                       HorizontalAlignment="Center" />
+            <DataGrid x:Name="dgvVorgabeInt2"
+                      Grid.Column="1"
+                      Grid.Row="4"
+                      Language="DE-de"
+                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                      HorizontalAlignment="Left"
+                      ItemsSource="{Binding}"
+                      AutoGenerateColumns="False"
+                      SelectionUnit="FullRow"
+                      HorizontalGridLinesBrush="#E600FA00"
+                      VerticalGridLinesBrush="#9B7D7B62"
+                      PreviewMouseDown="dgvVorgabeInt2_PreviewMouseDown"
+                      SelectionChanged="dgvVorgabeInt2_SelectionChanged">
+                <DataGrid.RowStyle>
+                    <Style TargetType="{x:Type DataGridRow}">
+                        <Setter Property="FontWeight"
+                                Value="Normal" />
+                        <Setter Property="Foreground"
+                                Value="Black" />
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected"
+                                     Value="True">
+                                <Setter Property="Background"
+                                        Value="White" />
+                            </Trigger>
+                            <DataTrigger Binding="{Binding Vg2Color}"
+                                         Value="1">
+                                <Setter Property="Background"
+                                        Value="LightGreen" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Vg2Color}"
+                                         Value="2">
+                                <Setter Property="Background"
+                                        Value="Blue" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Vg2Color}"
+                                         Value="3">
+                                <Setter Property="Background"
+                                        Value="LightCyan" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Vg2Color}"
+                                         Value="4">
+                                <Setter Property="Background"
+                                        Value="LightCoral" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Url1"
+                                        Binding="{Binding Url1}" />
+                    <DataGridTextColumn Header="Url2"
+                                        Binding="{Binding Url2}" />
+                    <DataGridTextColumn Header="Boxanfang"
+                                        Binding="{Binding Boxanfang}" />
+                    <DataGridTextColumn Header="Ausschluss1"
+                                        Binding="{Binding Ausschluss1}" />
+                    <DataGridTextColumn Header="Wert1"
+                                        Binding="{Binding Wert1}" />
+                    <DataGridTextColumn Header="Wert2"
+                                        Binding="{Binding Wert2}" />
+                    <DataGridTextColumn Header="Wert3"
+                                        Binding="{Binding Wert3}" />
+                    <DataGridTextColumn Header="Wert4"
+                                        Binding="{Binding Wert4}" />
+                    <DataGridTextColumn Header="Color"
+                                        Binding="{Binding Vg2Color}" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <Border Name="borderCombo"
+                    BorderThickness="2"
+                    Grid.Column="1"
+                    Grid.Row="5"
+                    Margin="0,5,0,0"
+                    Background="BlanchedAlmond">
+                <StackPanel Orientation="Horizontal"
+                            Margin="220,0,0,0">
+                    <ComboBox Name="cbBoxanfang"
+                              ItemsSource="{StaticResource  myBoxanfang}"
+                              Text="Boxanfang"
+                              IsEditable="true"
+                              IsReadOnly="true"
+                              Loaded="cbBoxanfang_Loaded"
+                              SelectionChanged="cbBoxanfang_SelectionChanged"></ComboBox>
+                    <TextBlock Text="{Binding ElementName=cbBoxanfang, Path=SelectedItem}" />
+                    <ComboBox Name="cbAusschluss1"
+                              ItemsSource="{StaticResource myAusschluss1}"
+                              Text="Ausschluss1"
+                              IsEditable="true"
+                              IsReadOnly="true"
+                              Loaded="cbAusschluss1_Loaded"
+                              SelectionChanged="cbAusschluss1_SelectionChanged"></ComboBox>
+                    <TextBlock Text="{Binding ElementName=cbAusschluss1, Path=SelectedItem}" />
+                    <ComboBox Name="cbWert1"
+                              ItemsSource="{StaticResource myWert1}"
+                              Text="Wert1"
+                              IsEditable="true"
+                              IsReadOnly="true"
+                              Loaded="cbWert1_Loaded"
+                              SelectionChanged="cbWert1_SelectionChanged"></ComboBox>
+                    <TextBlock Text="{Binding ElementName=cbWert1, Path=SelectedItem}" />
+                </StackPanel>
+            </Border>
+            <TextBox x:Name="txtAnzeige"
+                     Grid.Column="1"
+                     Grid.Row="6"
+                     Background="#f0f0f0"
+                     VerticalScrollBarVisibility="Visible"
+                     HorizontalScrollBarVisibility="Visible"></TextBox>
+        </Grid>
+    </Grid>
+</Window>

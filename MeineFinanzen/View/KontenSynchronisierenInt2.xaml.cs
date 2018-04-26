@@ -38,8 +38,8 @@ using System.Xml.Serialization;
 namespace MeineFinanzen.View {
     public partial class KontenSynchronisierenInt2 : Window, INotifyPropertyChanged, IEditableObject {
         public CollWertpapSynchro _wertpapsynchro = null;
-        public static Model.VorgabeInt2 Vorg = new Model.VorgabeInt2();
-        public static List<Model.VorgabeInt2> liVorg = new List<Model.VorgabeInt2>();
+        public static Model.UrlVerwalten Vorg = new Model.UrlVerwalten();
+        public static List<Model.UrlVerwalten> liVorg = new List<Model.UrlVerwalten>();
         private double _progress;
         public double Progress {
             get { return _progress; }

@@ -40,7 +40,7 @@ namespace MeineFinanzen.Helpers {
             static RowDefinitionExtended() {
                 VisibleProperty = DependencyProperty.Register("Visible", typeof(bool), typeof(RowDefinitionExtended),
                     new PropertyMetadata(true, new PropertyChangedCallback(OnVisibleChanged)));
-                HeightProperty.OverrideMetadata(typeof(RowDefinitionExtended),
+                    HeightProperty.OverrideMetadata(typeof(RowDefinitionExtended),
                     new FrameworkPropertyMetadata(new GridLength(1, GridUnitType.Star), null, new CoerceValueCallback(CoerceHeight)));
                 MinHeightProperty.OverrideMetadata(typeof(RowDefinitionExtended),
                     new FrameworkPropertyMetadata((double)0, null, new CoerceValueCallback(CoerceMinHeight)));

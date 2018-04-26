@@ -27,11 +27,15 @@ namespace MeineFinanzen.Model {
         //private string _WPVISIN;
         private double _WPVKurs;
         private double _WPVKursNeu;
-        //private double _WPVProzentAenderung;
+        private double _WPVProzentAenderung;
+        private double _WPVProzentAenderungNeu;
+        private DateTime _WPVKursZeit;
+        private DateTime _WPVKursZeitNeu;
         //private int _WPVType; 
-        private Single _WPVSharpe { get; set; }
-        private string _WPVURLSharp { get; set; }
-        private string _WPVColor { get; set; }
+        private Single _WPVSharpe;
+        private Single _WPVSharpeNeu;
+        //private string _WPVURLSharp;
+        private string _WPVColor;
         // public
         public float WPVAnzahl {
             get { return _WPVAnzahl; }
@@ -56,15 +60,57 @@ namespace MeineFinanzen.Model {
                 OnPropertyChanged(new PropertyChangedEventArgs("WPVKursNeu"));
             }
         }
-        public double WPVProzentAenderung { get; set; }
-        public double WPVProzentAenderungNeu { get; set; }
-        public DateTime WPVKursZeit { get; set; }
-        public DateTime WPVKursZeitNeu { get; set; }
-        public Single WPVSharpe { get; set; }
-        public Single WPVSharpeNeu { get; set; }
+        public double WPVProzentAenderung {
+            get { return _WPVProzentAenderung; }
+            set {
+                _WPVProzentAenderung = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("WPVProzentAenderung"));
+            }
+        }
+        public double WPVProzentAenderungNeu {
+            get { return _WPVProzentAenderungNeu; }
+            set {
+                _WPVProzentAenderungNeu = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("WPVProzentAenderungNeu"));
+            }
+        }
+        public DateTime WPVKursZeit {
+            get { return _WPVKursZeit; }
+            set {
+                _WPVKursZeit = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("WPVKursZeit"));
+            }
+        }
+        public DateTime WPVKursZeitNeu {
+            get { return _WPVKursZeitNeu; }
+            set {
+                _WPVKursZeitNeu = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("WPVKursZeitNeu"));
+            }
+        } 
+        public Single WPVSharpe {
+            get { return _WPVSharpe; }
+            set {
+                _WPVSharpe = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("WPVSharpe"));
+            }
+        }
+        public Single WPVSharpeNeu {
+            get { return _WPVSharpeNeu; }
+            set {
+                _WPVSharpeNeu = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("WPVSharpeNeu"));
+            }
+        }
+        public string WPVColor {
+            get { return _WPVColor; }
+            set {
+                _WPVColor = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("WPVColor"));
+            }
+        }
         public int WPVType { get; set; }              
-        public string WPVURLSharp { get; set; }
-        public string WPVColor { get; set; }       
+        public string WPVURLSharp { get; set; }             
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e) {
             if (PropertyChanged != null)

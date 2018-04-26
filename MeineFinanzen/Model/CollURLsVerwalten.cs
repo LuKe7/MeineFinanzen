@@ -6,14 +6,19 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 namespace MeineFinanzen.Model {
-    public class CollVorgabeInt2 : ObservableCollection<VorgabeInt2>, IComparable {
+    public class CollURLsVerwalten : ObservableCollection<UrlVerwalten>, IComparable {
         public int CompareTo(object obj) {           
                 return 0;         
         }
     }
-    public class VorgabeInt2 : INotifyPropertyChanged, IEditableObject  {
+    public class UrlVerwalten : INotifyPropertyChanged, IEditableObject  {       
         private string _boxanfang;
         private string _ausschluss1;
+        private string _wert1;
+        private string _wert2;
+        private string _wert3;
+        private string _wert4;
+        private string _vg2Color;       
         public string Url1 { get; set; }
         public string Url2 { get; set; }
         public string Boxanfang {
@@ -30,11 +35,41 @@ namespace MeineFinanzen.Model {
                 RaisePropertyChanged("Ausschluss1");
             }
         }
-        public string Wert1 { get; set; }
-        public string Wert2 { get; set; }
-        public string Wert3 { get; set; }
-        public string Wert4 { get; set; }
-        public string Vg2Color { get; set; }
+        public string Wert1 {
+            get { return _wert1; }
+            set {
+                _wert1 = value;
+                RaisePropertyChanged("Wert1");
+            }
+        }
+        public string Wert2 {
+            get { return _wert2; }
+            set {
+                _wert2 = value;
+                RaisePropertyChanged("Wert2");
+            }
+        }
+        public string Wert3 {
+            get { return _wert3; }
+            set {
+                _wert3 = value;
+                RaisePropertyChanged("Wert3");
+            }
+        }
+        public string Wert4 {
+            get { return _wert4; }
+            set {
+                _wert4 = value;
+                RaisePropertyChanged("Wert4");
+            }
+        }
+        public string Vg2Color {
+            get { return _vg2Color; }
+            set {
+                _vg2Color = value;
+                RaisePropertyChanged("Vg2Color");
+            }
+        }       
         public event PropertyChangedEventHandler PropertyChanged;
         internal void NotifyPropertyChanged(string propertyName) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

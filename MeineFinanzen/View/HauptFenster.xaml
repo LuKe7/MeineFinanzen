@@ -7,7 +7,7 @@
         xmlns:view="clr-namespace:MeineFinanzen.View"
         xmlns:model="clr-namespace:MeineFinanzen.Model"
         xmlns:dw="clr-namespace:DrWPF.Windows.Controls"
-        xmlns:helpers="clr-namespace:MeineFinanzen.Helpers" 
+        xmlns:helpers="clr-namespace:MeineFinanzen.Helpers"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         mc:Ignorable="d"
         Title="MeineFinanzen"
@@ -17,6 +17,7 @@
         Loaded="Window_Loaded"
         Closing="Window_Closing">
     <Window.Resources>
+        <view:CompleteConverter x:Key="completeConverter" />
         <view:BoolToGridRowHeightConverter3 x:Key="boolToGridRowHeightConverter3" />
         <view:BoolToGridRowHeightConverter2 x:Key="boolToGridRowHeightConverter2" />
         <view:IconPathConverter x:Key="iconPathConverter" />
@@ -35,7 +36,7 @@
                 <scm:SortDescription PropertyName="Name" />
             </CollectionViewSource.SortDescriptions>
             <CollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="AKName" />
+                <PropertyGroupDescription PropertyName="Type" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
         <model:CollKontoumsätze x:Key="kontoumsätzeXXX" />
@@ -132,7 +133,6 @@
             <StackPanel Orientation="Horizontal">
                 <!-- These elements are bound to a KategorieViewModel object. -->
                 <CheckBox x:Name="cbBox"
-                         
                           IsChecked="{Binding IsChecked}"
                           VerticalAlignment="Center" />
                 <ContentPresenter Content="{Binding Name, Mode=OneTime}" />
@@ -167,7 +167,7 @@
                     HorizontalAlignment="Center">
             <Menu DockPanel.Dock="Top"
                   x:Name="mnuMenu"
-                  Height="20"                  
+                  Height="20"
                   FontSize="14">
                 <MenuItem Header="_Datei">
                     <MenuItem Header="_Neu" />
@@ -190,8 +190,8 @@
                               Click="KontenSynchronisierenInt_Click" />
                     <MenuItem Header="Konten Synchronisieren Internet-2"
                               Click="KontenSynchronisierenInt2_Click" />
-                    <MenuItem Header="VorgabeParameter erstellen Int-2"
-                              Click="VorgabeParameterErstellenInt2_Click" />
+                    <MenuItem Header="URLs verwalten"
+                              Click="URLsVerwalten_Click" />
                     <MenuItem Header="Konten Synchronisieren Subsembly"
                               Click="KontenSynchronisierenSubsembly_Click" />
                     <MenuItem Header="Konten Synchronisieren HBCI4j"
@@ -234,7 +234,7 @@
             <DataGrid x:Name="dgBankenÜbersicht"
                       Grid.Column="0"
                       Grid.Row="1"
-                      ItemsSource="{Binding}"                        
+                      ItemsSource="{Binding}"
                       BorderBrush="#FFA2B687"
                       Background="#FFE6E5D1"
                       RowHeight="50"
@@ -245,7 +245,7 @@
                       AutoGenerateColumns="False"
                       HorizontalAlignment="Left"
                       PreviewMouseDown="DgBankenÜbersicht_PreviewMouseDown"
-                      HeadersVisibility="None"                    
+                      HeadersVisibility="None"
                       SelectionChanged="DgBankenÜbersicht_SelectionChanged">
                 <DataGrid.RowStyle>
                     <Style TargetType="{x:Type DataGridRow}">
@@ -416,7 +416,7 @@
                       Margin="40, 0"
                       Content="Browser"
                       IsChecked="False" />
-            <ComboBox x:Name="cbKonten"                      
+            <ComboBox x:Name="cbKonten"
                       Width="80"
                       HorizontalAlignment="Left"
                       VerticalAlignment="Top"
@@ -685,7 +685,6 @@
                                                                     <DataGrid x:Name="InnereDatagridBanken3"
                                                                               Grid.Column="1"
                                                                               GridLinesVisibility="Vertical"
-                                                                              
                                                                               RowHeight="14"
                                                                               Language="DE-de"
                                                                               FontSize="7"
@@ -776,9 +775,7 @@
                          Header="Wertpapiere"
                          FontSize="16">
                     <Grid x:Name="GridChartBrowserGridwertpapiere"
-                          Background="#FFFBEBB6"
-                          Grid.Row="1"
-                          Grid.Column="1">
+                          Background="#FFFBEBB6">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
@@ -798,289 +795,298 @@
                                          HorizontalContentAlignment="Left" />
                         <WebBrowser x:Name="wbAktuelles"
                                     Grid.Row="1"
-                                    Width="996"
+                                    Width="800"
                                     LoadCompleted="WbAktuelles_LoadCompleted"
                                     HorizontalAlignment="Left" />
-                        <!-- <Button Content="Group"
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Click="GroupButton_Click"
-                                FontSize="10"
-                                VerticalAlignment="Top"
-                                Width="80" />
-                        <Button Content="UnGroup"
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Click="UngroupButton_Click"
-                                FontSize="10"
-                                Width="80"
-                                VerticalAlignment="Top"
-                                Margin="10,0,0,0" />   
-                        <TextBlock x:Name="txtAktualisiert"
-                                   Grid.Row="2"
-                                   Grid.Column="2"
-                                   Text="Aktualisiert: "
-                                   FontSize="10"
-                                   Width="180"
-                                   VerticalAlignment="Top"
-                                   Margin="10,0,0,0" />  -->
-                        <StackPanel x:Name="StackGridWertpapiere"
+                        <StackPanel x:Name="StackButtons"
                                     Grid.Row="2"
-                                    Grid.ColumnSpan="4"
-                                    Grid.RowSpan="3"
-                                    Orientation="Horizontal"
-                                    HorizontalAlignment="Left">
-                            <DataGrid x:Name="dgWertpapiere"
-                                      Language="DE-de"
-                                      FontSize="11"
-                                      ScrollViewer.CanContentScroll="True"
-                                      ScrollViewer.VerticalScrollBarVisibility="Visible"
-                                      ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                                      RowDetailsVisibilityMode="VisibleWhenSelected"
-                                      RowDetailsTemplate="{StaticResource WertpapierDetail}"
-                                      RowDetailsVisibilityChanged="GridWertpapiere_RowDetailsVisibilityChanged"
-                                      ItemsSource="{Binding Source={StaticResource cvsWertpapiere}}"
-                                      AutoGenerateColumns="False"
-                                      SelectionChanged="GridWertpapiere_SelectionChanged"
-                                      SelectionUnit="FullRow"
-                                      LoadingRow="GridWertpapiere_LoadingRow"
-                                      AlternatingRowBackground="#FFBBF0D1"
-                                      HorizontalGridLinesBrush="#E600FA00"
-                                      VerticalGridLinesBrush="#9B7D7B62"
-                                      PreviewMouseDown="GridWertpapiere_PreviewMouseDown">
-                                <DataGrid.RowStyle>
-                                    <Style TargetType="{x:Type DataGridRow}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding isSumme}"
-                                                         Value="true">
-                                                <Setter Property="Foreground"
-                                                        Value="DarkBlue" />
-                                                <Setter Property="FontWeight"
-                                                        Value="Bold" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </DataGrid.RowStyle>
-                                <DataGrid.Columns>
-                                    <DataGridTemplateColumn Header="Anzahl">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Anzahl, StringFormat=\{0:#\,##0.00 \}}"
-                                                           Foreground="{Binding Anzahl, Converter={StaticResource SignedConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTextColumn Header="Name"
-                                                        Binding="{Binding Name}"
-                                                        IsReadOnly="True" />
-                                    <DataGridTemplateColumn Header="Heute"
-                                                            SortMemberPath="Heute">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Heute, StringFormat=\{0:#0.00 \}}"
-                                                           Foreground="{Binding Heute, Converter={StaticResource SignedConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="Rend">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Rend, StringFormat=\{0:##0.00 \}}"
-                                                           Foreground="{Binding Rend, Converter={StaticResource SignedConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="Rend1J">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Rend1J, StringFormat=\{0:##0.00 \}}"
-                                                           Foreground="{Binding Rend1J, Converter={StaticResource SignedConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="Ertrag">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Ertrag, StringFormat=\{0:###\,##0.00 \}}"
-                                                           Foreground="{Binding Ertrag, Converter={StaticResource SignedConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="KursZeit">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding KursZeit, StringFormat=\{0:dd/MM/yy HHmm\}}"
-                                                           Foreground="{Binding KursZeit, Converter={StaticResource dateConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="AktKurs">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding AktKurs, StringFormat=\{0:#\,##0.00 \}}"
-                                                           Foreground="{Binding AktKurs, ConverterParameter=AktKurs, Converter={StaticResource SignedConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="AktWert">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding AktWert, StringFormat=\{0:###\,##0.00 \}}"
-                                                           Foreground="{Binding AktWert, Converter={StaticResource SignedConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="Zahlungen">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Zahlungen, StringFormat=\{0:##\,##0.00 \}}"
-                                                           Foreground="{Binding Zahlungen, Converter={StaticResource SignedConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="Kaufsumme">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Kaufsumme, StringFormat=\{0:#\,##0.00 \}}"
-                                                           Foreground="{Binding Kaufsumme, Converter={StaticResource SignedConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="KaufDatum">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding KaufDatum, StringFormat=\{0:dd/MM/yy\}}"
-                                                           Foreground="{Binding KaufDatum, Converter={StaticResource dateConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="Depot"
-                                                            Visibility="Hidden">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding DepotID, StringFormat=\{0:#0 \}}"
-                                                           Foreground="{Binding DepotID, Converter={StaticResource SignedConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="KontoNr"
-                                                            Visibility="Hidden">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding KontoNr, StringFormat=\{0:######0 \}}"
-                                                           Foreground="{Binding KontoNr, Converter={StaticResource SignedConvert}}"
-                                                           Visibility="Hidden"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTextColumn Header="ISIN"
-                                                        Binding="{Binding ISIN}" />
-                                    <DataGridTemplateColumn Header="Type">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Type, StringFormat=\{0:##0 \}}"
-                                                           Foreground="{Binding Type, Converter={StaticResource SignedConvert}}"
-                                                           Visibility="Hidden"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTextColumn Header="AKKurz"
-                                                        Binding="{Binding AKKurz}"
-                                                        Visibility="Hidden" />
-                                    <DataGridTextColumn Header="AKName"
-                                                        Binding="{Binding AKName}"
-                                                        Visibility="Hidden" />
-                                    <DataGridTemplateColumn Header="Zins"
-                                                            CanUserReorder="True">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Zins, StringFormat=\{0:#\,##0.00 \}}"
-                                                           Foreground="{Binding Zins, Converter={StaticResource SignedConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="AbDatum">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding AbDatum, StringFormat=\{0:dd/MM/yy\}}"
-                                                           Foreground="{Binding AbDatum, Converter={StaticResource dateConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="BisDatum">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding BisDatum, StringFormat=\{0:dd/MM/yy\}}"
-                                                           Foreground="{Binding BisDatum, Converter={StaticResource dateConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="Sha/Ren">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Sharpe, StringFormat=\{0:##0.00 \}}"
-                                                           Foreground="{Binding Sharpe, Converter={StaticResource SignedConvert}}"
-                                                           HorizontalAlignment="Right" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                </DataGrid.Columns>
-                                <DataGrid.GroupStyle>
-                                    <!-- Style for groups at top level. -->
-                                    <GroupStyle>
-                                        <GroupStyle.ContainerStyle>
-                                            <Style TargetType="{x:Type GroupItem}">
-                                                <Setter Property="Margin"
-                                                        Value="0,0,0,5" />
-                                                <Setter Property="Template">
-                                                    <Setter.Value>
-                                                        <ControlTemplate TargetType="{x:Type GroupItem}">
-                                                            <Expander IsExpanded="True"
-                                                                      BorderBrush="Black"
-                                                                      Foreground="Black"
-                                                                      BorderThickness="1,1,1,1"
-                                                                      Background="GhostWhite"
-                                                                      FontWeight="DemiBold"
-                                                                      FontSize="9">
-                                                                <Expander.Header>
-                                                                    <DockPanel>
-                                                                        <TextBlock FontWeight="UltraBlack"
-                                                                                   Text="{Binding Name}"
-                                                                                   Margin="32,0,0,0"
-                                                                                   Width="200"
-                                                                                   Height="13"
-                                                                                   FontSize="11"
-                                                                                   FontStyle="Italic" />
-                                                                    </DockPanel>
-                                                                </Expander.Header>
-                                                                <ItemsPresenter Margin="0,0,0,0" />
-                                                            </Expander>
-                                                        </ControlTemplate>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Style>
-                                        </GroupStyle.ContainerStyle>
-                                    </GroupStyle>
-                                </DataGrid.GroupStyle>
-                            </DataGrid>
+                                    VerticalAlignment="Top"
+                                    Orientation="Horizontal">
+                            <Button Content="Group"
+                                    Click="GroupButton_Click"
+                                    FontSize="10"
+                                    VerticalAlignment="Top"
+                                    Width="80" />
+                            <Button Content="UnGroup"
+                                    Click="UngroupButton_Click"
+                                    FontSize="10"
+                                    Width="80"
+                                    VerticalAlignment="Top"
+                                    Margin="10,0,0,0" />
+                            <TextBlock x:Name="txtAktualisiert"
+                                       Text="Aktualisiert: "
+                                       FontSize="10"
+                                       Width="180"
+                                       VerticalAlignment="Top"
+                                       HorizontalAlignment="Left"
+                                       Margin="10,0,0,0" />
                         </StackPanel>
+                        <DataGrid x:Name="dgWertpapiere"
+                                  Grid.Row="3"
+                                  Language="DE-de"
+                                  FontSize="11"
+                                  ScrollViewer.CanContentScroll="True"
+                                  ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                  RowDetailsVisibilityMode="VisibleWhenSelected"
+                                  RowDetailsTemplate="{StaticResource WertpapierDetail}"
+                                  RowDetailsVisibilityChanged="GridWertpapiere_RowDetailsVisibilityChanged"
+                                  ItemsSource="{Binding Source={StaticResource cvsWertpapiere}}"
+                                  AutoGenerateColumns="False"
+                                  SelectionChanged="GridWertpapiere_SelectionChanged"
+                                  SelectionUnit="FullRow"
+                                  LoadingRow="GridWertpapiere_LoadingRow"
+                                  AlternatingRowBackground="#FFBBF0D1"
+                                  HorizontalGridLinesBrush="#E600FA00"
+                                  VerticalGridLinesBrush="#9B7D7B62"
+                                  PreviewMouseDown="GridWertpapiere_PreviewMouseDown">
+                            <DataGrid.GroupStyle>
+                                <!-- Style for groups at top level. -->
+                                <GroupStyle>
+                                    <GroupStyle.ContainerStyle>
+                                        <Style TargetType="{x:Type GroupItem}">
+                                            <Setter Property="Margin"
+                                                    Value="0,0,0,5" />
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                        <Expander IsExpanded="True"
+                                                                  BorderBrush="Red"
+                                                                  Foreground="Black"
+                                                                  BorderThickness="1,1,1,1"
+                                                                  Background="GhostWhite"
+                                                                  FontWeight="DemiBold"
+                                                                  FontSize="29">
+                                                            <Expander.Header>
+                                                                <DockPanel>
+                                                                    <TextBlock FontWeight="UltraBlack"
+                                                                               Text="{Binding Name}"
+                                                                               Margin="32,0,0,0"
+                                                                               Width="200"
+                                                                               Height="13"
+                                                                               FontSize="11"
+                                                                               FontStyle="Italic" />
+                                                                </DockPanel>
+                                                            </Expander.Header>
+                                                            <ItemsPresenter Margin="0,0,0,0" />
+                                                        </Expander>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </GroupStyle.ContainerStyle>
+                                </GroupStyle>
+                                <!-- Style for groups under the top level. -->
+                                <GroupStyle>
+                                    <GroupStyle.HeaderTemplate>
+                                        <DataTemplate>
+                                            <DockPanel Background="LightBlue">
+                                                <TextBlock Text="{Binding Path=Name, Converter={StaticResource completeConverter}}"
+                                                           Foreground="Red"
+                                                           Margin="30,0,0,0"
+                                                           Width="100" />
+                                                <TextBlock Text="{Binding Path=Type}"
+                                                           Foreground="Blue" />
+                                            </DockPanel>
+                                        </DataTemplate>
+                                    </GroupStyle.HeaderTemplate>
+                                </GroupStyle>
+                            </DataGrid.GroupStyle>
+                            <DataGrid.RowStyle>
+                                <Style TargetType="{x:Type DataGridRow}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding isSumme}"
+                                                     Value="true">
+                                            <Setter Property="Foreground"
+                                                    Value="DarkBlue" />
+                                            <Setter Property="FontWeight"
+                                                    Value="Bold" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGrid.RowStyle>
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="Anzahl">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Anzahl, StringFormat=\{0:#\,##0.00 \}}"
+                                                       Foreground="{Binding Anzahl, Converter={StaticResource SignedConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Name"
+                                                    Binding="{Binding Name}"
+                                                    IsReadOnly="True" />
+                                <DataGridTemplateColumn Header="Heute"
+                                                        SortMemberPath="Heute">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Heute, StringFormat=\{0:#0.00 \}}"
+                                                       Foreground="{Binding Heute, Converter={StaticResource SignedConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Rend">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Rend, StringFormat=\{0:##0.00 \}}"
+                                                       Foreground="{Binding Rend, Converter={StaticResource SignedConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Rend1J">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Rend1J, StringFormat=\{0:##0.00 \}}"
+                                                       Foreground="{Binding Rend1J, Converter={StaticResource SignedConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Ertrag">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Ertrag, StringFormat=\{0:###\,##0.00 \}}"
+                                                       Foreground="{Binding Ertrag, Converter={StaticResource SignedConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="KursZeit">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding KursZeit, StringFormat=\{0:dd/MM/yy HHmm\}}"
+                                                       Foreground="{Binding KursZeit, Converter={StaticResource dateConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="AktKurs">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding AktKurs, StringFormat=\{0:#\,##0.00 \}}"
+                                                       Foreground="{Binding AktKurs, ConverterParameter=AktKurs, Converter={StaticResource SignedConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="AktWert">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding AktWert, StringFormat=\{0:###\,##0.00 \}}"
+                                                       Foreground="{Binding AktWert, Converter={StaticResource SignedConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Zahlungen">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Zahlungen, StringFormat=\{0:##\,##0.00 \}}"
+                                                       Foreground="{Binding Zahlungen, Converter={StaticResource SignedConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Kaufsumme">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Kaufsumme, StringFormat=\{0:#\,##0.00 \}}"
+                                                       Foreground="{Binding Kaufsumme, Converter={StaticResource SignedConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="KaufDatum">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding KaufDatum, StringFormat=\{0:dd/MM/yy\}}"
+                                                       Foreground="{Binding KaufDatum, Converter={StaticResource dateConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Depot"
+                                                        Visibility="Hidden">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DepotID, StringFormat=\{0:#0 \}}"
+                                                       Foreground="{Binding DepotID, Converter={StaticResource SignedConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="KontoNr"
+                                                        Visibility="Hidden">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding KontoNr, StringFormat=\{0:######0 \}}"
+                                                       Foreground="{Binding KontoNr, Converter={StaticResource SignedConvert}}"
+                                                       Visibility="Hidden"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="ISIN"
+                                                    Binding="{Binding ISIN}" />
+                                <DataGridTemplateColumn Header="Type">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Type, StringFormat=\{0:##0 \}}"
+                                                       Foreground="{Binding Type, Converter={StaticResource SignedConvert}}"
+                                                       Visibility="Hidden"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="AKKurz"
+                                                    Binding="{Binding AKKurz}"
+                                                    Visibility="Hidden" />
+                                <DataGridTextColumn Header="AKName"
+                                                    Binding="{Binding AKName}"
+                                                    Visibility="Hidden" />
+                                <DataGridTemplateColumn Header="Zins"
+                                                        CanUserReorder="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Zins, StringFormat=\{0:#\,##0.00 \}}"
+                                                       Foreground="{Binding Zins, Converter={StaticResource SignedConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="AbDatum">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding AbDatum, StringFormat=\{0:dd/MM/yy\}}"
+                                                       Foreground="{Binding AbDatum, Converter={StaticResource dateConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="BisDatum">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding BisDatum, StringFormat=\{0:dd/MM/yy\}}"
+                                                       Foreground="{Binding BisDatum, Converter={StaticResource dateConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Sha/Ren">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Sharpe, StringFormat=\{0:##0.00 \}}"
+                                                       Foreground="{Binding Sharpe, Converter={StaticResource SignedConvert}}"
+                                                       HorizontalAlignment="Right" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="tabWertpapiereGesamt"

@@ -1,4 +1,4 @@
-﻿// 14.04.2018 VorgabeInt2.xaml.cs
+﻿// 23.04.2018 VorgabeInt2.xaml.cs
 // VorgabeParameter für KontenSynchronisierung über Internet 2.Version(Über Textsuche in Elementen...).
 // Die Wertpapiere suchen sich ihren Parametersatz selbst. Über Url1 + Url2 !!!!
 // Erstellen dieser Sätze, falls sie nicht vorhanden sind.
@@ -35,36 +35,39 @@
     </tblVorgabeInt2> */
 using DataSetAdminNS;
 using MeineFinanzen.Model;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 namespace MeineFinanzen.View {
-    public partial class VorgabeInt2 : Window {
-        public string strAnzeige { get; set; }
+    public partial class URLsVerwalten : Window {
+        public ObservableCollection<UrlVerwalten> liVorgaben = new ObservableCollection<UrlVerwalten>();
         public static List<Wertpap> liWertpaps = new List<Wertpap>();
         public CollWertpapSynchroNeu _wertpapsynchroneu = null;
-        public static Model.VorgabeInt2 Vorg = new Model.VorgabeInt2();
-        public static List<Model.VorgabeInt2> liVorg = new List<Model.VorgabeInt2>();
+        public static UrlVerwalten Vorg = new UrlVerwalten();
+        public static List<UrlVerwalten> liVorg = new List<UrlVerwalten>();
         DataTable dtPortFol = new DataTable();
         DataTable dtVorgabe = new DataTable();
         DataTable dtVorgabeLoop = new DataTable();
-        public System.Windows.Controls.DataGridRow dgRow1 = null;               // Diese Zeile in dgvUrl wurde angeklickt.      
+        public DataGridRow dgRow1 = null;               // Diese Zeile in dgvUrl wurde angeklickt.      
         string _Url1, _Url2, _BoxAnfang, _TxtKurse, _TxtKurszeit, _TxtKursdatum, _TxtKurs; // Diese Zeile in dgvVorgabe wurde angeklickt.
         string _ColHeaderVorgabe;                       // Diese Spalte in dgvVorgabe wurde angeklickt.
-        public VorgabeInt2() {
+        public URLsVerwalten() {
             InitializeComponent();
-            //txtAnzeige.Multiline = true;
-            strAnzeige = "Hier stehen Anweisungen und so ....";
+            //txtAnzeige.Multiline = true;          
             DataContext = this;
             // Get a reference to the CollWertpapSynchro collection.
-            _wertpapsynchroneu= (CollWertpapSynchroNeu)Resources["wertpapsynchron"];
+            Meldung("Anwendung gestartet.");
+            _wertpapsynchroneu = (CollWertpapSynchroNeu)Resources["wertpapsynchron"];
             wb1.ScriptErrorsSuppressed = true;
         }
         private void Window_Loaded(object sender, RoutedEventArgs e) {
@@ -75,6 +78,7 @@ namespace MeineFinanzen.View {
             wb1.GoHome();
             wb1.Navigate(new Uri("https://www.google.de/"));        // Löst kein wb1-DocumentCompleted aus
             VorgabeParameterBearbeiten();
+            Meldung("Bitte ein Wertpapier wählen.");
         }
         public void VorgabeParameterBearbeiten() {
             liVorg.Clear();
@@ -104,7 +108,11 @@ namespace MeineFinanzen.View {
                     WPVSharpe = Convert.ToSingle(dr["WPSharpe"]),
 
                     WPVURLSharp = dr["WPUrlSharpe"].ToString(),
-                    WPVColor = "1"
+                    WPVColor = "1",
+                    WPVKursNeu = 0,
+                    WPVKursZeitNeu = Convert.ToDateTime("01.01.1970"),
+                    WPVProzentAenderungNeu = 0,
+                    WPVSharpeNeu = 0
                 });
             }
             dgvUrls.ItemsSource = _wertpapsynchroneu;
@@ -123,13 +131,14 @@ namespace MeineFinanzen.View {
                 newRow["Wert2"] = "Kurszeit";
                 newRow["Wert3"] = "Kurs";
                 newRow["Wert4"] = "";
+                newRow["Vg2Color"] = "2";
                 dtVorgabe.Rows.Add(newRow);
             }
             // ---- liVorg für dgvVorgabeInt2 erstellen ----
             for (int i = dtVorgabe.Rows.Count - 1; i >= 0; i--) {
                 DataRow dr = dtVorgabe.Rows[i];
                 //foreach (DataRow dr in dtVorgabeLoop.Rows) {
-                Vorg = new Model.VorgabeInt2 {
+                Vorg = new UrlVerwalten {
                     Url1 = dr["Url1"].ToString(),
                     Url2 = dr["Url2"].ToString(),
                     Boxanfang = dr["Boxanfang"].ToString(),
@@ -147,7 +156,7 @@ namespace MeineFinanzen.View {
             foreach (WertpapSynchroNeu wps in _wertpapsynchroneu) {
                 splitUrls = wps.WPVURL.Split('/');
                 bool gef = false;
-                foreach (Model.VorgabeInt2 vg in liVorg) {
+                foreach (UrlVerwalten vg in liVorg) {
                     splitVorg = vg.Url1.Split('/');            // https leer www.finanzen.net leer                      
                     if (splitUrls[2] == splitVorg[2] && splitUrls[3] == vg.Url2) {
                         // www.finanzen.net == dto   &&        fonds == fonds
@@ -158,7 +167,7 @@ namespace MeineFinanzen.View {
                 if (!gef) {
                     // ---- Und jetzt fehlenden Satz in liVorg erstellen. ----                    
                     string[] splitUrls2 = wps.WPVURL.Split('/');
-                    Vorg = new Model.VorgabeInt2 {
+                    Vorg = new UrlVerwalten {
                         Url1 = splitUrls2[0] + "//" + splitUrls2[2] + "/",
                         Url2 = splitUrls2[3],
                         Boxanfang = "",
@@ -167,12 +176,13 @@ namespace MeineFinanzen.View {
                         Wert2 = "",
                         Wert3 = "",
                         Wert4 = "",
-                        Vg2Color = "Eingefügt"
+                        Vg2Color = "0"
                     };
                     liVorg.Add(Vorg);
                     AddliVorgTodtVorgabe(liVorg, Vorg);
                 }
             }
+            Meldung("VorgabeParameter aufgebaut.");
             dgvUrls.ItemsSource = null;
             dgvUrls.ItemsSource = _wertpapsynchroneu;
             dgvUrls.EnableRowVirtualization = false;
@@ -181,8 +191,9 @@ namespace MeineFinanzen.View {
             dgvVorgabeInt2.ItemsSource = liVorg;
             dgvVorgabeInt2.EnableRowVirtualization = false;
             dgvVorgabeInt2.UpdateLayout();
+            DoEvents();
         }
-        public class TEST_TermineList : List<Model.VorgabeInt2> {        // Kann weg
+        public class TEST_TermineList : List<UrlVerwalten> {        // Kann weg
             public void DeleteTermineForDate(DateTime dt) {
                 for (int i = this.Count - 1; i >= 0; i--) {
                     if (this[i].Url1 == "xxxxx") {
@@ -191,7 +202,7 @@ namespace MeineFinanzen.View {
                 }
             }
         }
-        private void AddliVorgTodtVorgabe(List<Model.VorgabeInt2> liVorg, Model.VorgabeInt2 Vorg) {
+        private void AddliVorgTodtVorgabe(List<UrlVerwalten> liVorg, UrlVerwalten Vorg) {
             DataRow newRow = DataSetAdmin.dtVorgabeInt2.NewRow();
             newRow["Url1"] = Vorg.Url1;
             newRow["Url2"] = Vorg.Url2;
@@ -209,7 +220,7 @@ namespace MeineFinanzen.View {
             }
         }
         private void UpdatedtVorgabe(string sooo_gehts_nicht) {
-            foreach (Model.VorgabeInt2 livor in liVorg) {
+            foreach (UrlVerwalten livor in liVorg) {
                 foreach (DataRow dtrow in dtVorgabe.Rows) {
                     try {
                         dtrow["Url1"] = livor.Url1;
@@ -229,86 +240,115 @@ namespace MeineFinanzen.View {
         private void Close_Window(object sender, System.ComponentModel.CancelEventArgs e) {
             DataSetAdmin.dtVorgabeInt2 = dtVorgabe;
             DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
+            //mel.Close();
         }
-        private void dgvUrls_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
-            _ColHeaderVorgabe = null;                   // Muß noch geklickt werden.
+        private void ResetDgRow() {            
+            dgRow1.DetailsVisibility = Visibility.Collapsed;
+            foreach (UrlVerwalten vg2 in liVorg) {
+                vg2.Vg2Color = "0";
+            }
+            foreach (WertpapSynchroNeu sy in _wertpapsynchroneu) {
+                sy.WPVColor = "1";
+            }
+            dgvVorgabeInt2.ItemsSource = null;
+            dgvVorgabeInt2.ItemsSource = liVorg;
+            dgvVorgabeInt2.EnableRowVirtualization = false;
+            dgvVorgabeInt2.UpdateLayout();
+        }
+        private void dgvUrls_PreviewMouseDown(object sender, MouseButtonEventArgs e) {                     
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is System.Windows.Controls.DataGridCell))
                 dep = VisualTreeHelper.GetParent(dep);
             if (dep == null)
-                return;
-            System.Windows.Controls.DataGridCell cell1 = dep as System.Windows.Controls.DataGridCell;
-            dgRow1 = dep as System.Windows.Controls.DataGridRow;
-            while ((dep != null) && !(dep is System.Windows.Controls.DataGridRow))
+                return;            
+            dgRow1 = dep as DataGridRow;
+            while ((dep != null) && !(dep is DataGridRow))
                 dep = VisualTreeHelper.GetParent(dep);
-            dgRow1 = dep as System.Windows.Controls.DataGridRow;
+            dgRow1 = dep as DataGridRow;
             if (dgRow1 == null)
+                return;          
+            if (e.RightButton == MouseButtonState.Pressed)
                 return;
-            string strType = dgRow1.Item.GetType().ToString();
-            if (strType != "MeineFinanzen.Model.WertpapSynchroNeu") {
-                strAnzeige = "Bitte dgvUrl anklicken!";
-                DataContext = null;
-                DataContext = this;
-                return;
-            }
-            System.Windows.Controls.DataGrid dataGrid = System.Windows.Controls.ItemsControl.ItemsControlFromItemContainer(dgRow1) as System.Windows.Controls.DataGrid;
+            ResetDgRow();
+            _ColHeaderVorgabe = null;           
+            System.Windows.Controls.DataGrid dataGrid = ItemsControl.ItemsControlFromItemContainer(dgRow1)
+                as System.Windows.Controls.DataGrid;
             WertpapSynchroNeu wpsn = (WertpapSynchroNeu)dataGrid.ItemContainerGenerator.ItemFromContainer(dgRow1);
-            Console.WriteLine("cell1.Column.Header: {0} Color: {1}", cell1.Column.Header, wpsn.WPVColor);            
-            if (wpsn.WPVColor == "3") {
-                strAnzeige = "Diese Zeile hat schon eine Vorgabe!";
-            } else {
-                strAnzeige = "Für diese Zeile eine Vorgabe bearbeiten oder erstellen.";
-            }
-            _Url1 = wpsn.WPVURL;
-            if (dgRow1.DetailsVisibility == Visibility.Visible) {           
-                dgRow1.DetailsVisibility = Visibility.Collapsed;
-                dgRow1.Background = new SolidColorBrush(Colors.BlanchedAlmond);
-                DataContext = null;
-                DataContext = this;
-                return;
-            }
+
+            //System.Windows.Controls.DataGridCell cell1 = dep as System.Windows.Controls.DataGridCell;
+            //Console.WriteLine("cell1.Column.Header: {0} Color: {1}", cell1.Column.Header, wpsn.WPVColor);
+
             dgRow1.DetailsVisibility = Visibility.Visible;
             dgRow1.Background = new SolidColorBrush(Colors.LightYellow);
-            DataContext = null;
-            DataContext = this;
-            //wb1.LoadCompleted += (s, e) =>  {
-            //the page has been loaded here. Do your thing...   };
+            _Url1 = wpsn.WPVURL;
+            Meldung("Ok, ausgewählt: " + _Url1);
             wb1.Navigate(new Uri(_Url1));
             while (wb1.IsBusy || wb1.ReadyState != WebBrowserReadyState.Complete) {
                 DoEvents();
-            }           
-            _BoxAnfang = "row quotebox";
-            _TxtKurse = "Kurse";
-            _TxtKurszeit = "Kurszeit";
-            _TxtKursdatum = "Kursdatum";
-            _TxtKurs = "Kurs";
-            bool bol = SearchWebPage(_Url1, _BoxAnfang, _TxtKurse, _TxtKurszeit, _TxtKursdatum, _TxtKurs, wpsn);
-            if (bol) {
-                AddTextStr("Ok, hat geklappt.");
-            } else
-                AddTextStr("!!!! Nee, hat nicht geklappt!!!!");
+            }
+            // ---- Vorgabe-Parametersatz in dgvVorgabeInt2 suchen ----    
+            int iSearch = 0;
+            char[] charSeparators = new char[] { '/' };
+            string[] url1split = _Url1.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
+            UrlVerwalten vor = null;
+            Console.WriteLine("---- gesucht wird in DataGrid-Vorgabe: _Url1:{0} _Url2: {1}", _Url1, _Url2);
+            foreach (UrlVerwalten vor1 in liVorg) {
+                if (vor1.Url1 == url1split[0] + @"//" + url1split[1] + @"/" && vor1.Url2 == url1split[2]) {    // https://www.finanzen.net/  == https://www.finanzen.net/ etf leer
+                    vor = vor1;
+                    Console.WriteLine("---- Url1 gefunden: {0} Url2: {1} Wert1: {2} Wert2: {3}", vor.Url1, vor1.Url2, vor1.Wert1, vor1.Wert2);
+                    if (vor1.Wert1 == string.Empty) {
+                        AddTextStr("Wert1 eingeben");
+                        iSearch = 4;
+                    } else {
+                        if (vor.Url2 == url1split[2]) {
+                            AddTextStr("---- Url2 gefunden: " + vor.Url2);
+                            _BoxAnfang = vor.Boxanfang;     // "row quotebox";                            
+                            _TxtKurse = vor.Ausschluss1;    // "Kurse";
+                            _TxtKursdatum = vor.Wert1;      // "Kursdatum";
+                            _TxtKurszeit = vor.Wert2;       // "Kurszeit";                            
+                            _TxtKurs = vor.Wert3;           // "Kurs";   
+                            iSearch = SearchWebPage(_Url1, _BoxAnfang, _TxtKurse, _TxtKurszeit, _TxtKursdatum, _TxtKurs, ref wpsn);
+                            if (iSearch == 1) {
+                                AddTextStr("Ok. 1.");
+                            } else
+                                AddTextStr("!!!! Nee, hat nicht geklappt 1.!!!! : " + iSearch);
+                        }
+                    }
+                }
+            } // foreach vor1    
+            vor.Vg2Color = iSearch.ToString();
+            if (iSearch == 1)
+                AddTextStr("Ok. 2.");
+            else
+                AddTextStr("!!!! Nee Fehler 2.!!!!  FehlerNummer: " + iSearch);
+            dgvVorgabeInt2.ItemsSource = null;
+            dgvVorgabeInt2.ItemsSource = liVorg;
+            dgvVorgabeInt2.EnableRowVirtualization = false;
+            dgvVorgabeInt2.UpdateLayout();
+            Meldung("VorgabeParameter hierzu ändern/eingeben.");
+            borderCombo.Background = new SolidColorBrush(Colors.LightGreen);
         }
-        private bool SearchWebPage(string url1, string boxanfang, string txtkurse, string txtkurszeit, string txtkursdatum,
-            string txtkurs, WertpapSynchroNeu wpsneu) {
+        private int SearchWebPage(string url1, string boxanfang, string txtkurse, string txtkurszeit, string txtkursdatum, string txtkurs, ref WertpapSynchroNeu wpsneu) {
             if (wb1.Document == null)
-                return false;
+                return 2;
             String pattBetrag = @"(\d+)([,])(\d+)(\d+)";                                // 9,99
             String pattDatum = @"(\d+)(\d+)([.])(\d+)(\d+)([.])(\d+)(\d+)(\d+)(\d+)";   // 99.99.9999
             String pattZeit = @"(\d+)(\d+)([:])(\d+)(\d+)([:])(\d+)(\d+)";              // 99:99:99
             HtmlElementCollection elemColl = null;
             HtmlDocument doc = wb1.Document;
             if (doc != null)
-                AddTextStr("--- Start ---" + wb1.Document.Url);            
+                AddTextStr("--- Start ---" + wb1.Document.Url);
             elemColl = doc.GetElementsByTagName("body");
             string strInnerText = "";
             string strKursdatum = "";
             string strKurszeit = "";
             string strKurs = "";
+            //string strSharpe = "";
             string strZeilePlus = "";
             string[] strarr1;
             string[] strarr2;
             string[] strarr3;
-            string strf = "";           
+            string strf = "";
             foreach (HtmlElement elem in elemColl) {                    // Ein Element (Node)
                 if (!elem.InnerHtml.Contains(boxanfang))
                     continue;
@@ -316,11 +356,12 @@ namespace MeineFinanzen.View {
                 strInnerText = elem.InnerText;                               // Beginn Box 'row quotebox'
                 strInnerText = Regex.Replace(strInnerText, "[\x00-\x1F]+", "/");
                 string[] strZeilenTeile = strInnerText.Split('/');
-                Console.Write("---- {0,2} {1,5} {2,-80} BoxAnf:{3}", elem.Children.Count, elem.InnerHtml.Length, wb1.Document.Url, boxanfang);                
+                Console.Write("---- {0,2} {1,5} {2,-80} BoxAnf:{3}", elem.Children.Count, elem.InnerHtml.Length, wb1.Document.Url, boxanfang);
                 int nn = 0;
                 strKursdatum = "";
                 strKurszeit = "";
                 strKurs = "";                                                       // Und +-EUR, +-% 
+                //strSharpe = "";
                 char[] charSeparators = new char[] { ' ' };
                 foreach (string strZeile in strZeilenTeile) {                       // Zeilen in der Box.
                     strf = "";
@@ -355,82 +396,207 @@ namespace MeineFinanzen.View {
                 }                   // foreach (string strZeile in strZeilenTeile)
                 strf = String.Format("@2 K:{0} D:{1} Z:{2}", strKurs, strKursdatum, strKurszeit);
                 if (strf.Length == 0)
-                    return false;
+                    return 2;
                 string[] strarrx = strKurs.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
                 if (strKurs.Length > 0) {
                     wpsneu.WPVKursNeu = Convert.ToDouble(strarrx[0]);
                     // 128,96 2,33 1,84
                 }
                 if (strarrx.Length > 1)
-                    wpsneu.WPVProzentAenderung = Convert.ToDouble(strarrx[1]);
+                    wpsneu.WPVProzentAenderungNeu = Convert.ToDouble(strarrx[1]);
                 if (strarrx.Length > 2)
-                    wpsneu.WPVProzentAenderung = Convert.ToDouble(strarrx[2]);
+                    wpsneu.WPVProzentAenderungNeu = Convert.ToDouble(strarrx[2]);
                 strarrx = strKursdatum.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
-                wpsneu.WPVKursZeit = Convert.ToDateTime(strarrx[0]);
-                Console.WriteLine("§{0,7} {1} {2}", wpsneu.WPVKursNeu, wpsneu.WPVProzentAenderung, wpsneu.WPVKursZeit);
+                if (strarrx.Length > 0)
+                    wpsneu.WPVKursZeitNeu = Convert.ToDateTime(strarrx[0]);
+                Console.WriteLine("§{0,7} {1} {2}", wpsneu.WPVKursNeu, wpsneu.WPVProzentAenderungNeu, wpsneu.WPVKursZeitNeu);
                 //Progress++;
-                return true;
+                return 1;
             }                   // foreach (HtmlElement elem in elemColl)
             System.Windows.MessageBox.Show("Fehler. Auf dieser WebSeite kein 'row quotebox' gefunden!!!");
             //SetDataRowColor("R");
-            return false;    // Wenn kein 'row quotebox' gefunden.
+            return 3;    // Wenn kein 'row quotebox' gefunden.
         }
         private void dgvVorgabeInt2_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
+            /* var source = e.Source;
+            if (e.RightButton == MouseButtonState.Pressed) {
+                URLsVerwaltenContextMenu gk = new URLsVerwaltenContextMenu();
+                gk.ShowDialog();
+            } */
+            //base.OnMouseDown(e);
+            //e.Handled = true;
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is System.Windows.Controls.DataGridCell))
                 dep = VisualTreeHelper.GetParent(dep);
             if (dep == null)
                 return;
             System.Windows.Controls.DataGridCell cell1 = dep as System.Windows.Controls.DataGridCell;
-            dgRow1 = dep as System.Windows.Controls.DataGridRow;
-            while ((dep != null) && !(dep is System.Windows.Controls.DataGridRow))
+            while ((dep != null) && !(dep is DataGridRow))
                 dep = VisualTreeHelper.GetParent(dep);
-            dgRow1 = dep as System.Windows.Controls.DataGridRow;
+            dgRow1 = dep as DataGridRow;
             if (dgRow1 == null)
                 return;
-            string strType = dgRow1.Item.GetType().ToString();
-            if (strType != "MeineFinanzen.Model.VorgabeInt2") {
-                strAnzeige = "Bitte VorgabeIn2 anklicken!";
-                DataContext = null;
-                DataContext = this;
-                return;
-            }
-            System.Windows.Controls.DataGrid dataGrid = System.Windows.Controls.ItemsControl.ItemsControlFromItemContainer(dgRow1) as System.Windows.Controls.DataGrid;
+            //string strType = dgRow1.Item.GetType().ToString();  // MeineFinanzen.Model.VorgabeInt2                      
+            System.Windows.Controls.DataGrid dataGrid = ItemsControl.ItemsControlFromItemContainer(dgRow1) as System.Windows.Controls.DataGrid;
             var item = dataGrid.ItemContainerGenerator.ItemFromContainer(dgRow1);
+            if (item.ToString() == "{NewItemPlaceholder}")
+                return;
             _ColHeaderVorgabe = cell1.Column.Header.ToString();
-            _Url1 = ((Model.VorgabeInt2)item).Url1;
-            _Url2 = ((Model.VorgabeInt2)item).Url2;
-            _BoxAnfang = ((Model.VorgabeInt2)item).Boxanfang;
-            if (dgRow1.DetailsVisibility == Visibility.Collapsed) {
-                dgRow1.DetailsVisibility = Visibility.Visible;
+            _Url1 = ((UrlVerwalten)item).Url1;
+            _Url2 = ((UrlVerwalten)item).Url2;
+            _BoxAnfang = ((UrlVerwalten)item).Boxanfang;
+            /* if (dgRow1.DetailsVisibility == Visibility.Collapsed) {
+                 dgRow1.DetailsVisibility = Visibility.Visible;
             } else {
-                dgRow1.DetailsVisibility = Visibility.Collapsed;
+                //dgRow1.DetailsVisibility = Visibility.Collapsed;
             }
             Console.WriteLine("_ColHeaderVorgabe: {0,12} {1,20} {2,20} _BoxAnfang: {3,20}", _ColHeaderVorgabe, _Url1, _Url2, _BoxAnfang);
-            if (((Model.VorgabeInt2)item).Vg2Color == "Eingefügt") {
+            if (((VorgabeInt2)item).Vg2Color == "Eingefügt") {
                 strAnzeige = "xxxxxxxxxxEingefügtxxxxxxxxxxxxxx";
             } else {
                 strAnzeige = "yyyyyyyyyyyyyyyyyyyyyyyyyyy " + cell1.Column.Header;
                 strAnzeige += Environment.NewLine + "mach was";
-            }
+            } */
+            Meldung("Vorgabe " + _Url1 + " " + _Url2);
             DataContext = null;
             DataContext = this;
         }
         private void wb1_DocumentTitleChanged(object sender, EventArgs e) { }
         private void wb1_DocumentCompleted(object sender, System.Windows.Forms.WebBrowserDocumentCompletedEventArgs e) { }
-        private void wb1_Navigating(object sender, System.Windows.Forms.WebBrowserNavigatingEventArgs e) { }
-        private void _Beenden_Click(object sender, RoutedEventArgs e) { }
+        private void cbBoxanfang_Loaded(object sender, RoutedEventArgs e) {
+            //cbBoxanfang.Text = "BoxAnfang - Text";
+            //cbBoxanfang.Items.Add("BoxAnfang-Text");
+            //cbBoxanfang.SelectedIndex = 0;            
+            try {
+                //OCBoxanfang();
+            } catch (Exception ex) {
+                System.Windows.MessageBox.Show("Fehler in cbBoxanfang_Loaded: " + ex);
+            }
+        }
+        private void cbBoxanfang_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
+        private void cbAusschluss1_Loaded(object sender, RoutedEventArgs e) {
+            //cbUrl2.Text = "URL2";
+            //cbUrl2.Items.Add("URL2");
+            //cbUrl2.SelectedIndex = 0;
+            foreach (UrlVerwalten vg in liVorg) {
+                try {
+                    //cbUrl2.Items.Add(vg.Url2);
+                } catch (Exception ex) {
+                    System.Windows.MessageBox.Show("Fehler in cbUrl2_Loaded: " + ex);
+                }
+            }
+        }
+        private void wb1_Navigating(object sender, WebBrowserNavigatingEventArgs e) { }
+        private void cbAusschluss1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+
+        }
+        private void cbWert1_Loaded(object sender, RoutedEventArgs e) {
+
+        }
+        private void cbWert1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+
+        }
+        private void _Beenden_Click(object sender, RoutedEventArgs e) { }      
+        private void dgvUrls_Neu_Click(object sender, RoutedEventArgs e) {
+            DatagridContextMenu.IsOpen = false;
+            string xxx = DatagridContextMenu.ToString();
+            string strType = dgRow1.Item.GetType().ToString();      // MeineFinanzen.Model.WertpapSynchroNeu
+            System.Windows.Controls.DataGrid dataGrid = ItemsControl.ItemsControlFromItemContainer(dgRow1)
+                as System.Windows.Controls.DataGrid;
+            WertpapSynchroNeu wpsn = (WertpapSynchroNeu)dataGrid.ItemContainerGenerator.ItemFromContainer(dgRow1);
+            
+            wb1.Navigate(new Uri("https://www.google.de/search?q=" + "finanzen " + wpsn.WPVISIN
+                + "&ie=utf-8&oe=utf-8&client=firefox-b"));
+            //https://www.google.com/search?q=XXYY&ie=utf-8&oe=utf-8&client=firefox-b
+            //string browser = GetDefaultBrowser();
+        }        
+        private void dgvUrls_bearbeiten_Click(object sender, RoutedEventArgs e) {
+        }
+        private void myMenuButton_ContextMenu_Closed(object sender, RoutedEventArgs e) {
+            //Console.WriteLine("intercepted!!!!");
+            e.Handled = true;
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e) {
+
+        }
+        // Navigates webBrowser1 to the search page of the current user.
+        private void searchButton_Click(object sender, EventArgs e) {
+            wb1.GoSearch();
+        }
+        // Navigates webBrowser1 to the home page of the current user.
+        private void homeButton_Click(object sender, EventArgs e) {
+            wb1.GoHome();
+        }
+        /* private string GetDefaultBrowser() {
+    string browser = string.Empty;
+    RegistryKey key = null;
+    try {
+        key = Registry.ClassesRoot.OpenSubKey(@"HTTP\shell\open\command");
+        // trim off quotes
+        if (key != null)
+            browser = key.GetValue(null).ToString().ToLower(); 
+        // "c:\program files (x86)\mozilla firefox\firefox.exe" -osint -url "%1"
+        // get rid of everything after the ".exe"
+        if (!browser.EndsWith("exe")) {
+            browser = browser.Substring(0, browser.LastIndexOf(".exe") + 4);
+            browser = browser.Substring(1);
+            // c:\program files (x86)\mozilla firefox\firefox.exe
+        }
+    } finally {
+        if (key != null)
+            key.Close();
+    }
+    return browser;
+}  */
         private void Abmelden_Click(object sender, RoutedEventArgs e) { }
         private void dgvVorgabeInt2_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) { }
         protected void DoEvents() {
             if (System.Windows.Application.Current != null)
                 System.Windows.Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new ThreadStart(delegate { }));
         }
-        private void AddTextStr(string str) {          
+        private void AddTextStr(string str) {
             txtAnzeige.AppendText(Environment.NewLine + str);
             txtAnzeige.ScrollToEnd();
             txtAnzeige.InvalidateVisual();
             DoEvents();
+        }
+        private void Meldung(string str) {
+            TxtMeldung.AppendText(str + Environment.NewLine);
+            TxtMeldung.ScrollToEnd();
+            TxtMeldung.InvalidateVisual();
+            DoEvents();
+        }
+        public ObservableCollection<UrlVerwalten> GetVorgaben() {
+            liVorgaben.Add(new UrlVerwalten { Url1 = "uurrrllll1" });
+            return liVorgaben;
+        }
+    }
+    public class OCBoxanfang : ObservableCollection<string> {
+        public OCBoxanfang() {
+            Add("Spain");
+            Add("France");
+            Add("Peru");
+            Add("Mexico");
+            Add("Italy");
+        }
+    }
+    public class OCAusschluss1 : ObservableCollection<string> {
+        public OCAusschluss1() {
+            Add("Spain");
+            Add("France");
+            Add("Peru");
+            Add("Mexico");
+            Add("Italy");
+        }
+    }
+    public class OCWert1 : ObservableCollection<string> {
+        public OCWert1() {
+            Add("Spain22");
+            Add("France");
+            Add("Peru");
+            Add("Mexico");
+            Add("Italy");
         }
     }
 }

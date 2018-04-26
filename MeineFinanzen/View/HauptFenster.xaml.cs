@@ -1,4 +1,4 @@
-﻿// 13.04.2018   -View-  HauptFenster.cs 
+﻿// 24.04.2018   -View-  HauptFenster.cs 
 // Tja, wenn man die Grundlagen nicht lernen will, stolpert man halt ständig beim Ausprobieren.
 // Wenn du eine DataTable an ein DG bindest, spiegelt der DefaultView der DT die Daten wieder. Mit allen Filter- und Sort-Angaben.
 // 16.11.2014 Ser/Deserialize 'Wertpapiere' zu/von Xml-Datei. 
@@ -38,8 +38,7 @@ namespace MeineFinanzen.View {
         internal VMKontenSynchronisierenSubsembly _kosySubsembly;
         internal KontenSynchronisierenInt _kosyInt;
         internal KontenSynchronisierenInt2 _kosyInt2;
-        internal Konten_Knotenliste_Erstellen _kosyErstellen;
-        internal VorgabeInt2 _vorInt2;    
+        internal Konten_Knotenliste_Erstellen _kosyErstellen;         
         internal StreamWriter swLog;
         internal DateTime _Datum;
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
@@ -52,7 +51,7 @@ namespace MeineFinanzen.View {
         private Stopwatch _stopwatch = new Stopwatch();        // Eine StopUhr
         private static UmsätzeHolen umsHolen;
         private Process[] processes;
-        DirectoryInfo rootDir = null;
+        DirectoryInfo rootDir = null;      
         public HauptFenster() {
             splash = new SplashWindow(this);
             // NOCH splash.Show();
@@ -64,7 +63,7 @@ namespace MeineFinanzen.View {
             GlobalRef.g_User = new User();
             GlobalRef.g_CollUser = new CollUser();
             GlobalRef.g_WP = new CollWertpapiere();
-            GlobalRef.g_WPHBCI = new WertpapHBCI4j();            
+            GlobalRef.g_WPHBCI = new WertpapHBCI4j();
             GlobalRef.g_KoHBCI = new CollKontenaufstellung();
             string[] drives = Environment.GetLogicalDrives();
             GlobalRef.g_dgBanken = new DgBanken();
@@ -79,9 +78,9 @@ namespace MeineFinanzen.View {
                         Console.WriteLine("---- " + dirInfo.Name);
                         rootDir = dirInfo;
                         break;
-                        }
                     }
                 }
+            }
             // FileInfo fiExe = (new FileInfo(Assembly.GetEntryAssembly().Location));            
             // string strxxx = Helpers.GlobalRef.g_Ein + @"\" + Assembly.GetExecutingAssembly().GetName().Name;
             // MeineFinanzen.Model.Einstellungen\MeineFinanzen            
@@ -89,7 +88,7 @@ namespace MeineFinanzen.View {
             ConWrLi("---- -1c- In HauptFenster()");
             GlobalRef.g_Ein.SerializeWriteEinstellungen(GlobalRef.g_Ein.strEinstellungen, GlobalRef.g_Ein);
             ConWrLi("---- -1d- In HauptFenster()");
-            }
+        }
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             ConWrLi("---- -2a- Beginn in Window_Loaded()");
             dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
@@ -173,11 +172,11 @@ namespace MeineFinanzen.View {
             ConWrLi("---- -16g- wbAktuelles_LoadCompleted()");
             WebBrowser wb = (WebBrowser)sender;
             mshtml.HTMLDocument htmlDoc = wb.Document as mshtml.HTMLDocument;
-            htmlDoc.parentWindow.scroll(0, 300);
+            htmlDoc.parentWindow.scroll(0, 260);
             WindowState = WindowState.Maximized;
             ConWrLi("---- -16h- wbAktuelles_LoadCompleted()");
             // NOCH splash.Close();
-            Console.WriteLine("---- --05-- HauptFenster _dgBanken.banken.Count {0}", DgBanken.banken.Count);
+            Console.WriteLine("---- --05-- HauptFenster _dgBanken.banken.Count {0}", DgBanken.banken.Count);           
             }
         private void CPUSpeedAnzeigen() {
             var counters = new List<PerformanceCounter>();
@@ -337,12 +336,13 @@ namespace MeineFinanzen.View {
             }
         private void UngroupButton_Click(object sender, RoutedEventArgs e) {
             ICollectionView cvWertpapiere = CollectionViewSource.GetDefaultView(dgWertpapiere.ItemsSource);
-            if (cvWertpapiere != null) {
+            if (cvWertpapiere != null && cvWertpapiere.CanGroup == true) {
                 _isGroup = false;
                 cvWertpapiere.GroupDescriptions.Clear();
                 }
             }
-        private void GroupButton_Click(object sender, RoutedEventArgs e) {
+        private void GroupButton_Click(object sender, RoutedEventArgs e) {            
+            e.Handled = true;
             ICollectionView cvWertpapiere = CollectionViewSource.GetDefaultView(dgWertpapiere.ItemsSource);
             if (cvWertpapiere != null && cvWertpapiere.CanGroup == true) {
                 _isGroup = true;
@@ -664,7 +664,7 @@ namespace MeineFinanzen.View {
             return child;
             }
         private void GridWertpapiere_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e) {
-            //Details.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));           
+            //Detail.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));           
             }
         private void AlsTextRestore_Click(object sender, RoutedEventArgs e) {
 
@@ -994,11 +994,11 @@ namespace MeineFinanzen.View {
             koauf.dgKontenaufstellung.EnableRowVirtualization = false;
             koauf.Show();
             }
-        private void VorgabeParameterErstellenInt2_Click(object sender, RoutedEventArgs e) {
-            _vorInt2 = new VorgabeInt2();
-            _vorInt2.Show();             // Nicht Modal, kehrt zurück.
+        private void URLsVerwalten_Click(object sender, RoutedEventArgs e) {
+            URLsVerwalten _urlsverwalten = new URLsVerwalten();
+            _urlsverwalten.Show();             // Nicht Modal, kehrt zurück.
         }
-/* private void InnereDatagridBanken3_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e) {
+        /* private void InnereDatagridBanken3_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e) {
 DataGridRow dgrow = e.Row as DataGridRow;
 Model.Umsatz ums = (Model.Umsatz)dgrow.Data-Context;
 Console.WriteLine("InnereDatagridBanken3_RowDetailsVisibilityChanged:{0} Name1:{1}", ums.Kontonummer, ums.Name1);
@@ -1298,6 +1298,25 @@ return;
                     sr.WriteLine(node.Header);
             }
         }  */
+    }
+    [ValueConversion(typeof(Boolean), typeof(String))]
+    public class CompleteConverter : IValueConverter {
+        // This converter changes the value of a XTas ksX Complete status from true/false to a string value of
+        // "Complete"/"Active" for use in the row group header.
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+            bool complete = (bool)value;
+            if (complete)
+                return "Complete";
+            else
+                return "Active";
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+            string strComplete = (string)value;
+            if (strComplete == "Complete")
+                return true;
+            else
+                return false;
+        }
     }
     public class IconPathConverter : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
