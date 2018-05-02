@@ -196,7 +196,7 @@
     <Compile Include="Model\CollWertpapSynchroNeu.cs" />
     <Compile Include="Model\VacationSpots.cs" />
     <Compile Include="Model\WertpapHBCI4j.cs" />
-    <Compile Include="CollWertpapSynchro.cs" />
+    <Compile Include="Model\CollWertpapSynchro.cs" />
     <Compile Include="Model\CollZahlungen.cs" />
     <Compile Include="Model\CollKontenaufstellung.cs" />
     <Compile Include="Model\PortFolDatensatz.cs" />
@@ -254,17 +254,11 @@
     <Compile Include="View\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Meldung.xaml.cs">
-      <DependentUpon>Meldung.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\URLsVerwalten.xaml.cs">
       <DependentUpon>URLsVerwalten.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\URLsVerwaltenContextMenu.xaml.cs">
-      <DependentUpon>URLsVerwaltenContextMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\XPathVerwalten.xaml.cs">
       <DependentUpon>XPathVerwalten.xaml</DependentUpon>
@@ -343,19 +337,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Meldung.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\SplashWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\URLsVerwalten.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\URLsVerwaltenContextMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

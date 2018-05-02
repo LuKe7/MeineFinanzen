@@ -58,8 +58,51 @@
                 <RowDefinition Height="2*" />
                 <RowDefinition Height="30*" />
             </Grid.RowDefinitions>
-            
-            <!--Ein Element, mit dem Sie ein Windows Forms-Steuerelement auf einer WPF-Seite hosten können.-->
+            <StackPanel Orientation="Vertical">
+                <Menu DockPanel.Dock="Top"
+                      HorizontalAlignment="Left"
+                      FontSize="14"
+                      x:Name="mnuMenu1">
+                    <MenuItem Header="Kurs"
+                              Click="Kurs_Click" />
+                    <MenuItem Header="Zeit"
+                              Click="Zeit_Click" />
+                    <MenuItem Header="ProzÄnd."
+                              Click="ProzÄnd_Click" />
+                    <MenuItem Header="Sharpe"
+                              Click="Sharpe_Click" />
+                    <MenuItem Header="Ok"
+                              Click="btOk_Click" />
+                    <MenuItem Header="_Web">
+                        <MenuItem Header="_Search"
+                                  Click="searchButton_Click" />
+                        <MenuItem Header="_GoHome"
+                                  Click="homeButton_Click" />
+                        <Separator />
+                        <MenuItem Header="_Speichern" />
+                        <MenuItem Header="Speichern _unter ..." />
+                        <Separator />
+                        <MenuItem Header="_Senden an">
+                            <MenuItem Header="_Mail" />
+                            <MenuItem Header="_Desktop" />
+                        </MenuItem>
+                        <MenuItem Header="_Beenden"
+                                  Click="_Beenden_Click" />
+                    </MenuItem>
+                    <MenuItem Header="_Extras">
+                        <MenuItem Header="_Abmelden"
+                                  Click="Abmelden_Click" />
+                    </MenuItem>
+                    <MenuItem Header="_Hilfe" />
+                </Menu>
+                <TextBox Name="TxtUrl"
+                         Grid.Row="1"
+                         TextWrapping="Wrap"
+                         Background="LightGreen"
+                         Foreground="DarkBlue"
+                         VerticalScrollBarVisibility="Visible"
+                         HorizontalScrollBarVisibility="Visible"></TextBox>
+            </StackPanel>
             <WindowsFormsHost x:Name="wfh1"
                               Grid.Row="1">
                 <!-- Mit winforms: könnt ihr eine Form auswählen und mit 
@@ -67,7 +110,8 @@
                 <winforms:WebBrowser x:Name="wb1"
                                      DocumentTitleChanged="wb1_DocumentTitleChanged"
                                      DocumentCompleted="wb1_DocumentCompleted"
-                                     Navigating="wb1_Navigating" />
+                                     Navigating="wb1_Navigating"
+                                     Navigated="wb1_Navigated" />
             </WindowsFormsHost>
         </Grid>
         <Grid x:Name="GridRechts"
@@ -85,36 +129,7 @@
                 <RowDefinition Height="10*" />
             </Grid.RowDefinitions>
             <Menu DockPanel.Dock="Top"
-                  Grid.Column="0"
-                  Grid.Row="0"
-                  x:Name="mnuMenu1"
-                  FontSize="14">
-                <MenuItem Header="_WebBrowser">
-                    <MenuItem Header="_Search"
-                              Click="searchButton_Click"></MenuItem> />
-                    <MenuItem Header="_GoHome"
-                              Click="homeButton_Click" />
-                    <Separator />
-                    <MenuItem Header="_Speichern" />
-                    <MenuItem Header="Speichern _unter ..." />
-                    <Separator />
-                    <MenuItem Header="_Senden an">
-                        <MenuItem Header="_Mail" />
-                        <MenuItem Header="_Desktop" />
-                    </MenuItem>
-                    <MenuItem Header="_Beenden"
-                              Click="_Beenden_Click" />
-                </MenuItem>
-                <MenuItem Header="_Extras">
-                    <MenuItem Header="_Abmelden"
-                              Click="Abmelden_Click" />
-                </MenuItem>
-                <MenuItem Header="_Hilfe" />
-            </Menu>
-            <Menu DockPanel.Dock="Top"
-                  Grid.Row="0"
-                  x:Name="mnuMenu2"
-                  FontSize="14">
+                  x:Name="mnuMenu2">
                 <MenuItem Header="_Datei">
                     <MenuItem Header="_Neu" />
                     <MenuItem Header="_Öffnen" />
@@ -144,9 +159,9 @@
                      VerticalScrollBarVisibility="Visible"
                      HorizontalScrollBarVisibility="Visible"></TextBox>
             <DataGrid x:Name="dgvUrls"
+                      Language="DE-de"
                       Grid.Column="1"
                       Grid.Row="2"
-                      Language="DE-de"
                       SelectionMode="Extended"
                       RowDetailsVisibilityMode="Collapsed"
                       HorizontalAlignment="Left"
@@ -156,6 +171,9 @@
                       HorizontalGridLinesBrush="Black"
                       VerticalGridLinesBrush="Black"
                       PreviewMouseDown="dgvUrls_PreviewMouseDown">
+                <!--MouseEnter="OnMouseEnterHandler"
+                      MouseLeave="OnMouseLeaveHandler"
+                      MouseMove="dgvUrls_MouseMove"    -->
                 <DataGrid.ContextMenu>
                     <ContextMenu Name="DatagridContextMenu"
                                  Closed="myMenuButton_ContextMenu_Closed">
@@ -248,6 +266,11 @@
                                 <Setter Property="Background"
                                         Value="Beige" />
                             </DataTrigger>
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+                                <Setter Property="Background"
+                                        Value="Green" />
+                            </Trigger>
                         </Style.Triggers>
                     </Style>
                 </DataGrid.RowStyle>

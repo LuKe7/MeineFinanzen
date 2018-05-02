@@ -31,7 +31,7 @@ using MeineFinanzen.Helpers;
 namespace MeineFinanzen.View {
     public partial class HauptFenster : Window {
         internal string strSplash = "MeineFinanzen... loading";
-        private SplashWindow splash = null;
+        //private SplashWindow splash = null;
         internal List<FinContact> liContacte = new List<FinContact>();
         internal DgBanken _dgBanken;
         internal KontenSynchronisierenHBCI4j _kosyHBCI4j;
@@ -53,7 +53,7 @@ namespace MeineFinanzen.View {
         private Process[] processes;
         DirectoryInfo rootDir = null;      
         public HauptFenster() {
-            splash = new SplashWindow(this);
+            //splash = new SplashWindow(this);
             // NOCH splash.Show();
             InitializeComponent();
             processes = Process.GetProcesses();

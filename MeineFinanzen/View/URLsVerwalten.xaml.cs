@@ -1,4 +1,4 @@
-﻿// 23.04.2018 VorgabeInt2.xaml.cs
+﻿// 02.05.2018 VorgabeInt2.xaml.cs
 // VorgabeParameter für KontenSynchronisierung über Internet 2.Version(Über Textsuche in Elementen...).
 // Die Wertpapiere suchen sich ihren Parametersatz selbst. Über Url1 + Url2 !!!!
 // Erstellen dieser Sätze, falls sie nicht vorhanden sind.
@@ -35,11 +35,11 @@
     </tblVorgabeInt2> */
 using DataSetAdminNS;
 using MeineFinanzen.Model;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -61,6 +61,9 @@ namespace MeineFinanzen.View {
         public DataGridRow dgRow1 = null;               // Diese Zeile in dgvUrl wurde angeklickt.      
         string _Url1, _Url2, _BoxAnfang, _TxtKurse, _TxtKurszeit, _TxtKursdatum, _TxtKurs; // Diese Zeile in dgvVorgabe wurde angeklickt.
         string _ColHeaderVorgabe;                       // Diese Spalte in dgvVorgabe wurde angeklickt.
+        int posx = -1;      //  e.ClientMousePosition.X;
+        int posy = -1;
+        HtmlElement _elem1 = null;
         public URLsVerwalten() {
             InitializeComponent();
             //txtAnzeige.Multiline = true;          
@@ -423,8 +426,8 @@ namespace MeineFinanzen.View {
                 URLsVerwaltenContextMenu gk = new URLsVerwaltenContextMenu();
                 gk.ShowDialog();
             } */
-            //base.OnMouseDown(e);
-            //e.Handled = true;
+            base.OnMouseDown(e);
+            e.Handled = true;
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is System.Windows.Controls.DataGridCell))
                 dep = VisualTreeHelper.GetParent(dep);
@@ -461,8 +464,12 @@ namespace MeineFinanzen.View {
             DataContext = null;
             DataContext = this;
         }
-        private void wb1_DocumentTitleChanged(object sender, EventArgs e) { }
-        private void wb1_DocumentCompleted(object sender, System.Windows.Forms.WebBrowserDocumentCompletedEventArgs e) { }
+        private void wb1_DocumentTitleChanged(object sender, EventArgs e) {
+            AddTextStr("wb1_DocumentTitleChanged");
+        }
+        private void wb1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e) {
+            AddTextStr("wb1_DocumentCompleted");
+        }
         private void cbBoxanfang_Loaded(object sender, RoutedEventArgs e) {
             //cbBoxanfang.Text = "BoxAnfang - Text";
             //cbBoxanfang.Items.Add("BoxAnfang-Text");
@@ -473,7 +480,9 @@ namespace MeineFinanzen.View {
                 System.Windows.MessageBox.Show("Fehler in cbBoxanfang_Loaded: " + ex);
             }
         }
-        private void cbBoxanfang_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
+        private void cbBoxanfang_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            System.Windows.Forms.MessageBox.Show("NOCH    cbBoxanfang_SelectionChanged");
+        }
         private void cbAusschluss1_Loaded(object sender, RoutedEventArgs e) {
             //cbUrl2.Text = "URL2";
             //cbUrl2.Items.Add("URL2");
@@ -488,15 +497,14 @@ namespace MeineFinanzen.View {
         }
         private void wb1_Navigating(object sender, WebBrowserNavigatingEventArgs e) { }
         private void cbAusschluss1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-
+            System.Windows.Forms.MessageBox.Show("NOCH    cbAusschluss1_SelectionChanged");
         }
         private void cbWert1_Loaded(object sender, RoutedEventArgs e) {
-
+            //System.Windows.Forms.MessageBox.Show("NOCH    cbWert1_Loaded");
         }
         private void cbWert1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-
+            System.Windows.Forms.MessageBox.Show("NOCH    cbWert1_SelectionChanged");
         }
-        private void _Beenden_Click(object sender, RoutedEventArgs e) { }      
         private void dgvUrls_Neu_Click(object sender, RoutedEventArgs e) {
             DatagridContextMenu.IsOpen = false;
             string xxx = DatagridContextMenu.ToString();
@@ -505,52 +513,121 @@ namespace MeineFinanzen.View {
                 as System.Windows.Controls.DataGrid;
             WertpapSynchroNeu wpsn = (WertpapSynchroNeu)dataGrid.ItemContainerGenerator.ItemFromContainer(dgRow1);
             
-            wb1.Navigate(new Uri("https://www.google.de/search?q=" + "finanzen " + wpsn.WPVISIN
+            wb1.Navigate(new Uri("https://www.google.de/search?q=" + "Kurs " + wpsn.WPVISIN
                 + "&ie=utf-8&oe=utf-8&client=firefox-b"));
             //https://www.google.com/search?q=XXYY&ie=utf-8&oe=utf-8&client=firefox-b
             //string browser = GetDefaultBrowser();
         }        
         private void dgvUrls_bearbeiten_Click(object sender, RoutedEventArgs e) {
+            System.Windows.Forms.MessageBox.Show("NOCH    dgvUrls_bearbeiten_Click");
         }
         private void myMenuButton_ContextMenu_Closed(object sender, RoutedEventArgs e) {
             //Console.WriteLine("intercepted!!!!");
             e.Handled = true;
         }
-
-        private void MenuItem_Click(object sender, RoutedEventArgs e) {
-
-        }
-        // Navigates webBrowser1 to the search page of the current user.
         private void searchButton_Click(object sender, EventArgs e) {
             wb1.GoSearch();
         }
-        // Navigates webBrowser1 to the home page of the current user.
-        private void homeButton_Click(object sender, EventArgs e) {
+        private void _Beenden_Click(object sender, RoutedEventArgs e) {
+            System.Windows.Forms.MessageBox.Show("NOCH    _Beenden_Click");
+        }
+        private void searchButton_Click(object sender, RoutedEventArgs e) {
+            wb1.GoSearch();
+        }
+        private void homeButton_Click(object sender, RoutedEventArgs e) {
             wb1.GoHome();
         }
-        /* private string GetDefaultBrowser() {
-    string browser = string.Empty;
-    RegistryKey key = null;
-    try {
-        key = Registry.ClassesRoot.OpenSubKey(@"HTTP\shell\open\command");
-        // trim off quotes
-        if (key != null)
-            browser = key.GetValue(null).ToString().ToLower(); 
-        // "c:\program files (x86)\mozilla firefox\firefox.exe" -osint -url "%1"
-        // get rid of everything after the ".exe"
-        if (!browser.EndsWith("exe")) {
-            browser = browser.Substring(0, browser.LastIndexOf(".exe") + 4);
-            browser = browser.Substring(1);
-            // c:\program files (x86)\mozilla firefox\firefox.exe
+        private void wb1_Navigated(object sender, WebBrowserNavigatedEventArgs e) {
+            TxtUrl.Text = wb1.Url.ToString();
         }
-    } finally {
-        if (key != null)
-            key.Close();
-    }
-    return browser;
+        private void wb1_Document_Click(Object sender, System.Windows.Forms.HtmlElementEventArgs e) {
+            if (e.ClientMousePosition.IsEmpty) {
+                _elem1 = null;
+                posx = -1;
+                posy = -1;
+            } else {
+                posx = e.ClientMousePosition.X;
+                posy = e.ClientMousePosition.Y;
+                _elem1 = wb1.Document.GetElementFromPoint(e.ClientMousePosition); // Ruft das an den angegebenen Clientkoordinaten befindliche HTML-Element ab.                            
+                if (_elem1 != null)
+                    AddTextStr("wb1_Document_Click: " + _elem1.InnerText);
+                else
+                    AddTextStr("wb1_Document_Click: null");
+            }
+        }
+        private void Kurs_Click(object sender, RoutedEventArgs e) {
+            wb1.Document.Click += new HtmlElementEventHandler(wb1_Document_Click);
+        }
+        private void Zeit_Click(object sender, RoutedEventArgs e) {
+
+        }
+        private void ProzÄnd_Click(object sender, RoutedEventArgs e) {
+
+        }
+        private void Sharpe_Click(object sender, RoutedEventArgs e) {
+
+        }
+        private void btOk_Click(object sender, RoutedEventArgs e) {
+            /* if (!boDgvRowAusgewählt)
+                return;
+            if (_foundRow == null)
+                return;
+            if (cbKeinSharpe.IsChecked == true) {
+                _foundRow.WPUrlSharpe = "";
+                _foundRow.WPSharpe = 0;
+            }  */
+            //AddTextStr("btOk() _foundRow[\"WPKurs\"]: " + _foundRow.WPKurs.ToString());
+            //AllesReset();
+            wb1.Document.Click -= new HtmlElementEventHandler(wb1_Document_Click);
+        }
+        private void dgvUrls_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
+            DependencyObject dep = (DependencyObject)e.OriginalSource;
+            while ((dep != null) && !(dep is System.Windows.Controls.DataGridCell))
+                dep = VisualTreeHelper.GetParent(dep);
+            if (dep == null)
+                return;
+            System.Windows.Controls.DataGridCell cell1 = dep as System.Windows.Controls.DataGridCell;
+            while ((dep != null) && !(dep is DataGridRow))
+                dep = VisualTreeHelper.GetParent(dep);
+            dgRow1 = dep as DataGridRow;
+            if (dgRow1 == null)
+                return;
+            //string strType = dgRow1.Item.GetType().ToString();  // MeineFinanzen.Model.VorgabeInt2                      
+            System.Windows.Controls.DataGrid dataGrid = ItemsControl.ItemsControlFromItemContainer(dgRow1) as System.Windows.Controls.DataGrid;
+            var item = dataGrid.ItemContainerGenerator.ItemFromContainer(dgRow1);
+            if (item.ToString() == "{NewItemPlaceholder}")
+                return;
+            _ColHeaderVorgabe = cell1.Column.Header.ToString();
+            //string strIsin = ((MeineFinanzen.Model.WertpapSynchroNeu)item).WPVISIN;
+
+        }
+        /* private string GetDefaultBrowser() {
+string browser = string.Empty;
+RegistryKey key = null;
+try {
+key = Registry.ClassesRoot.OpenSubKey(@"HTTP\shell\open\command");
+// trim off quotes
+if (key != null)
+browser = key.GetValue(null).ToString().ToLower(); 
+// "c:\program files (x86)\mozilla firefox\firefox.exe" -osint -url "%1"
+// get rid of everything after the ".exe"
+if (!browser.EndsWith("exe")) {
+browser = browser.Substring(0, browser.LastIndexOf(".exe") + 4);
+browser = browser.Substring(1);
+// c:\program files (x86)\mozilla firefox\firefox.exe
+}
+} finally {
+if (key != null)
+key.Close();
+}
+return browser;
 }  */
-        private void Abmelden_Click(object sender, RoutedEventArgs e) { }
-        private void dgvVorgabeInt2_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) { }
+        private void Abmelden_Click(object sender, RoutedEventArgs e) {
+            System.Windows.Forms.MessageBox.Show("NOCH    Abmelden_Click");
+        }
+        private void dgvVorgabeInt2_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            System.Windows.Forms.MessageBox.Show("NOCH    dgvVorgabeInt2_SelectionChanged");
+        }
         protected void DoEvents() {
             if (System.Windows.Application.Current != null)
                 System.Windows.Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new ThreadStart(delegate { }));
