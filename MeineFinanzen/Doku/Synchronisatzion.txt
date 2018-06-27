@@ -1,0 +1,26 @@
+﻿ Synchronisieren: 4 Werte in dtPortFol setzen: WPKurs WPStand WPProzentAenderung WPSharpe.
+	Woher: 1)Internet, 2)Internet2, 3)HBCI4=Bank, 4)Subsembly=Bank.
+		1) Über Internet: Per Konten_Knotenliste_Erstellen = XPathVerwalten.cs wird die Knotenliste erstellt.
+			Die WPX...-Felder aus tblPortfol zeigen dann im HTML-Dokument auf die 4 Werte(XPath).
+		2) Über Internet2: Per URLsVerwalten.cs die Vorgabeparameter setzen.
+			Die tblVorgabeIn2-Felder zeigen dann den Weg im ElementeLoop(Textsuche).
+		3) Über HBCI4:
+		4) Über Subsembly:
+
+	Die Wertpapiere suchen sich ihren Parametersatz selbst. Über Url1 + Url2 !!!!
+
+	NICHT MEHR BENUTZT:_________________________________________________________________________________________
+	13.03.2018 Die Url für KontenSynchronisierenInt NEU.
+	Die Klasse PortFol enthält folgende 6 Felder:
+	0.WPUrlText  enthält schon jetzt: https://www.finanzen.net/fonds/sharperatio/whc_-_global_discovery
+	1.WPUrlText1 enthält 1 für "https://www." 
+	2.WPUrlText2 enthält 2 für "finanzen.net/"
+	3.WPUrlText3 enthält 3 für "fonds/"
+	4.WPUrlText4 enthält 4 für "sharperatio/"
+	5.WPUrlText5 enthält 5 für "whc - global_discovery"
+	CollSynUrl eine Row pro WP.
+		Url1 für 1. s.o. Enthält also eine 1 für WPUrlText1 und damit "https://www.".
+		.
+		Url5
+		Die Zahl verweist auf den Tabellenplatz. Ist der Eintrag länger 3 Stellen, dann ist dies ein Direktwert.
+	____________________________________________________________________________________________________________

@@ -1,4 +1,4 @@
-﻿// 08.03.2018 GridKlick.cs
+﻿// 25.06.2018 GridKlick.cs
 // 03.03.2018 DgBanken.wertpap statt -wertpap.  NOCH
 using System.Windows;
 using System.Diagnostics;
@@ -6,11 +6,11 @@ using MeineFinanzen.Helpers;
 using MeineFinanzen.ViewModel;
 namespace MeineFinanzen.View {   
     public partial class GridKlick : Window {
-        internal static BearbeitenView bearb = null;
+        internal static Bearbeiten bearb = null;
         internal static string isi = null;
         internal static HauptFenster mw;
         internal int nro = -1;
-        internal int nwp = -1;
+        internal int nwp = -1;        
         public GridKlick() {
             InitializeComponent();
         }
@@ -26,7 +26,8 @@ namespace MeineFinanzen.View {
         private void LbExportAlle_Click(object sender, RoutedEventArgs e) {
         }
         private void BtBearbeiten_Click(object sender, RoutedEventArgs e) {
-            bearb = new BearbeitenView(mw, isi, nro, nwp);
+            bearb = new Bearbeiten();
+            bearb.MachEs(mw, isi, nro, nwp);
             bearb.Show();
             this.Close();
         }

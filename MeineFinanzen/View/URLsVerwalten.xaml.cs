@@ -1,8 +1,8 @@
-﻿// 02.05.2018 VorgabeInt2.xaml.cs
+﻿// 27.05.2018 URLsVerwalten.xaml.cs
 // VorgabeParameter für KontenSynchronisierung über Internet 2.Version(Über Textsuche in Elementen...).
 // Die Wertpapiere suchen sich ihren Parametersatz selbst. Über Url1 + Url2 !!!!
 // Erstellen dieser Sätze, falls sie nicht vorhanden sind.
-// Ergänzer dieser Sätze manuell.
+// Ergänzen dieser Sätze manuell.
 /*  <tblVorgabeInt2 diffgr:id="tblVorgabeInt21" msdata:rowOrder="0" diffgr:hasChanges="inserted">
       <Url1>https://www.finanzen.net/</Url1>
       <Url2>fonds</Url2>
@@ -39,7 +39,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -61,8 +60,8 @@ namespace MeineFinanzen.View {
         public DataGridRow dgRow1 = null;               // Diese Zeile in dgvUrl wurde angeklickt.      
         string _Url1, _Url2, _BoxAnfang, _TxtKurse, _TxtKurszeit, _TxtKursdatum, _TxtKurs; // Diese Zeile in dgvVorgabe wurde angeklickt.
         string _ColHeaderVorgabe;                       // Diese Spalte in dgvVorgabe wurde angeklickt.
-        int posx = -1;      //  e.ClientMousePosition.X;
-        int posy = -1;
+        int _posx = -1;      //  e.ClientMousePosition.X;
+        int _posy = -1;
         HtmlElement _elem1 = null;
         public URLsVerwalten() {
             InitializeComponent();
@@ -245,7 +244,7 @@ namespace MeineFinanzen.View {
             DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             //mel.Close();
         }
-        private void ResetDgRow() {            
+        private void ResetDgRow() {
             dgRow1.DetailsVisibility = Visibility.Collapsed;
             foreach (UrlVerwalten vg2 in liVorg) {
                 vg2.Vg2Color = "0";
@@ -258,29 +257,27 @@ namespace MeineFinanzen.View {
             dgvVorgabeInt2.EnableRowVirtualization = false;
             dgvVorgabeInt2.UpdateLayout();
         }
-        private void dgvUrls_PreviewMouseDown(object sender, MouseButtonEventArgs e) {                     
+        private void dgvUrls_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is System.Windows.Controls.DataGridCell))
                 dep = VisualTreeHelper.GetParent(dep);
             if (dep == null)
-                return;            
+                return;
             dgRow1 = dep as DataGridRow;
             while ((dep != null) && !(dep is DataGridRow))
                 dep = VisualTreeHelper.GetParent(dep);
             dgRow1 = dep as DataGridRow;
             if (dgRow1 == null)
-                return;          
+                return;
             if (e.RightButton == MouseButtonState.Pressed)
                 return;
             ResetDgRow();
-            _ColHeaderVorgabe = null;           
+            _ColHeaderVorgabe = null;
             System.Windows.Controls.DataGrid dataGrid = ItemsControl.ItemsControlFromItemContainer(dgRow1)
                 as System.Windows.Controls.DataGrid;
             WertpapSynchroNeu wpsn = (WertpapSynchroNeu)dataGrid.ItemContainerGenerator.ItemFromContainer(dgRow1);
-
             //System.Windows.Controls.DataGridCell cell1 = dep as System.Windows.Controls.DataGridCell;
             //Console.WriteLine("cell1.Column.Header: {0} Color: {1}", cell1.Column.Header, wpsn.WPVColor);
-
             dgRow1.DetailsVisibility = Visibility.Visible;
             dgRow1.Background = new SolidColorBrush(Colors.LightYellow);
             _Url1 = wpsn.WPVURL;
@@ -300,7 +297,7 @@ namespace MeineFinanzen.View {
                     vor = vor1;
                     Console.WriteLine("---- Url1 gefunden: {0} Url2: {1} Wert1: {2} Wert2: {3}", vor.Url1, vor1.Url2, vor1.Wert1, vor1.Wert2);
                     if (vor1.Wert1 == string.Empty) {
-                        AddTextStr("Wert1 eingeben");
+                        Meldung("Wert1 muß eingegeben werden!");
                         iSearch = 4;
                     } else {
                         if (vor.Url2 == url1split[2]) {
@@ -310,28 +307,29 @@ namespace MeineFinanzen.View {
                             _TxtKursdatum = vor.Wert1;      // "Kursdatum";
                             _TxtKurszeit = vor.Wert2;       // "Kurszeit";                            
                             _TxtKurs = vor.Wert3;           // "Kurs";   
-                            iSearch = SearchWebPage(_Url1, _BoxAnfang, _TxtKurse, _TxtKurszeit, _TxtKursdatum, _TxtKurs, ref wpsn);
+                            iSearch = SearchWebPageHIER(_Url1, _BoxAnfang, _TxtKurse, _TxtKurszeit, _TxtKursdatum, _TxtKurs, ref wpsn);
                             if (iSearch == 1) {
                                 AddTextStr("Ok. 1.");
                             } else
-                                AddTextStr("!!!! Nee, hat nicht geklappt 1.!!!! : " + iSearch);
+                                Meldung("!!!! Nee, Die Suche nach Kurs... im WEB war nicht erfolgreich.  !!!! : " + iSearch);
                         }
                     }
                 }
             } // foreach vor1    
             vor.Vg2Color = iSearch.ToString();
-            if (iSearch == 1)
-                AddTextStr("Ok. 2.");
-            else
-                AddTextStr("!!!! Nee Fehler 2.!!!!  FehlerNummer: " + iSearch);
+            //if (iSearch == 1)
+            //    AddTextStr("Ok. 2.");
+            //else
+            //    Meldung("!!!! Nee Fehler 2.!!!!  FehlerNummer: " + iSearch);
             dgvVorgabeInt2.ItemsSource = null;
             dgvVorgabeInt2.ItemsSource = liVorg;
             dgvVorgabeInt2.EnableRowVirtualization = false;
             dgvVorgabeInt2.UpdateLayout();
-            Meldung("VorgabeParameter hierzu ändern/eingeben.");
+            Meldung("Suchargumente anlegen/ändern.");
             borderCombo.Background = new SolidColorBrush(Colors.LightGreen);
         }
-        private int SearchWebPage(string url1, string boxanfang, string txtkurse, string txtkurszeit, string txtkursdatum, string txtkurs, ref WertpapSynchroNeu wpsneu) {
+        private int SearchWebPageHIER(string url1, string boxanfang, string txtkurse, string txtkurszeit,
+            string txtkursdatum, string txtkurs, ref WertpapSynchroNeu wpsneu) {
             if (wb1.Document == null)
                 return 2;
             String pattBetrag = @"(\d+)([,])(\d+)(\d+)";                                // 9,99
@@ -468,7 +466,16 @@ namespace MeineFinanzen.View {
             AddTextStr("wb1_DocumentTitleChanged");
         }
         private void wb1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e) {
-            AddTextStr("wb1_DocumentCompleted");
+            if (e.Url.AbsolutePath != (sender as System.Windows.Forms.WebBrowser).Url.AbsolutePath) {
+                AddTextStr("Urls !=");
+            } else if (wb1.ReadyState == WebBrowserReadyState.Complete) {
+                AddTextStr("Complete");
+                wb1.Document.Click += new HtmlElementEventHandler(wb1_Document_Click);
+            } else if (wb1.ReadyState == WebBrowserReadyState.Loading) {
+                AddTextStr("Loading");
+            } else {
+                AddTextStr("wb1-DocumentCompleted: " + wb1.ReadyState + " unbekannt!!!");
+            }
         }
         private void cbBoxanfang_Loaded(object sender, RoutedEventArgs e) {
             //cbBoxanfang.Text = "BoxAnfang - Text";
@@ -495,7 +502,6 @@ namespace MeineFinanzen.View {
                 }
             }
         }
-        private void wb1_Navigating(object sender, WebBrowserNavigatingEventArgs e) { }
         private void cbAusschluss1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             System.Windows.Forms.MessageBox.Show("NOCH    cbAusschluss1_SelectionChanged");
         }
@@ -505,6 +511,7 @@ namespace MeineFinanzen.View {
         private void cbWert1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             System.Windows.Forms.MessageBox.Show("NOCH    cbWert1_SelectionChanged");
         }
+        private void wb1_Navigating(object sender, WebBrowserNavigatingEventArgs e) { }
         private void dgvUrls_Neu_Click(object sender, RoutedEventArgs e) {
             DatagridContextMenu.IsOpen = false;
             string xxx = DatagridContextMenu.ToString();
@@ -512,12 +519,12 @@ namespace MeineFinanzen.View {
             System.Windows.Controls.DataGrid dataGrid = ItemsControl.ItemsControlFromItemContainer(dgRow1)
                 as System.Windows.Controls.DataGrid;
             WertpapSynchroNeu wpsn = (WertpapSynchroNeu)dataGrid.ItemContainerGenerator.ItemFromContainer(dgRow1);
-            
+
             wb1.Navigate(new Uri("https://www.google.de/search?q=" + "Kurs " + wpsn.WPVISIN
                 + "&ie=utf-8&oe=utf-8&client=firefox-b"));
             //https://www.google.com/search?q=XXYY&ie=utf-8&oe=utf-8&client=firefox-b
             //string browser = GetDefaultBrowser();
-        }        
+        }
         private void dgvUrls_bearbeiten_Click(object sender, RoutedEventArgs e) {
             System.Windows.Forms.MessageBox.Show("NOCH    dgvUrls_bearbeiten_Click");
         }
@@ -540,32 +547,131 @@ namespace MeineFinanzen.View {
         private void wb1_Navigated(object sender, WebBrowserNavigatedEventArgs e) {
             TxtUrl.Text = wb1.Url.ToString();
         }
-        private void wb1_Document_Click(Object sender, System.Windows.Forms.HtmlElementEventArgs e) {
+        private void wb1_Document_Click(Object sender, HtmlElementEventArgs e) {
             if (e.ClientMousePosition.IsEmpty) {
                 _elem1 = null;
-                posx = -1;
-                posy = -1;
+                _posx = -1;
+                _posy = -1;
             } else {
-                posx = e.ClientMousePosition.X;
-                posy = e.ClientMousePosition.Y;
-                _elem1 = wb1.Document.GetElementFromPoint(e.ClientMousePosition); // Ruft das an den angegebenen Clientkoordinaten befindliche HTML-Element ab.                            
-                if (_elem1 != null)
-                    AddTextStr("wb1_Document_Click: " + _elem1.InnerText);
-                else
+                _posx = e.ClientMousePosition.X;
+                _posy = e.ClientMousePosition.Y;
+                _elem1 = wb1.Document.GetElementFromPoint(e.ClientMousePosition);
+                // Ruft das an den angegebenen Clientkoordinaten befindliche HTML-Element ab.                            
+                if (_elem1 != null) {
+                    AddTextStr("wb1_Document_Click: " + _elem1.InnerText); 
+                    // 145,01EUR
+                    // 145,01 < span class="currency-iso">EUR</span>
+
+                      HtmlElementCollection elemColl = null;
+                    HtmlDocument doc = wb1.Document;
+                    if (doc != null)
+                        AddTextStr("--- Start ---" + wb1.Document.Url);
+                    elemColl = doc.GetElementsByTagName("body");
+                    foreach (HtmlElement elem in elemColl) {                    // Ein Element (Node)
+                        if (!elem.InnerHtml.Contains(_elem1.InnerText))
+                            continue;
+                        //DoEvents();
+                        string strInnerText = elem.InnerText;                               // Beginn Box 'row quotebox'
+                        strInnerText = Regex.Replace(strInnerText, "[\x00-\x1F]+", "/");
+                        string[] strZeilenTeile = strInnerText.Split('/');
+                        Console.WriteLine("---- {0,2} {1,5} {2,-80} BoxAnf:{3}", elem.Children.Count,
+                            elem.InnerHtml.Length, wb1.Document.Url, "row quotebox");
+                        //int nn = 0;
+                    }
+                } else {
                     AddTextStr("wb1_Document_Click: null");
-            }
+                }
+            } // else
         }
-        private void Kurs_Click(object sender, RoutedEventArgs e) {
-            wb1.Document.Click += new HtmlElementEventHandler(wb1_Document_Click);
-        }
-        private void Zeit_Click(object sender, RoutedEventArgs e) {
-
-        }
-        private void ProzÄnd_Click(object sender, RoutedEventArgs e) {
-
-        }
-        private void Sharpe_Click(object sender, RoutedEventArgs e) {
-
+        private int SearchSuchbegriff(string url1, string boxanfang, string txtkurse, string txtkurszeit,
+     string txtkursdatum, string txtkurs, ref WertpapSynchroNeu wpsneu) {
+            if (wb1.Document == null)
+                return 2;
+            String pattBetrag = @"(\d+)([,])(\d+)(\d+)";                                // 9,99
+            String pattDatum = @"(\d+)(\d+)([.])(\d+)(\d+)([.])(\d+)(\d+)(\d+)(\d+)";   // 99.99.9999
+            String pattZeit = @"(\d+)(\d+)([:])(\d+)(\d+)([:])(\d+)(\d+)";              // 99:99:99
+            HtmlElementCollection elemColl = null;
+            HtmlDocument doc = wb1.Document;
+            if (doc != null)
+                AddTextStr("--- Start ---" + wb1.Document.Url);
+            elemColl = doc.GetElementsByTagName("body");
+            string strInnerText = "";
+            string strKursdatum = "";
+            string strKurszeit = "";
+            string strKurs = "";
+            //string strSharpe = "";
+            string strZeilePlus = "";
+            string[] strarr1;
+            string[] strarr2;
+            string[] strarr3;
+            string strf = "";
+            foreach (HtmlElement elem in elemColl) {                    // Ein Element (Node)
+                if (!elem.InnerHtml.Contains(boxanfang))
+                    continue;
+                //DoEvents();
+                strInnerText = elem.InnerText;                               // Beginn Box 'row quotebox'
+                strInnerText = Regex.Replace(strInnerText, "[\x00-\x1F]+", "/");
+                string[] strZeilenTeile = strInnerText.Split('/');
+                Console.Write("---- {0,2} {1,5} {2,-80} BoxAnf:{3}", elem.Children.Count, elem.InnerHtml.Length, wb1.Document.Url, boxanfang);
+                int nn = 0;
+                strKursdatum = "";
+                strKurszeit = "";
+                strKurs = "";                                                       // Und +-EUR, +-% 
+                //strSharpe = "";
+                char[] charSeparators = new char[] { ' ' };
+                foreach (string strZeile in strZeilenTeile) {                       // Zeilen in der Box.
+                    strf = "";
+                    ++nn;
+                    if (strZeile.StartsWith(txtkurse))
+                        continue;
+                    strZeilePlus = "";
+                    if (strZeile.StartsWith(txtkursdatum)) {
+                        strZeilePlus += String.Format(" nn:{0,3} {1} =", nn, strZeile);
+                        foreach (Match m in Regex.Matches(strZeile, pattDatum))
+                            strKursdatum += String.Format("{0} ", m.Value);
+                    }
+                    if (strZeile.StartsWith(txtkurszeit)) {
+                        strZeilePlus += String.Format(" nn:{0,3} {1} =", nn, strZeile);
+                        foreach (Match m in Regex.Matches(strZeile, pattZeit))
+                            strKurszeit += String.Format("{0} ", m.Value);
+                    }
+                    if (strZeile.StartsWith(txtkurs)) {
+                        strZeilePlus += String.Format(" nn:{0,3} {1} =", nn, strZeile);
+                        foreach (Match m in Regex.Matches(strZeile, pattBetrag))
+                            strKurs += String.Format("{0} ", m.Value);
+                    }
+                    if (strZeilePlus.Length > 0) {
+                        strarr1 = strKurs.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
+                        strarr2 = strKursdatum.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
+                        strarr3 = strKurszeit.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
+                        strf = String.Format("@1 {0,-40}-->(K:{1} {2}) (D:{3} {4}) (Z:{5} {6})", strZeilePlus, strKurs,
+                            strarr1.Length, strKursdatum, strarr2.Length, strKurszeit, strarr1.Length);
+                        AddTextStr(strf);
+                        Console.WriteLine("{0}", strf);
+                    }
+                }                   // foreach (string strZeile in strZeilenTeile)
+                strf = String.Format("@2 K:{0} D:{1} Z:{2}", strKurs, strKursdatum, strKurszeit);
+                if (strf.Length == 0)
+                    return 2;
+                string[] strarrx = strKurs.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
+                if (strKurs.Length > 0) {
+                    wpsneu.WPVKursNeu = Convert.ToDouble(strarrx[0]);
+                    // 128,96 2,33 1,84
+                }
+                if (strarrx.Length > 1)
+                    wpsneu.WPVProzentAenderungNeu = Convert.ToDouble(strarrx[1]);
+                if (strarrx.Length > 2)
+                    wpsneu.WPVProzentAenderungNeu = Convert.ToDouble(strarrx[2]);
+                strarrx = strKursdatum.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
+                if (strarrx.Length > 0)
+                    wpsneu.WPVKursZeitNeu = Convert.ToDateTime(strarrx[0]);
+                Console.WriteLine("§{0,7} {1} {2}", wpsneu.WPVKursNeu, wpsneu.WPVProzentAenderungNeu, wpsneu.WPVKursZeitNeu);
+                //Progress++;
+                return 1;
+            }                   // foreach (HtmlElement elem in elemColl)
+            System.Windows.MessageBox.Show("Fehler. Auf dieser WebSeite kein 'row quotebox' gefunden!!!");
+            //SetDataRowColor("R");
+            return 3;    // Wenn kein 'row quotebox' gefunden.
         }
         private void btOk_Click(object sender, RoutedEventArgs e) {
             /* if (!boDgvRowAusgewählt)
@@ -600,6 +706,76 @@ namespace MeineFinanzen.View {
             _ColHeaderVorgabe = cell1.Column.Header.ToString();
             //string strIsin = ((MeineFinanzen.Model.WertpapSynchroNeu)item).WPVISIN;
 
+        }
+        private void labKurs(object sender, MouseButtonEventArgs e) {
+            string strKurs = null;
+            if (_elem1 != null) {
+                try {
+                    String pattBetrag = @"(\d+)([,])(\d+)(\d+)";                                // 9,99
+                    foreach (Match m in Regex.Matches(_elem1.InnerText, pattBetrag))
+                        strKurs += String.Format("{0} ", m.Value);
+                    if (strKurs == null)
+                        strKurs = "FEHLER";
+                    double db = Convert.ToDouble(strKurs);
+                    Meldung("Kurs:  " + strKurs + " ist Ok");
+                    txtKurs.Text = strKurs;
+                } catch (Exception) {
+                    //System.Windows.MessageBox.Show("Fehler in wb1_Document_Click 'Kurs': " + ex);
+                    Meldung("Fehler Kurs: " + _elem1.InnerText);
+                }
+            }
+        }
+        private void labZeit(object sender, MouseButtonEventArgs e) {
+            string strKurszeit = null;
+            if (_elem1 != null) {
+                try {
+                    String pattZeit = @"(\d+)(\d+)([:])(\d+)(\d+)([:])(\d+)(\d+)";              // 99.99.99  
+                    String pattDatum = @"(\d+)(\d+)([.])(\d+)(\d+)([.])(\d+)(\d+)(\d+)(\d+)";   // 99.99.9999                   
+                    foreach (Match m in Regex.Matches(_elem1.InnerText, pattDatum))
+                        strKurszeit += String.Format("{0} ", m.Value);
+                    if (strKurszeit == null)
+                        strKurszeit = "FEHLER";
+                    DateTime dt = Convert.ToDateTime(strKurszeit);
+                    Meldung("Zeit:  " + strKurszeit + " ist Ok");
+                    txtZeit.Text = strKurszeit;
+                } catch (Exception) {
+                    Meldung("Fehler Kurszeit: " + _elem1.InnerText);
+                }
+            }
+        }
+        private void labÄnder(object sender, MouseButtonEventArgs e) {
+            string strÄnd = null;
+            if (_elem1 != null) {
+                try {
+                    String pattBetrag = @"(\d+)([,])(\d+)(\d+)";                                // 9,99
+                    foreach (Match m in Regex.Matches(_elem1.InnerText, pattBetrag))
+                        strÄnd += String.Format("{0} ", m.Value);
+                    if (strÄnd == null)
+                        strÄnd = "FEHLER";
+                    double db = Convert.ToDouble(strÄnd);
+                    Meldung("%Änd:  " + strÄnd + " ist Ok");
+                    txtÄnd.Text = strÄnd;
+                } catch (Exception) {
+                    Meldung("Fehler %Änd: " + _elem1.InnerText);
+                }
+            }
+        }
+        private void labSharpe(object sender, MouseButtonEventArgs e) {
+            string strSharpe = null;
+            if (_elem1 != null) {
+                try {
+                    String pattBetrag = @"(\d+)([,])(\d+)(\d+)";                                // 9,99
+                    foreach (Match m in Regex.Matches(_elem1.InnerText, pattBetrag))
+                        strSharpe += String.Format("{0} ", m.Value);
+                    if (strSharpe == null)
+                        strSharpe = "FEHLER";
+                    double db = Convert.ToDouble(strSharpe);
+                    Meldung("Sharpe:  " + strSharpe + " ist Ok");
+                    txtSharpe.Text = strSharpe;
+                } catch (Exception) {
+                    Meldung("Fehler Sharpe: " + _elem1.InnerText);
+                }
+            }
         }
         /* private string GetDefaultBrowser() {
 string browser = string.Empty;
@@ -636,7 +812,7 @@ return browser;
             txtAnzeige.AppendText(Environment.NewLine + str);
             txtAnzeige.ScrollToEnd();
             txtAnzeige.InvalidateVisual();
-            DoEvents();
+            //DoEvents();
         }
         private void Meldung(string str) {
             TxtMeldung.AppendText(str + Environment.NewLine);

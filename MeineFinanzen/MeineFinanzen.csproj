@@ -416,7 +416,9 @@
   <ItemGroup>
     <Resource Include="Doku\MeineFinanzen.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Doku\Synchronisatzion.txt" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="MeineBilder\Aktualisieren1.png" />
   </ItemGroup>

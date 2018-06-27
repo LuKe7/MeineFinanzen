@@ -3,11 +3,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 namespace MeineFinanzen.Model {
-    // ObservableCollection: Stellt eine dynamische Datenauflistung dar,
-    // die Benachrichtigungen bereitstellt,
-    // wenn Elemente hinzugefügt oder entfernt werden
-    // bzw. wenn die gesamte Liste aktualisiert wird.
-    // public class ObservableCollection<T> : Collection<T>, INotifyCollectionChanged, INotifyPropertyChanged
     public class CollWertpapSynchroNeu : ObservableCollection<WertpapSynchroNeu>, IComparable {
         public int CompareTo(object obj) {
             if (obj == null)
@@ -19,7 +14,7 @@ namespace MeineFinanzen.Model {
         }
     }
     public class WertpapSynchroNeu : INotifyPropertyChanged, IEditableObject {
-        // private
+        // ---- private
         private float _WPVAnzahl;
         //private string _WPVName;
         //private string _WPVURL;
@@ -36,7 +31,7 @@ namespace MeineFinanzen.Model {
         private Single _WPVSharpeNeu;
         //private string _WPVURLSharp;
         private string _WPVColor;
-        // public
+        // ---- public
         public float WPVAnzahl {
             get { return _WPVAnzahl; }
             set {

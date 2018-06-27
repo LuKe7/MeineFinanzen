@@ -1,15 +1,17 @@
-﻿// 01.01.2017 BearbeitenView.cs
+﻿// 27.06.2018 BearbeitenView.cs
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System;
 using System.Collections.ObjectModel;
 using DataSetAdminNS;
+using System.ComponentModel;
 namespace MeineFinanzen.View {
-    public partial class BearbeitenView : Window {
+    public partial class Bearbeiten : Window {
         public Model.CollWertpapiere _wertpap = null;
         public ObservableCollection<string> TypeList = new ObservableCollection<string>();
         public ObservableCollection<string> DepotList = new ObservableCollection<string>();
+        public WertpapPlus wpp = new WertpapPlus();
         DataRow _rowPortFol;
         DataRow _rowAnlKat;
         DataRow _rowDepot;
@@ -17,8 +19,14 @@ namespace MeineFinanzen.View {
         HauptFenster _mw;
         int _nro;
         int _nwp;
-        public BearbeitenView() { }
-        public BearbeitenView(HauptFenster mw, string isin, int nro, int nwp) {
+        public double KaufKurs { get; set; }
+        public Bearbeiten() {
+            KaufKurs = 47.12;
+            wpp.KaufKurs = 47;
+        }
+        public void MachEs(HauptFenster mw, string isin, int nro, int nwp) {
+            KaufKurs = 48.12;
+            wpp.KaufKurs = 48;
             //Point location = new Point(0, 0);
             //Left = location.X;
             //Top = location.Y;
@@ -27,9 +35,12 @@ namespace MeineFinanzen.View {
             _nro = nro;                 // Row-Nr in dgWertpapiere
             _nwp = nwp;                 // Nr in Wertpapiere
             InitializeComponent();
+            //DataContext = this;
             _wertpap = (Model.CollWertpapiere)mw.Resources["wertpapiereXXX"];
         }
         private void Window_Loaded(object sender, RoutedEventArgs e) {
+            KaufKurs = 49.13;
+            wpp.KaufKurs = 49;
             if (_isin == "") {
                 MessageBox.Show("Ein neues Wertpapier wird angelgt. NOCH");
                 return;
@@ -138,5 +149,26 @@ namespace MeineFinanzen.View {
             if (_rowDepot["DepotName"].ToString() == cbDepot.SelectedItem.ToString())
                 _rowPortFol["WPDepotID"] = Convert.ToInt32(_rowDepot["DepotID"]);
         }
+    }
+    public class WertpapPlus : INotifyPropertyChanged, IEditableObject {
+        private float _kaufkurs;
+        public float KaufKurs {
+            get { return _kaufkurs; }
+            set { _kaufkurs = value; 
+                RaisePropertyChanged("KaufKurs");
+            }        
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+        internal void NotifyPropertyChanged(string propertyName) {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        protected void RaisePropertyChanged(string name) {
+            if (PropertyChanged != null) {
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
+        }
+        public void BeginEdit() { }
+        public void CancelEdit() { }
+        public void EndEdit() { }
     }
 }

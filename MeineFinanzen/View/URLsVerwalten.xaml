@@ -55,24 +55,14 @@
         <Grid x:Name="GridLinks"
               Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="2*" />
-                <RowDefinition Height="30*" />
+                <RowDefinition Height="6*" />
+                <RowDefinition Height="32*" />
             </Grid.RowDefinitions>
             <StackPanel Orientation="Vertical">
                 <Menu DockPanel.Dock="Top"
                       HorizontalAlignment="Left"
                       FontSize="14"
                       x:Name="mnuMenu1">
-                    <MenuItem Header="Kurs"
-                              Click="Kurs_Click" />
-                    <MenuItem Header="Zeit"
-                              Click="Zeit_Click" />
-                    <MenuItem Header="ProzÄnd."
-                              Click="ProzÄnd_Click" />
-                    <MenuItem Header="Sharpe"
-                              Click="Sharpe_Click" />
-                    <MenuItem Header="Ok"
-                              Click="btOk_Click" />
                     <MenuItem Header="_Web">
                         <MenuItem Header="_Search"
                                   Click="searchButton_Click" />
@@ -96,12 +86,34 @@
                     <MenuItem Header="_Hilfe" />
                 </Menu>
                 <TextBox Name="TxtUrl"
-                         Grid.Row="1"
+                         Height="22"
                          TextWrapping="Wrap"
                          Background="LightGreen"
                          Foreground="DarkBlue"
                          VerticalScrollBarVisibility="Visible"
                          HorizontalScrollBarVisibility="Visible"></TextBox>
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Kurs"
+                           MouseUp="labKurs"></Label>
+                    <TextBox Name="txtKurs"
+                             Width="50"></TextBox>
+                    
+                    <Label Content="Datum"
+                           MouseUp="labZeit"></Label>
+                    <TextBox Name="txtZeit"
+                             Width="70"></TextBox>
+                    
+                    <Label Content="%Änd"
+                           MouseUp="labÄnder"></Label>
+                    <TextBox Name="txtÄnd"
+                             Width="40"></TextBox>
+                    
+                    <Label Content="Sharpe"
+                           MouseUp="labSharpe"></Label>
+                    <TextBox Name="txtSharpe"
+                             Width="40"></TextBox>
+                    
+                </StackPanel>
             </StackPanel>
             <WindowsFormsHost x:Name="wfh1"
                               Grid.Row="1">

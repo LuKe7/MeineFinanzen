@@ -1,4 +1,4 @@
-﻿<!-- 27.03.2018   -View-   HauptFenster.xaml -->
+﻿<!-- 27.05.2018   -View-   HauptFenster.xaml -->
 <Window x:Class="MeineFinanzen.View.HauptFenster"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -191,12 +191,12 @@
                 <MenuItem Header="_Extras">
                     <MenuItem Header="Kontenaufstellung HBCI4j"
                               Click="KontenaufstellungHBCI4j_Click" />
+                    <MenuItem Header="URLs + Parameter fürs Synchronisieren verwalten"
+                              Click="URLsVerwalten_Click" />
                     <MenuItem Header="Konten Synchronisieren Internet"
                               Click="KontenSynchronisierenInt_Click" />
                     <MenuItem Header="Konten Synchronisieren Internet-2"
                               Click="KontenSynchronisierenInt2_Click" />
-                    <MenuItem Header="URLs verwalten"
-                              Click="URLsVerwalten_Click" />
                     <MenuItem Header="Konten Synchronisieren Subsembly"
                               Click="KontenSynchronisierenSubsembly_Click" />
                     <MenuItem Header="Konten Synchronisieren HBCI4j"

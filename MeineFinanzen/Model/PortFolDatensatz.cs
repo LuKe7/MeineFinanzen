@@ -1,9 +1,13 @@
-﻿// 07.12.2017 Quantity/Anzahl ist Single
+﻿// 21.06.2018 Erstellt ein dtPortFol aus tblWertpapSubsembly oder Leersatz.
+// 07.12.2017 Quantity/Anzahl ist Single
 // 2017-09-21 l max 8
 // WPAktWert neu aus HoldingValue
 // 31.12.2017 neu dtPortFolAusdtNull() Leersatz.
 using System;
+using System.Collections.Specialized;
 using System.Data;
+using System.Net;
+using System.Windows.Controls;
 namespace MeineFinanzen.Model {
     public class PortFolDatensatz {
         Random rand = new Random();
@@ -22,7 +26,7 @@ namespace MeineFinanzen.Model {
             newRow["WPKaufDatum"] = new DateTime(1980, 1, 1);
             newRow["WPKaufsumme"] = 0.00;
             newRow["WP0101Summe"] = 0.00;
-            newRow["WPWaehrung"] = "";           
+            newRow["WPWaehrung"] = "";
             newRow["WPKurz"] = "";
             newRow["WPZinsSatz"] = 0;
             newRow["WPAbDatum"] = new DateTime(1980, 1, 1);
@@ -46,7 +50,7 @@ namespace MeineFinanzen.Model {
             newRow["WPXPathSharp"] = "";
             newRow["WPAktWert"] = 0.00;
             return newRow;
-            }
+        }
         public DataRow dtPortFolAusdtGesamt(DataRow newRow, DataRow rowGesamt) {
             newRow["WPID"] = rand.Next();
             newRow["WPPortFolNr"] = 1;
@@ -75,7 +79,7 @@ namespace MeineFinanzen.Model {
             newRow["WPSharpe"] = 0;
             newRow["WPVolatil"] = 0;
             newRow["WPPerfHeute"] = 0;
-            newRow["WPUrlText"] = "";
+            newRow["WPUrlText"] = URLSuchenISIN((string)rowGesamt["ISIN"]);    // Die URL bei neuen WPs ermitteln. NOCH
             newRow["WPTextVorKurs"] = "";
             newRow["WPURLSharpe"] = "";
             newRow["WPTextVorSharpe"] = "";
@@ -88,6 +92,23 @@ namespace MeineFinanzen.Model {
             newRow["WPXPathSharp"] = "";
             newRow["WPAktWert"] = Convert.ToSingle(rowGesamt["HoldingValue"].ToString());
             return newRow;
+        }
+        public string URLSuchenISIN(string isin) {
+            WebBrowser wbGoogleSearch = new WebBrowser();
+            // NOCH wbGoogleSearch.Navigate("https://www.google.de/imghp?q=" + "https://www.finanzen.net", true);
+            return @"//https://www.finanzen.net/";
+        }
+        private void Suchen() {
+            string uriString = "http://www.google.com/search";
+            string keywordString = "Test Keyword";
+
+            WebClient webClient = new WebClient();
+
+            NameValueCollection nameValueCollection = new NameValueCollection();
+            nameValueCollection.Add("q", keywordString);
+
+            webClient.QueryString.Add(nameValueCollection);
+            string text = webClient.DownloadString(uriString);
         }
     }
 }
