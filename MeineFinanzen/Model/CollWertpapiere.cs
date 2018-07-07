@@ -1,6 +1,5 @@
-﻿// 05.03.2018   -Model-  CollWertpapiere.cs 
+﻿// 29.06.2018   -Model-  CollWertpapiere.cs 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -51,6 +50,8 @@ namespace MeineFinanzen.Model {
         public double _aktKurs;
         public double _aktWert;
         public Single _sharpe;
+        public double _kaufsumme;
+        public DateTime _kaufDatum;
         public float Anzahl {
             get { return _anzahl; }
             set {
@@ -131,8 +132,20 @@ namespace MeineFinanzen.Model {
                 RaisePropertyChanged("Zahlungen");
             }
         }
-        public double Kaufsumme { get; set; }
-        public DateTime KaufDatum { get; set; }
+        public double Kaufsumme {
+            get { return _kaufsumme; }
+            set {
+                _kaufsumme = value;
+                RaisePropertyChanged("Kaufsumme");
+            }
+        }
+        public DateTime KaufDatum {
+            get { return _kaufDatum; }
+            set {
+                _kaufDatum = value;
+                RaisePropertyChanged("KaufDatum");
+            }
+        }
         public int DepotID { get; set; }
         public string KontoNr { get; set; }
         public int Type { get; set; }

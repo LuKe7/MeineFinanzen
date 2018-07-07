@@ -1,4 +1,4 @@
-﻿// 02.04.2018 KontenSynchronisierenInt2.xaml.cs
+﻿// 06.07.2018 KontenSynchronisierenInt2.xaml.cs
 // _wertpapsynchro wird aus dtPortFol gefüllt.
 // LosGehts - NavigiereZu - DocumentCompleted - SearchWebPage - LosGehts usw
 // https://www.finanzen.net/        fonds/      spsw_-_whc_global_discovery
@@ -29,17 +29,14 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Threading;
-using System.Xml;
-using System.Xml.Serialization;
 namespace MeineFinanzen.View {
     public partial class KontenSynchronisierenInt2 : Window, INotifyPropertyChanged, IEditableObject {
         public CollWertpapSynchro _wertpapsynchro = null;
-        public static Model.UrlVerwalten Vorg = new Model.UrlVerwalten();
-        public static List<Model.UrlVerwalten> liVorg = new List<Model.UrlVerwalten>();
+        // public static UrlVerwalten Vorg = new UrlVerwalten();
+        // public static List<UrlVerwalten> liVorg = new List<UrlVerwalten>();
         private double _progress;
         public double Progress {
             get { return _progress; }

@@ -1,8 +1,9 @@
-﻿// 27.05.2018 URLsVerwalten.xaml.cs
+﻿// 30.06.2018 URLsVerwalten.xaml.cs
 // VorgabeParameter für KontenSynchronisierung über Internet 2.Version(Über Textsuche in Elementen...).
 // Die Wertpapiere suchen sich ihren Parametersatz selbst. Über Url1 + Url2 !!!!
 // Erstellen dieser Sätze, falls sie nicht vorhanden sind.
 // Ergänzen dieser Sätze manuell.
+// 30.06.2018 Leere URLs NOCH !!!!!!!!!!!!!!!!!!!
 /*  <tblVorgabeInt2 diffgr:id="tblVorgabeInt21" msdata:rowOrder="0" diffgr:hasChanges="inserted">
       <Url1>https://www.finanzen.net/</Url1>
       <Url2>fonds</Url2>
@@ -158,6 +159,8 @@ namespace MeineFinanzen.View {
             foreach (WertpapSynchroNeu wps in _wertpapsynchroneu) {
                 splitUrls = wps.WPVURL.Split('/');
                 bool gef = false;
+                if (splitUrls.Length < 3)
+                    continue;           // NOCH  wp ohne url
                 foreach (UrlVerwalten vg in liVorg) {
                     splitVorg = vg.Url1.Split('/');            // https leer www.finanzen.net leer                      
                     if (splitUrls[2] == splitVorg[2] && splitUrls[3] == vg.Url2) {

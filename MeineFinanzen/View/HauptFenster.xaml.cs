@@ -1,4 +1,4 @@
-﻿// 24.04.2018   -View-  HauptFenster.cs 
+﻿// 06.07.2018   -View-  HauptFenster.cs 
 // Tja, wenn man die Grundlagen nicht lernen will, stolpert man halt ständig beim Ausprobieren.
 // Wenn du eine DataTable an ein DG bindest, spiegelt der DefaultView der DT die Daten wieder. Mit allen Filter- und Sort-Angaben.
 // 16.11.2014 Ser/Deserialize 'Wertpapiere' zu/von Xml-Datei. 
@@ -51,7 +51,9 @@ namespace MeineFinanzen.View {
         private Stopwatch _stopwatch = new Stopwatch();        // Eine StopUhr
         private static UmsätzeHolen umsHolen;
         private Process[] processes;
-        DirectoryInfo rootDir = null;      
+        DirectoryInfo rootDir = null;
+        PerformanceCounter cpuCounter;
+        PerformanceCounter ramCounter;
         public HauptFenster() {
             //splash = new SplashWindow(this);
             // NOCH splash.Show();
@@ -116,10 +118,10 @@ namespace MeineFinanzen.View {
             wbAktuelles.Navigate(GlobalRef.g_Ein.strUrlIndizes);
             dgFinanzübersicht.ItemsSource = null;
             dgFinanzübersicht.ItemsSource = DgBanken.banken;
-            Console.WriteLine("---- --01-- HauptFenster _dgBanken.banken.Count {0}", DgBanken.banken.Count);
+            ConWrLi("---- --01-- HauptFenster _dgBanken.banken.Count " + DgBanken.banken.Count);
             ConWrLi("---- -5- Nach _tabFinanzen.maches()");
-            umsHolen = new Helpers.UmsätzeHolen(this);
-            Console.WriteLine("---- --02-- HauptFenster _dgBanken.banken.Count {0}", DgBanken.banken.Count);
+            umsHolen = new UmsätzeHolen(this);
+            ConWrLi("---- --02-- HauptFenster _dgBanken.banken.Count " + DgBanken.banken.Count);
             // NOCH dtKontoumsätze sofort erstellen, beim download.
             // Lade dtKontoumsätze und _mw.Resources["kontoumsätzeGesamt"] aus g_Ein.myDepotPfad+\Log\Umsätze-"+sKtoNr+.csv                       
             // NOCH Zahlungen zah = new Zahlungen(this);    // ---> .dtPortFolBew. Aus CollKontoumsätzeGesamt Zahlungen extrahieren.
@@ -133,7 +135,7 @@ namespace MeineFinanzen.View {
             //var xxx = dgFinanzübersicht.FindName("GridInnereDatagrid2");//.RowDef2.Height = new GridLength(1, GridUnitType.Star);
             //Console.WriteLine("");
             //RowDef3.Height = new GridLength(1, GridUnitType.Star);
-            Console.WriteLine("---- --03-- HauptFenster _dgBanken.banken.Count {0}", DgBanken.banken.Count);
+            ConWrLi("---- --03-- HauptFenster _dgBanken.banken.Count " + DgBanken.banken.Count);
             }
         private void CbKonten_Loaded(object sender, RoutedEventArgs e) {
             cbKonten.Text = "";
@@ -153,7 +155,7 @@ namespace MeineFinanzen.View {
                 } catch (Exception ex) {
                 MessageBox.Show("Fehler in cbKonten_Loaded: " + ex);
                 }
-            Console.WriteLine("---- --04-- HauptFenster _dgBanken.banken.Count {0}", DgBanken.banken.Count);
+            ConWrLi("---- --04-- HauptFenster _dgBanken.banken.Count " + DgBanken.banken.Count);
             }
         private void CbNeueVerbindung_Loaded(object sender, RoutedEventArgs e) {
             cbNeueVerbindung.Text = "";
@@ -176,7 +178,7 @@ namespace MeineFinanzen.View {
             WindowState = WindowState.Maximized;
             ConWrLi("---- -16h- wbAktuelles_LoadCompleted()");
             // NOCH splash.Close();
-            Console.WriteLine("---- --05-- HauptFenster _dgBanken.banken.Count {0}", DgBanken.banken.Count);           
+            ConWrLi("---- --05-- HauptFenster _dgBanken.banken.Count " + DgBanken.banken.Count);           
             }
         private void CPUSpeedAnzeigen() {
             var counters = new List<PerformanceCounter>();
@@ -264,13 +266,16 @@ namespace MeineFinanzen.View {
             //cbNeueVerbindung.Visibility = Visibility.Visible;
             }
         private void TabWertpap() {
+            ConWrLi("---- -8a1- in HauptFenster in TabWertpap()");
             _tabwertpapiere = new TabWertpapiere();
+            ConWrLi("---- -8a2- in HauptFenster in TabWertpap()");
             _tabwertpapiere.FelderLöschen();
+            ConWrLi("---- -8a3- in HauptFenster in TabWertpap()");
             _tabwertpapiere.ErstelleWertpapiere(this);  // Aus dtPortFol
-
+            ConWrLi("---- -8a4- in HauptFenster in TabWertpap()");
             tabWertGefüllt = true;
-            CPUSpeedAnzeigen();
-            }
+            ConWrLi("---- -8a5- in HauptFenster in TabWertpap()");  // 3 Sek.
+        }
         private void WertPapStart() {
             AlleTabsHidden();
             cbGraph.Visibility = Visibility.Visible;

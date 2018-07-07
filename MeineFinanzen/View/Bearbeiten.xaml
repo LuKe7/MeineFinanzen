@@ -3,59 +3,84 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MeineFinanzen.View"
-        xmlns:model="clr-namespace:MeineFinanzen.Model"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        xmlns:view="clr-namespace:MeineFinanzen.View"
         mc:Ignorable="d"
         Title="Bearbeiten"
+        WindowState="Maximized"
+        FontFamily="Tahoma"
         Loaded="Window_Loaded"
-        FontSize="13"
-        Height="777"
-        Width="555">
-    <Window.Resources>
-        <local:WertpapPlus x:Key="wpplus" />
-        <local:Bearbeiten x:Key="wpThis" />
-    </Window.Resources>
+        FontSize="12">
     <Grid x:Name="GridWertpapiereBearbeiten"
-          Background="GhostWhite">
+          Background="Linen">
         <!-- Auto Die Größe wird von den Größeneigenschaften des Inhaltsobjekts bestimmt.  
              100  Der Wert wird als Pixel ausgedrückt.  
              *    Der Wert wird als gewichtetes Verhältnis zum verfügbaren Platz ausgedrückt. -->
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="20*" />
-            <ColumnDefinition Width="40*" />
+            <ColumnDefinition Width="7*" />
+            <ColumnDefinition Width="30*" />
+            <ColumnDefinition Width="60*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="43*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
-            <RowDefinition Height="27*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
         </Grid.RowDefinitions>
+        <!--Ein Element, mit dem Sie ein Windows Forms-Steuerelement
+            auf einer WPF-Seite hosten können.-->
+        <WindowsFormsHost x:Name="wfh1"
+                          Grid.Column="2"
+                          Grid.Row="2"
+                          Grid.RowSpan="16">
+            <!-- Mit wf: könnt ihr eine Form auswählen und mit 
+                 x: den Namen FieldModifier oder txtOben festlegen
+                DocumentCompleted="wb1_DocumentCompleted" -->
+            <wf:WebBrowser x:Name="wb1"
+                           DocumentTitleChanged="Wb1_DocumentTitleChanged"
+                           StatusTextChanged="Wb1_StatusTextChanged"
+                           Navigating="Wb1_Navigating" />
+        </WindowsFormsHost>
+        <TextBox Name="TxtWebUrl"
+                 FontSize="14"
+                 Grid.Column="2"
+                 Grid.Row="0"                 
+                 PreviewMouseDown="URL_PreviewMouseDown"/>
+        <Label Content="Klick auf URL zum Übernehmen."
+               Grid.Column="2"
+               Grid.Row="1"              
+               HorizontalContentAlignment="Left" />
+        <TextBox Name="TxtWebStatus"
+                 Text="TxtWebStatus"
+                 Grid.Column="2"
+                 Grid.Row="20" 
+                 Grid.RowSpan="3"/>
         <Label Content="Wertpapier bearbeiten"
                Grid.Row="0"
                Grid.ColumnSpan="2"
-               FontSize="20"
+               FontSize="14"
                HorizontalContentAlignment="Center"
-               FontStyle="Italic"
-               FontWeight="Bold" />
+               FontWeight="Bold"
+               FontStyle="Italic" />
         <Label Content="Depot:"
                Grid.Column="0"
                Grid.Row="1" />
@@ -63,6 +88,7 @@
                   Grid.Column="1"
                   Grid.Row="1"
                   AllowDrop="True"
+                  Height="20"
                   HorizontalAlignment="Left"
                   SelectedItem="{Binding DepotID, Mode=TwoWay}"
                   SelectionChanged="cmbSelectionChangedDepot" />
@@ -73,6 +99,7 @@
                   Grid.Column="1"
                   Grid.Row="2"
                   AllowDrop="True"
+                  Height="20"
                   HorizontalAlignment="Left"
                   SelectedItem="{Binding Type, Mode=TwoWay}"
                   SelectionChanged="cmbSelectionChangedType" />
@@ -83,14 +110,16 @@
                  Grid.Column="1"
                  Grid.Row="3"
                  IsEnabled="True"
+                 Height="20"
                  HorizontalAlignment="Left"
-                 Text="{Binding Path=Name, Mode=TwoWay}" />
+                 Text="{Binding Path=Name, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
         <Label Content="ISIN:"
                Grid.Column="0"
                Grid.Row="4" />
         <TextBox Name="txtISIN"
                  Grid.Column="1"
                  Grid.Row="4"
+                 Height="20"
                  HorizontalAlignment="Left"
                  Text="{Binding Path=ISIN, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
         <Label Content="Menge:"
@@ -99,109 +128,125 @@
         <TextBox Name="txtMenge"
                  Grid.Column="1"
                  Grid.Row="5"
+                 Height="20"
                  HorizontalAlignment="Left"
-                 Text="{Binding Path=Anzahl, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
+                 Text="{Binding Path=Anzahl, UpdateSourceTrigger=LostFocus, Mode=TwoWay, StringFormat=\{0:###\,##0.00 \}}" />
         <Label Content="Kaufsumme:"
                Grid.Column="0"
                Grid.Row="6" />
         <TextBox Name="txtKaufsumme"
                  Grid.Column="1"
                  Grid.Row="6"
+                 Height="20"
                  HorizontalAlignment="Left"
-                 Text="{Binding Path=Kaufsumme, Mode=TwoWay}" />
+                 Text="{Binding Path=Kaufsumme, Mode=TwoWay, StringFormat=\{0:###\,##0.00 \}}" />
         <Label Content="KaufKurs:"
                Grid.Column="0"
                Grid.Row="7" />
         <TextBox Name="txtKaufKurs"
                  Grid.Column="1"
                  Grid.Row="7"
-                 HorizontalAlignment="Left"
-                 Text="{Binding Source={StaticResource wpplus},Path=KaufKurs, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
-        <Label Content="Fälligkeit:"
-               Grid.Column="0"
-               Grid.Row="8" />
+                 Height="20"
+                 SourceUpdated="txtKaufKurs_SourceUpdated"
+                 TargetUpdated="txtKaufKurs_TargetUpdated"
+                 HorizontalAlignment="Left" />
+        <!-- DataContext="xxxx"
+                 Text="{Binding Path=KaufKurs,  UpdateSourceTrigger=LostFocus, Mode=TwoWay}" /> -->
         <Label Content="Zinsen:"
                Grid.Column="0"
-               Grid.Row="9" />
+               Grid.Row="8" />
         <TextBox Name="txtZinsen"
                  Grid.Column="1"
-                 Grid.Row="9"
+                 Grid.Row="8"
+                 Height="20"
                  HorizontalAlignment="Left"
-                 Text="{Binding Path=Zins, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
+                 Text="{Binding Zins, UpdateSourceTrigger=LostFocus, Mode=TwoWay, StringFormat=\{0:###\,##0.00 \}}" />
         <Label Content="Datum AktKurs:"
                Grid.Column="0"
-               Grid.Row="10" />
+               Grid.Row="9" />
         <DatePicker Name="dpAktKurs"
                     Grid.Column="1"
-                    Grid.Row="10"
+                    Grid.Row="9"
                     HorizontalAlignment="Left"
                     SelectedDate="{Binding KursZeit, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
         <Label Content="Aktueller Kurs:"
                Grid.Column="0"
-               Grid.Row="11" />
+               Grid.Row="10" />
         <TextBox Name="txtAktKurs"
                  Grid.Column="1"
-                 Grid.Row="9"
+                 Grid.Row="10"
+                 Height="20"
                  HorizontalAlignment="Left"
-                 Text="{Binding AktKurs, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
+                 Text="{Binding AktKurs, UpdateSourceTrigger=LostFocus, Mode=TwoWay, StringFormat=\{0:###\,##0.00 \}}" />
         <Label Content="KaufDatum:"
                Grid.Column="0"
-               Grid.Row="12" />
-        <DatePicker Name="dpKaufDatum"
+               Grid.Row="11" />
+        <DatePicker HorizontalAlignment="Left"
                     Grid.Column="1"
-                    Grid.Row="12"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
+                    Grid.Row="11"                    
                     SelectedDate="{Binding KaufDatum, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
         <Label Content="BisDatum:"
                Grid.Column="0"
-               Grid.Row="13"
+               Grid.Row="12"
                HorizontalAlignment="Left" />
         <DatePicker HorizontalAlignment="Left"
                     Grid.Column="1"
-                    Grid.Row="13"
-                    VerticalAlignment="Top"
-                    SelectedDate="{Binding Path=BisDatum, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
-        <TextBox HorizontalAlignment="Left"
+                    Grid.Row="12"                    
+                    SelectedDate="{Binding BisDatum, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
+        <Label Content="KontoNr :"
+               Grid.Column="0"
+               Grid.Row="13" />
+        <TextBox Name="txtKontoNr"
+                 HorizontalAlignment="Left"
+                 Grid.Column="1"
+                 Grid.Row="13"
+                 Height="20"
+                 Text="{Binding KontoNr, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
+        <Label Content="URL:"
+               Grid.Column="0"
+               Grid.Row="14"
+               HorizontalAlignment="Left" />
+        <TextBox Name="txtUrl"
+                 HorizontalAlignment="Left"
                  Grid.Column="1"
                  Grid.Row="14"
-                 Text="TextBox" />
-        <TextBox HorizontalAlignment="Left"
-                 Grid.Column="1"
-                 Grid.Row="15"
-                 Text="TextBox" />
-        <Label Content="Zinsen p.a.%:"
+                 Height="20"
+                 Text="{Binding URL, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
+        <Label Content="URL1:"
                Grid.Column="0"
-               Grid.Row="16"
-               HorizontalAlignment="Left" />
-        <Label Content="ccccccc :"
-               Grid.Column="0"
-               Grid.Row="17" />
-        <TextBox Name="txtKontoNr"
-                 Grid.Column="1"
-                 Grid.Row="17"
-                 HorizontalAlignment="Left" />
-        <Label Content="bbbbbbb:"
-               Grid.Column="0"
-               Grid.Row="18" />
-        <Label Content="aaaaaaa:"
-               Grid.Column="0"
-               Grid.Row="19" />
-        <Button Content="Ok"
+               Grid.Row="15" />
+        <ComboBox Name="cbUrl1"
+                  Grid.Column="1"
+                  Grid.Row="15"
+                  AllowDrop="True"
+                  Height="20"
+                  HorizontalAlignment="Left"
+                  Loaded="CbUrl1_Loaded"
+                  SelectedItem="{Binding DepotID, Mode=TwoWay}"
+                  SelectionChanged="cmbSelectionChangedUrl1" />
+        <Button Content="Speichern"
                 Grid.Column="0"
-                Grid.Row="21"
-                Name="btOk"
-                Width="66"
+                Grid.Row="20"
+                Name="btSpeichern"
+                Width="90"
+                Height="20"
                 HorizontalAlignment="Center"
-                HorizontalContentAlignment="Center"
-                Click="btOk_Click" />
+                Click="BtSpeichern_Click" />
+        <Button Content="Ende"
+                Grid.Column="1"
+                Grid.Row="20"
+                Name="btEnde"
+                Width="90"
+                Height="20"
+                HorizontalAlignment="Left"
+                Click="btOk_Ende" />
         <Button Content="Abbrechen"
                 Grid.Column="1"
-                Grid.Row="21"
+                Grid.Row="20"
                 Width="90"
+                Height="20"
                 Name="btAbbrechen"
-                HorizontalAlignment="Left"
-                HorizontalContentAlignment="Center"
+                HorizontalAlignment="Center"
                 Click="btAbbrechen_Click" />
     </Grid>
 </Window>

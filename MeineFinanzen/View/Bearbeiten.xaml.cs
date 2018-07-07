@@ -1,52 +1,50 @@
-﻿// 27.06.2018 BearbeitenView.cs
+﻿// 04.07.2018 Bearbeiten.cs
+// https://www.finanzen.net/suchergebnis.asp?strSuchString=LU0171293920     &inCnt=0&strKat=alles
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System;
 using System.Collections.ObjectModel;
 using DataSetAdminNS;
-using System.ComponentModel;
+using System.Windows.Threading;
+using System.Threading;
 namespace MeineFinanzen.View {
     public partial class Bearbeiten : Window {
         public Model.CollWertpapiere _wertpap = null;
         public ObservableCollection<string> TypeList = new ObservableCollection<string>();
         public ObservableCollection<string> DepotList = new ObservableCollection<string>();
-        public WertpapPlus wpp = new WertpapPlus();
-        DataRow _rowPortFol;
-        DataRow _rowAnlKat;
-        DataRow _rowDepot;
-        string _isin;
-        HauptFenster _mw;
-        int _nro;
-        int _nwp;
-        public double KaufKurs { get; set; }
+        private static DataRow _rowPortFol;
+        private static DataRow _rowAnlKat;
+        private static DataRow _rowDepot;
+        public string _isin;
+        public HauptFenster _mw;
+        public int _nro;
+        public int _nwp;
         public Bearbeiten() {
-            KaufKurs = 47.12;
-            wpp.KaufKurs = 47;
-        }
-        public void MachEs(HauptFenster mw, string isin, int nro, int nwp) {
-            KaufKurs = 48.12;
-            wpp.KaufKurs = 48;
-            //Point location = new Point(0, 0);
-            //Left = location.X;
-            //Top = location.Y;
-            _mw = mw;
-            _isin = isin;
-            _nro = nro;                 // Row-Nr in dgWertpapiere
-            _nwp = nwp;                 // Nr in Wertpapiere
             InitializeComponent();
-            //DataContext = this;
-            _wertpap = (Model.CollWertpapiere)mw.Resources["wertpapiereXXX"];
+            ConWrLi("---- -60- Konstruktor Bearbeiten()");
         }
         private void Window_Loaded(object sender, RoutedEventArgs e) {
-            KaufKurs = 49.13;
-            wpp.KaufKurs = 49;
+            MachWas();
+        }
+        private void MachWas() {
+            ConWrLi("---- -62- Bearbeiten  Window_Loaded()");
+            Point location = new Point(0, 0);
+            Left = location.X + 300;
+            Top = location.Y;
+            _wertpap = (Model.CollWertpapiere)_mw.Resources["wertpapiereXXX"];
             if (_isin == "") {
-                MessageBox.Show("Ein neues Wertpapier wird angelgt. NOCH");
+                System.Windows.MessageBox.Show("Ein neues Wertpapier wird angelgt. NOCH");
                 return;
             }
-            Model.Wertpapier wp = findWP(_isin);
+            Visibility = Visibility.Visible;
+            WindowState = WindowState.Maximized;
+            wb1.ScriptErrorsSuppressed = true;
+            wb1.ScrollBarsEnabled = true;
+            wb1.GoHome();
+            wb1.Navigate(new Uri("https://www.google.de/"));
 
+            Model.Wertpapier wp = findWP(_isin);
             DataTable dtt1 = new DataTable();
             DataSetAdmin.dvPortFol.Sort = "WPISIN";
             dtt1 = DataSetAdmin.dtPortFol.DefaultView.ToTable();
@@ -55,7 +53,6 @@ namespace MeineFinanzen.View {
             keys1[0] = DataSetAdmin.dtPortFol.Columns["WPIsin"];
             DataSetAdmin.dtPortFol.PrimaryKey = keys1;
             _rowPortFol = DataSetAdmin.dtPortFol.Rows.Find(_isin);
-
             DataSetAdmin.dvAnlKat.Sort = "AKID";
             DataColumn[] keys2 = new DataColumn[1];
             keys2[0] = DataSetAdmin.dtAnlKat.Columns["AKID"];
@@ -83,7 +80,16 @@ namespace MeineFinanzen.View {
             cbType.ItemsSource = TypeList;
             cbType.SelectedIndex = 0;
 
+            string url = _wertpap[_nwp].URL;
+            if (url.Length > 0)
+                wb1.Navigate(new Uri(url));
+            else {
+                url = @"https://www.finanzen.net/suchergebnis.asp?strSuchString=" + _wertpap[_nwp].ISIN;
+                wb1.Navigate(new Uri(url));
+            }
             DataContext = _wertpap[_nwp];
+            txtKaufKurs.Text = (_wertpap[_nwp].Kaufsumme / _wertpap[_nwp].Anzahl).ToString("#.##0,00");
+            DoEvents();
         }
         public DataRow findDepotID(string depotID) {
             for (int ir = 0; ir < DataSetAdmin.dvDepot.Count; ir++) {
@@ -120,20 +126,39 @@ namespace MeineFinanzen.View {
             }
             return null;
         }
-        private void btAbbrechen_Click(object sender, RoutedEventArgs e) {
-            this.Close();
+        private void btOk_Ende(object sender, RoutedEventArgs e) {
+            Close();
         }
-        private void btOk_Click(object sender, RoutedEventArgs e) {
-            // In _wertpap[nwp] stehen die Änderungen. 
-            if ((string)_rowPortFol["WPName"] != _wertpap[_nwp].Name)
-                MessageBox.Show("Der WPName wird übernommen! Alt: " + _rowPortFol["WPName"] + " Neu: " + _wertpap[_nwp].Name);
-            _rowPortFol["WPName"] = _wertpap[_nwp].Name;
-            if ((double)_rowPortFol["WPKaufsumme"] != _wertpap[_nwp].Kaufsumme)
-                MessageBox.Show("WPKaufsumme wird übernommen!" + _wertpap[_nwp].Name + " Alt: " + _rowPortFol["WPKaufsumme"] + " Neu: " + _wertpap[_nwp].Kaufsumme);
-            _rowPortFol["WPKaufsumme"] = _wertpap[_nwp].Kaufsumme;
-            _rowPortFol["WPKaufDatum"] = _wertpap[_nwp].KaufDatum;
-            DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
-            this.Close();
+        private void btAbbrechen_Click(object sender, RoutedEventArgs e) {
+            Close();
+        }
+        private void BtSpeichern_Click(object sender, RoutedEventArgs e) {
+            // In _wertpap[nwp] stehen die Änderungen. NOCH weitere Änderungen übernehmen
+            bool geändert = false;
+            if ((string)_rowPortFol["WPName"] != _wertpap[_nwp].Name) {
+                MessageBox.Show("Der WPName  wird übernommen! " + _wertpap[_nwp].Name + " Alt: " + _rowPortFol["WPName"] + " Neu: " + _wertpap[_nwp].Name);
+                _rowPortFol["WPName"] = _wertpap[_nwp].Name;
+                geändert = true;
+            }
+            if ((double)_rowPortFol["WPKaufsumme"] != _wertpap[_nwp].Kaufsumme) {
+                System.Windows.MessageBox.Show("WPKaufsumme wird übernommen! " + _wertpap[_nwp].Name + " Alt: " + _rowPortFol["WPKaufsumme"] + " Neu: " + _wertpap[_nwp].Kaufsumme);
+                _rowPortFol["WPKaufsumme"] = _wertpap[_nwp].Kaufsumme;
+                geändert = true;
+            }
+            if ((DateTime)_rowPortFol["WPKaufDatum"] != _wertpap[_nwp].KaufDatum) {
+                MessageBox.Show("WPKaufDatum wird übernommen! " + _wertpap[_nwp].Name + " Alt: " + _rowPortFol["WPKaufDatum"] + " Neu: " + _wertpap[_nwp].KaufDatum);
+                _rowPortFol["WPKaufDatum"] = _wertpap[_nwp].KaufDatum;
+                geändert = true;
+            }
+            if ((string)_rowPortFol["WPUrlText"] != _wertpap[_nwp].URL) {
+                MessageBox.Show("WPUrlText   wird übernommen! " + _wertpap[_nwp].Name + " Alt: " + _rowPortFol["WPUrlText"] + " Neu: " + _wertpap[_nwp].URL);
+                _rowPortFol["WPUrlText"] = _wertpap[_nwp].URL;
+                geändert = true;
+            }
+            if (geändert == true) {
+                MessageBox.Show("---- Bearbeiten: DatasetSichernInXml()");
+                DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
+            }
         }
         private void cmbSelectionChangedType(object sender, SelectionChangedEventArgs e) {
             if (cbType == null || cbType.SelectedItem == null)
@@ -149,26 +174,75 @@ namespace MeineFinanzen.View {
             if (_rowDepot["DepotName"].ToString() == cbDepot.SelectedItem.ToString())
                 _rowPortFol["WPDepotID"] = Convert.ToInt32(_rowDepot["DepotID"]);
         }
-    }
-    public class WertpapPlus : INotifyPropertyChanged, IEditableObject {
-        private float _kaufkurs;
-        public float KaufKurs {
-            get { return _kaufkurs; }
-            set { _kaufkurs = value; 
-                RaisePropertyChanged("KaufKurs");
-            }        
+        private void ConWrLi(string str1) {
+            Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
         }
-        public event PropertyChangedEventHandler PropertyChanged;
-        internal void NotifyPropertyChanged(string propertyName) {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        private void txtKaufKurs_SourceUpdated(object sender, System.Windows.Data.DataTransferEventArgs e) {
+            MessageBox.Show("txtKaufKurs_SourceUpdated() Aktualisierung durchgeführt.");
         }
-        protected void RaisePropertyChanged(string name) {
-            if (PropertyChanged != null) {
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
+        private void txtKaufKurs_TargetUpdated(object sender, System.Windows.Data.DataTransferEventArgs e) {
+            MessageBox.Show("txtKaufKurs_TargetUpdated() Aktualisierung durchgeführt.");
+        }
+        private void Wb1_DocumentTitleChanged(object sender, EventArgs e) {
+            Title = Title = "-Bearbeiten- " + (sender as System.Windows.Forms.WebBrowser).DocumentTitle;
+        }
+        private void Wb1_StatusTextChanged(object sender, EventArgs e) {
+            if (wb1.Url != null) {
+                TxtWebUrl.Text = wb1.Url.ToString();
+                //TxtWebUrl.InvalidateVisual();
+            }
+            TxtStatus(wb1.StatusText);
+        }
+        private void Wb1_Navigating(object sender, System.Windows.Forms.WebBrowserNavigatingEventArgs e) {
+        }
+        private void URL_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+            Uri url = wb1.Document.Url;
+            txtUrl.Text = url.ToString();
+        }
+        protected void DoEvents() {
+            if (Application.Current != null)
+                Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new ThreadStart(delegate { }));
+        }
+        public void TxtStatus(string str1) {
+            try {
+                if (str1.Length >= 3) {
+                    if (!str1.Equals("Fertig")) {
+                        string str = string.Format("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
+                        TxtWebStatus.AppendText(Environment.NewLine + str);
+                        TxtWebStatus.ScrollToEnd();
+                        TxtWebStatus.InvalidateVisual();
+                    }
+                }
+            } catch (Exception ex) {
+                MessageBox.Show("Fehler TxtWrLi()" + ex);
             }
         }
-        public void BeginEdit() { }
-        public void CancelEdit() { }
-        public void EndEdit() { }
+        private void cmbSelectionChangedUrl1(object sender, SelectionChangedEventArgs e) {
+            if (cbUrl1 == null || cbUrl1.SelectedItem == null)
+                return;
+            // _rowDepot = findDepotxxxxxxxxxxxxx NOCH Name(cbUrl1.SelectedItem.ToString());
+            if (_rowDepot["DepotName"].ToString() == cbUrl1.SelectedItem.ToString())
+                _rowPortFol["WPDepotID"] = Convert.ToInt32(_rowDepot["DepotID"]);
+        }
+        private void CbUrl1_Loaded(object sender, RoutedEventArgs e) {
+            cbUrl1.Text = "";
+            cbUrl1.Items.Add("Alle Konten");
+            cbUrl1.SelectedIndex = 0;
+
+            foreach (Model.BankÜbersicht fin in ViewModel.DgBanken.banken) {
+                if (fin.OCBankKonten.Count > 0)
+                    if (fin.OCBankKonten[0].KontoNr8.Length > 0) {
+                        //ConWrLi("==== Bankname {0} /{1}/ {2} {3}", fin.Bankname, fin.Kontonummer, fin.Kontoname, fin.SortFeld);
+                        if (DBNull.Value.Equals(fin.OCBankKonten[0].KontoArt8) || (fin.OCBankKonten[0].KontoArt8 == ""))
+                            continue;
+                        cbUrl1.Items.Add(fin.OCBankKonten[0].KontoNr8);
+                    }
+            }
+            try {
+            } catch (Exception ex) {
+                MessageBox.Show("Fehler in cbUrl1_Loaded: " + ex);
+            }
+            Console.WriteLine("---- --04-- Bearbeiten.xaml.cs cbUrl1_Loaded {0}", ViewModel.DgBanken.banken.Count);
+        }
     }
 }

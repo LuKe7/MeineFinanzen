@@ -1,4 +1,4 @@
-﻿// 21.11.2016  EinstellungenView.xaml.cs
+﻿// 28.06.2018  EinstellungenView.xaml.cs
 using System;
 using System.Windows;
 using System.Windows.Controls;

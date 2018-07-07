@@ -98,16 +98,16 @@ namespace MeineFinanzen.View {
             if (handler != null)
                 handler(this, new PropertyChangedEventArgs(propertyName));
         }
+        internal void NotifyPropertyChanged(string propertyName) {
+            //Console.WriteLine("---- !!!! NotifyPropertyChanged: " + propertyName);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
         protected void RaisePropertyChanged(string name) {
             //Console.WriteLine("RaisePropertyChanged: " + name);
             if (PropertyChanged != null) {
                 PropertyChanged(this, new PropertyChangedEventArgs(name));
             }
-        }
-        internal void NotifyPropertyChanged(string propertyName) {
-            Console.WriteLine("NotifyPropertyChanged: " + propertyName);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        }      
         public void BeginEdit() { }
         public void CancelEdit() { }
         public void EndEdit() { }
@@ -410,7 +410,7 @@ namespace MeineFinanzen.View {
             return false;
         }
         private void wb1_DocumentTitleChanged(object sender, EventArgs e) {
-            //Title = "-KontenSynchronisierenInt- " + (sender as System.Windows.Forms.WebBrowser).DocumentTitle;
+            Title = "-KontenSynchronisierenInt- " + (sender as System.Windows.Forms.WebBrowser).DocumentTitle;
         }
         private void acceptButton_Click(object sender, RoutedEventArgs e) {
             // Accept the dialog and return the dialog result

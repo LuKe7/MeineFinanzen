@@ -46,7 +46,7 @@
                 <Grid x:Name="GridAllgemein"
                       ShowGridLines="False">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="27*" />
+                        <ColumnDefinition Width="10*" />
                         <ColumnDefinition Width="510*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
@@ -120,7 +120,7 @@
                       ShowGridLines="False"
                       Margin="0,2,0,-2">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="27*" />
+                        <ColumnDefinition Width="10*" />
                         <ColumnDefinition Width="510*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
