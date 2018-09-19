@@ -991,7 +991,7 @@ namespace MeineFinanzen {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
         }
     }
-    // 07.03.2018 VMKontenSynchronisierenSubsembly.cs
+    // 11.07.2018 VMKontenSynchronisierenSubsembly.cs
     // Get Passw verändert. NOCH verbessern.
     // SortFeld7 < 888 sind Banken.
     public class VMKontenSynchronisierenSubsembly {
@@ -1400,26 +1400,32 @@ namespace MeineFinanzen {
             DataColumn column;
             Type typeInt32 = Type.GetType("System.Int32");
             // ------ Spalten erstellen ------ 
+            Console.WriteLine("---- FinToDtGesamt() in dtWertpapSubsembly ------ Spalten erstellen ------ ");
             foreach (Object prop in properties1) {
                 System.Reflection.PropertyInfo pif = (System.Reflection.PropertyInfo)prop;
                 Object val1 = pif.GetValue(aFinancialInstrument1, null);
                 Object val3 = pif.PropertyType;
-                //Console.WriteLine("dtWertpapSubsembly Spalten pif.Name:{0,-34} GetValue:{1,-24} PropertyType:{2}",
-                //    pif.Name, val1, val3);                
+                Console.WriteLine("    Spalte: {0,-34} Value: {1,-24} Type: {2}", pif.Name, val1, val3);                
                 column = new DataColumn(pif.Name);
                 if (pif.PropertyType.Name == "String")
-                    column.DataType = System.Type.GetType("System.String");
+                    column.DataType = Type.GetType("System.String");
                 else if (pif.PropertyType.Name == "Int32")
-                    column.DataType = System.Type.GetType("System.Int32");
+                    column.DataType = Type.GetType("System.Int32");
                 else if (pif.PropertyType.Name == "Decimal")
-                    column.DataType = System.Type.GetType("System.Decimal");
+                    column.DataType = Type.GetType("System.Decimal");
                 else if (pif.PropertyType.Name == "SwiftDate")                  // 20140711 00000000               
-                    column.DataType = System.Type.GetType("System.DateTime");
+                    column.DataType = Type.GetType("System.DateTime");
                 else if (pif.PropertyType.Name == "SwiftTime")                  // 000000                
-                    column.DataType = System.Type.GetType("System.DateTime");
+                    column.DataType = Type.GetType("System.DateTime");
+                else if (pif.PropertyType.Name == "SwiftQuantityType")               
+                    column.DataType = Type.GetType("System.String");
+                else if (pif.PropertyType.Name == "SwiftTextLines")
+                    column.DataType = Type.GetType("System.String");
+                else if (pif.PropertyType.Name == "SwiftPriceType")
+                    column.DataType = Type.GetType("System.String");                
                 else {
-                    //Debug.WriteLine("kein type!! pif.Name:" + pif.Name + " PropertyType:" + pif.PropertyType.Name);
-                    column.DataType = System.Type.GetType("System.String");
+                    Debug.WriteLine("kein type!! pif.Name:" + pif.Name + " PropertyType:" + pif.PropertyType.Name);
+                    column.DataType = Type.GetType("System.String");
                 }
                 DataSetAdmin.dtWertpapSubsembly.Columns.Add(column);
             }
@@ -1428,35 +1434,48 @@ namespace MeineFinanzen {
             decimal aktwert = 0;
             int co = -1;
             // ------ Zeilen erstellen ------
+            Console.WriteLine("---- FinToDtGesamt() in dtWertpapSubsembly ------ Zeilen(Daten) erstellen ------ ");
             foreach (SwiftStatementOfHoldingsFinancialInstrument aFinancialInstrument in aStatementOfHoldings) {
+                Console.WriteLine("    Zeile: {0, -50} {1,-16}", aFinancialInstrument.SecurityName.Pack(), aFinancialInstrument.ISIN);
                 newRow = DataSetAdmin.dtWertpapSubsembly.NewRow();
                 co = -1;
                 Object[] properties2 = aFinancialInstrument.GetType().GetProperties();
+                string str = null;
+                string str2 = null;
+                //Console.Write("---- Eigenschaften ");
                 foreach (Object prop in properties2) {
                     System.Reflection.PropertyInfo pif = (System.Reflection.PropertyInfo)prop;
                     Object val1 = pif.GetValue(aFinancialInstrument, null);
                     Object val3 = pif.PropertyType;
-                    //Console.WriteLine("dtWPGes pif.Name:{0,-34} GetValue:{1,-24} PropertyType:{2}", pif.Name, val1, val3); 
+                    //Console.WriteLine("    {0,-34} {1,-24} {2}", pif.Name, val1, val3);
                     ++co;
                     try {
                         if (pif.PropertyType.Name == "SwiftDate") {
-                            string str = val1.ToString();
+                            str = val1.ToString();
                             if (str == "00000000")
-                                newRow[co] = Convert.ToDateTime("01.01.1980");
+                                newRow[co] = Convert.ToDateTime("01/01/1980");
                             else
-                                newRow[co] = Convert.ToDateTime(str.Substring(6, 2) + "." + str.Substring(4, 2) + "." + str.Substring(0, 4) + " 12:00:00");
+                                newRow[co] = Convert.ToDateTime(str.Substring(6, 2) + "/" + str.Substring(4, 2) + "/" + str.Substring(0, 4) + " 12:00:00");
                         } else if (pif.PropertyType.Name == "SwiftTime") {
-                            string str = val1.ToString();
-                            newRow[co] = Convert.ToDateTime("01.01.1980 " + str.Substring(4, 2) + ":" + str.Substring(0, 2));
+                            str = val1.ToString();
+                            str2 = Convert.ToDateTime("01/01/1980 " + str.Substring(0, 2) + ":" + str.Substring(2, 2)).ToString();
+                            newRow[co] = str2;
+                        } else if (pif.PropertyType.Name == "SwiftQuantityType") {
+                            newRow[co] = val1;
+                        } else if (pif.PropertyType.Name == "SwiftTextLines") {
+                            newRow[co] = val1;
+                        } else if (pif.PropertyType.Name == "SwiftPriceType") {
+                            newRow[co] = val1;
                         } else {
                             newRow[co] = val1;
                         }
                     } catch (Exception ex) {
-                        //MessageBox.Show("Fehler in finToDtGesamt() : vale: " + val1.ToString() + " ex: " + ex);
-                        Console.WriteLine("Fehler in finToDtGesamt() : vale: " + val1.ToString() + " ex: " + ex);
-                        newRow[co] = Convert.ToDateTime("01.01.1980");
+                        MessageBox.Show("Fehler in finToDtGesamt() : val1: " + val1.ToString() + " ex: " + ex);
+                        Console.WriteLine("Fehler in finToDtGesamt() : val1: " + val1.ToString() + " ex: " + ex);
+                        newRow[co] = Convert.ToDateTime("01/01/1980");  // Ist wohl Date???
                     }
                 }
+                Console.WriteLine("    SecurityName: {0,-50} ISIN: {1} Price: {2}", newRow["SecurityName"], newRow["ISIN"], newRow["Price"]);
                 DataSetAdmin.dtWertpapSubsembly.Rows.Add(newRow);
                 aktwert += (decimal)newRow["HoldingValue"]; // Value of the total holding.
             }

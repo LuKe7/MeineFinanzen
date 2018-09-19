@@ -12,11 +12,12 @@
         Loaded="Window_Loaded"
         Closing="CloseWindow">
     <Grid>
-        <TextBox Name="txbHBCI"
-                 Width="400"                
-                 FontSize="18"
+        <TextBox x:Name="txbHBCI"
+                 Width="400"
+                 FontSize="12"
                  Text="hbci Status"
                  VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Auto"
                  TextWrapping="Wrap"
                  AcceptsReturn="True"
                  AcceptsTab="True" />

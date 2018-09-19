@@ -1,4 +1,4 @@
-﻿<!-- 27.05.2018   -View-   HauptFenster.xaml -->
+﻿<!-- 23.07.2018   -View-   HauptFenster.xaml -->
 <Window x:Class="MeineFinanzen.View.HauptFenster"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -434,8 +434,7 @@
                       SelectionChanged="CbNeueVerbindung_SelectionChanged" />
             <TextBox x:Name="txbCPU"
                      Margin="10, 0"
-                     VerticalAlignment="Top"
-                     Width="100"
+                                     
                      Text="CPU" />
             <TextBox x:Name="txbSuche"
                      Margin="1, 0"
@@ -916,9 +915,10 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="Name"
+                                <DataGridTextColumn Header="Name"                                                    
+                                                    Width="200"                                                    
                                                     Binding="{Binding Name}"
-                                                    IsReadOnly="True" />
+                                                    IsReadOnly="True" />                                                                                                                      
                                 <DataGridTemplateColumn Header="Heute"
                                                         SortMemberPath="Heute">
                                     <DataGridTemplateColumn.CellTemplate>

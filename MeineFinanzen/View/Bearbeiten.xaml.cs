@@ -242,7 +242,7 @@ namespace MeineFinanzen.View {
             } catch (Exception ex) {
                 MessageBox.Show("Fehler in cbUrl1_Loaded: " + ex);
             }
-            Console.WriteLine("---- --04-- Bearbeiten.xaml.cs cbUrl1_Loaded {0}", ViewModel.DgBanken.banken.Count);
+            Console.WriteLine("---- -04-- Bearbeiten.xaml.cs cbUrl1_Loaded {0}", ViewModel.DgBanken.banken.Count);
         }
     }
 }

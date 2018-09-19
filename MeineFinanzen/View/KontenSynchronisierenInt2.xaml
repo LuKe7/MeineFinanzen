@@ -1,4 +1,4 @@
-﻿<!-- 30.03.2018   -View-   KontenSynchronisierenInt2.xaml -->
+﻿<!-- 19.09.2018   -View-   KontenSynchronisierenInt2.xaml -->
 <Window x:Class="MeineFinanzen.View.KontenSynchronisierenInt2"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -37,20 +37,6 @@
             <RowDefinition Height="10*" />
             <RowDefinition Height="3*" />
         </Grid.RowDefinitions>
-        <!--Ein Element, mit dem Sie ein Windows Forms-Steuerelement
-            auf einer WPF-Seite hosten können.-->
-        <WindowsFormsHost x:Name="wfh1"
-                          Grid.Column="0"
-                          Grid.Row="0"
-                          Grid.RowSpan="4">
-            <!-- Mit wf: könnt ihr eine Form auswählen und mit 
-                 x: den Namen FieldModifier oder txtOben festlegen
-                DocumentCompleted="wb1_DocumentCompleted" -->
-            <wf:WebBrowser x:Name="wb1"
-                           DocumentTitleChanged="wb1_DocumentTitleChanged"
-                           StatusTextChanged="wb1_StatusTextChanged"
-                           Navigating="wb1_Navigating" />
-        </WindowsFormsHost>
         <!--  AlternatingRowBackground="#FFBBF0D1" -->
         <DataGrid  x:Name="dgvUrls"
                    Grid.Column="1"
@@ -63,8 +49,7 @@
                    SelectionUnit="FullRow"
                    HorizontalGridLinesBrush="#E600FA00"
                    VerticalGridLinesBrush="#9B7D7B62"
-                   VerticalAlignment="Top"
-                   PreviewMouseDown="dgvUrls_PreviewMouseDown">
+                   VerticalAlignment="Top">
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
                     <Setter Property="FontWeight"
@@ -124,6 +109,12 @@
                  VerticalScrollBarVisibility="Auto"
                  HorizontalScrollBarVisibility="Auto" />
         <TextBox x:Name="txtUnten"
+                 Grid.Column="1"
+                 Grid.Row="2"
+                 Text="txtUnten"
+                 VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Auto" />
+        <TextBox x:Name="txtBox"
                  Grid.Column="1"
                  Grid.Row="2"
                  Text="txtUnten"

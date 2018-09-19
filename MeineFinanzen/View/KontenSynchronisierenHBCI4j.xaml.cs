@@ -1,4 +1,6 @@
-﻿// 07.03.2018 KontenSynchronisierenHBCI4j.cs
+﻿// 08.07.2018 KontenSynchronisierenHBCI4j.cs
+// In KursDaten\Depot-aus-hbci4j werden alte Sätze NICHT gelöscht!!!
+// Daher Datum Heute abfragen!!
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,6 +11,8 @@ using DataSetAdminNS;
 using MeineFinanzen.Model;
 using MeineFinanzen.Helpers;
 using MeineFinanzen.ViewModel;
+using System.Windows.Threading;
+using System.Threading;
 namespace MeineFinanzen.View {
     public partial class KontenSynchronisierenHBCI4j : Window {
         public WertpapHBCI4j wp4j = new WertpapHBCI4j();
@@ -18,21 +22,21 @@ namespace MeineFinanzen.View {
         public KontenSynchronisierenHBCI4j() {
             InitializeComponent();
         }
-        private void Window_Loaded(Object sender, RoutedEventArgs e) { }
-        public void Ausführen(HauptFenster mw, bool laden) {
+        private void Window_Loaded(Object sender, RoutedEventArgs e) {
+            TxtWrLi("---- KontenSynchronisierenHBCI4j Window_Loaded()");
+            ConWrLi("---- -50- KontenSynchronisierenHBCI4j Window_Loaded()");
             /* Verzeichnis: @"\KursDaten\Depot-aus-hbci4j\"                                                                      
             * --funktion--            -was-           -wohin-                                                                                
             * KontoStändeFinCmd       Kontostände     \Kontenstände-sKontoNr-DateTime.csv               
             * KontoUmsätzeFinCmdStmt  Kontoumsätze    \Umsätze-KontoNr-DateTime.csv     
             *                                         \logKontoUmsätzeHolen.txt                                                                     
             * DepotHolen_ausführen    WertpapierDepot dtWertpapHBCI4j (Mit angepasstem hbci4j geholt)   */
-            string propDir = Helpers.GlobalRef.g_Ein.strHBCI4j; // C:\Users\LuKe/hbci4j-core/hbci4j-core-3.0.10/
-            string datenDir = Helpers.GlobalRef.g_Ein.myDepotPfad + @"\KursDaten\Depot-aus-hbci4j\";
+            string propDir = GlobalRef.g_Ein.strHBCI4j; // C:\Users\LuKe/hbci4j-core/hbci4j-core-3.0.10/
+            string datenDir = GlobalRef.g_Ein.myDepotPfad + @"\KursDaten\Depot-aus-hbci4j\";
             //List<string> props = new List<string>();
             //props.Clear();
             // ---- Mit HBCI4j mit Java DepotAbrufTest.bat
-            // -----    nach Wertpap_ISIN.xml
-            ConWrLi("---- -50- Start KontenSynchronisieren_HBCI4j");
+            // -----    nach Wertpap_ISIN.xml           
             TxtWrLi("Start HBCI");
             foreach (var ban in DgBanken.banken) {
                 if (String.Compare(ban.SortFeld7, "888", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -50,8 +54,32 @@ namespace MeineFinanzen.View {
                         continue;
                     StreamReader file = new StreamReader(fi.FullName);
                     //Console.WriteLine("properties gefunden?: {0}", file);
+                    /*  # Angepasste Version von AnalyzeReportOfTransactions                     
+                     *  # Kurzanleitung:
+                        # 1. .properties-Datei erstellen mit folgendem Inhalt:
+                        #
+                        # -- Beginn
+                        client.passport.default=PinTan
+                        default.hbciversion=300
+                        log.loglevel.default=2
+                        
+                        client.passport.PinTan.filename=/Users/LuKe/hbci4j-core/hbci4j-core-3.0.10/hbci-ING-DiBa.passport
+                        #                          /home/jonas/java/hbci/pintan_hbci4java.test
+
+                        # client.passport.PinTan.certfile=hbcicerts.bin
+                        client.passport.PinTan.checkcert=1
+                        # client.passport.PinTan.proxy=proxy.intern.domain.com:3128
+                        client.passport.PinTan.init=1
+                        # --Ende
+
+                        # Anzupassen ist nur client.passport.PinTan.filename
+                        # Diese Datei muss nicht existieren, sondern wird beim ersten Start angelegt. Dort fragt HBCI4Java dann auch 
+                        # automatisch die ganzen Informationen zur Verbindung ab (BLZ, Benutzername, usw.)
+
+                        # 2. Unten im Source Code "/home/jonas/java/hbci/jw.hbci4java.properties" durch den Pfad zu dieser .properties-Datei ersetzen
+                        public final class DepotAbrufTest */
                     while ((line = file.ReadLine()) != null) {
-                        if (line.Contains("client.passport.default=")) {
+                        if (line.Contains("client.passport.default=")) {    // C:\Users\LuKe\hbci4j-core\hbci4j-core-3.0.10\hbci-ING-DiBa.properties
                             string strPfad = fi.FullName.Substring(2);
                             strPfad = strPfad.Replace(@"\", "/");
                             if (!fi.FullName.Contains(ban.BankName7))
@@ -89,13 +117,19 @@ namespace MeineFinanzen.View {
             foreach (FileInfo fi in fis2) {
                 string strExt = fi.Extension;
                 string strName = fi.Name;
+                string strDatum = fi.LastWriteTime.ToShortDateString(); // 08.07.2018
+                string strHeute = DateTime.Today.ToShortDateString();
                 if ((string.Compare(strExt, ".xml") != 0) || (!strName.StartsWith("Wertpapier_")))
+                    continue;
+                if ((strDatum != strHeute))
                     continue;
                 Console.Write("{0,-80} ", fi.FullName);
                 wp4j = null;
                 GlobalRef.g_WPHBCI.DeserializeReadWertpapHBCI4j(fi.FullName, out wp4j);
-                // wird nicht gebraucht: dsHier.ReadXml(fi.FullName, XmlReadMode.Auto);                    
-                Console.WriteLine("{0,-28} {1,-16} {2,10} {3,20:dd/MM/yy H:mm:ss}", wp4j.Name, wp4j.ISIN, wp4j.Kurs, wp4j.KursZeit);
+                // wird nicht gebraucht: dsHier.ReadXml(fi.FullName, XmlReadMode.Auto);  
+                //D:\MeineFinanzen\MyDepot\KursDaten\Depot-aus-hbci4j\Wertpapier_DE0006791809.xml KANAM GRUNDINVEST FONDS INHABER-ANTEILE  DE0006791809          13,37    06.07.18 20:37:34
+                //D:\MeineFinanzen\MyDepot\KursDaten\Depot-aus-hbci4j\Wertpapier_DE0007483612.xml DEKA-IMMOBILIENGLOBAL INHABER-ANTEILE  DE0007483612          55,03    06.07.18 20:37:34
+                Console.WriteLine("{0,-62} {1,-12} {2,10} {3,18:dd/MM/yy H:mm:ss}", wp4j.Name, wp4j.ISIN, wp4j.Kurs, wp4j.KursZeit);
                 wp4js.Add(wp4j);
             }
             WertpapHBCI4jToPortFol();
@@ -220,9 +254,14 @@ namespace MeineFinanzen.View {
                 txbHBCI.AppendText(Environment.NewLine + str);
                 txbHBCI.ScrollToEnd();
                 txbHBCI.InvalidateVisual();
+                DoEvents();
             } catch (Exception ex) {
                 MessageBox.Show("Fehler TxtWrLi()" + ex);
             }
+        }
+        protected void DoEvents() {
+            if (Application.Current != null)
+                Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new ThreadStart(delegate { }));
         }
     }
 }

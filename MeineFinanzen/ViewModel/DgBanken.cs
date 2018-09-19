@@ -16,7 +16,6 @@ using DataSetAdminNS;
 using MeineFinanzen.Model;
 using MeineFinanzen.Helpers;
 using System.Windows.Data;
-
 namespace MeineFinanzen.ViewModel {
     public class DgBanken {
         public static BankÜbersicht bank = new BankÜbersicht();
@@ -85,7 +84,7 @@ namespace MeineFinanzen.ViewModel {
                 } catch { }
             return umsätze;
             }
-        /* dtWPGes pif.Name:ISIN                               GetValue:DE000A0NEKQ8             PropertyType:System.String
+     /* dtWPGes pif.Name:ISIN                               GetValue:DE000A0NEKQ8             PropertyType:System.String
         dtWPGes pif.Name:WKN                                GetValue:A0NEKQ                   PropertyType:System.String
         dtWPGes pif.Name:Quantity                           GetValue:385                      PropertyType:System.Decimal
         dtWPGes pif.Name:QuantityType                       GetValue:UNIT                     PropertyType:Subsembly.Swift.SwiftQuantityType

@@ -285,16 +285,16 @@ namespace MeineFinanzen.View {
                 if (dtrow["WPXKursX"] != dtrow["WPXPathKurs"])
                     dtrow["WPXKursX"] = lirow.WPXKursX;
 
-                if (lirow.WPXKursY != (int)dtrow["WPXKursY"])
+               // if (lirow.WPXKursY != dtrow["WPXKursY"]
                     dtrow["WPXKursY"] = lirow.WPXKursY;
 
                 if (lirow.WPXPathZeit != (string)dtrow["WPXPathZeit"])
                     dtrow["WPXPathZeit"] = lirow.WPXPathZeit;
 
-                if (lirow.WPXZeitX != (int)dtrow["WPXZeitX"])
+                //if (lirow.WPXZeitX != (int)dtrow["WPXZeitX"])
                     dtrow["WPXZeitX"] = lirow.WPXZeitX;
 
-                if (lirow.WPXZeitY != (int)dtrow["WPXZeitY"])
+                //if (lirow.WPXZeitY != (int)dtrow["WPXZeitY"])
                     dtrow["WPXZeitY"] = lirow.WPXZeitY;
             }
             DataSetAdmin.dtPortFol = dtPortFol;
