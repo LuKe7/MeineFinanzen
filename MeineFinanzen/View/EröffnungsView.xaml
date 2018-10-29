@@ -41,7 +41,7 @@
                  Width="120"
                  Background="#FFB5D8D8" />
         <Button x:Name="btDurchsuchen"
-                Click="btDurchsuchen_Click"
+                Click="BtDurchsuchen_Click"
                 Content="Durchsuchen..."
                 HorizontalAlignment="Left"
                 Margin="20,374,0,0"
@@ -53,14 +53,14 @@
                 Margin="136,374,0,0"
                 VerticalAlignment="Top"
                 Width="75"
-                Click="btOk_Click" />
+                Click="BtOk_Click" />
         <Button x:Name="btAbbrechen"
                 Content="Abbrechen"
                 HorizontalAlignment="Left"
                 Margin="236,374,0,0"
                 VerticalAlignment="Top"
                 Width="75"
-                Click="btAbbrechen_Click" />
+                Click="BtAbbrechen_Click" />
         <Image Name="image1"
                HorizontalAlignment="Left"
                Margin="415,154"

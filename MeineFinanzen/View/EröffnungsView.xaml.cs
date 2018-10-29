@@ -23,9 +23,9 @@ namespace MeineFinanzen.View {
             txtBildPath.Text = _filename;
         }
         private void Image1_Loaded(object sender, RoutedEventArgs e) {
-            setzeImageSource();
+            SetzeImageSource();
         }
-        private void setzeImageSource() {
+        private void SetzeImageSource() {
             BitmapImage b = new BitmapImage();
             b.BeginInit();
             b.UriSource = new Uri(_filename);
@@ -33,14 +33,15 @@ namespace MeineFinanzen.View {
             image1.Source = b;
             txtBildPath.Text = _filename;
         }
-        private void btDurchsuchen_Click(object sender, RoutedEventArgs e) {
+        private void BtDurchsuchen_Click(object sender, RoutedEventArgs e) {
             //string[] directories = Directory.GetDirectories(Helpers.GlobalRef.g_Ein.strBilderPfad);
             //string[] files = Directory.GetFiles(Helpers.GlobalRef.g_Ein.strBilderPfad, "*.*");
             try {
-                OpenFileDialog dlg = new OpenFileDialog();
-                dlg.InitialDirectory = Helpers.GlobalRef.g_Ein.strBilderPfad;
-                dlg.DefaultExt = "*";   //"jpg";
-                dlg.Filter = "Images (*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|All files (*.*)|*.*";
+                OpenFileDialog dlg = new OpenFileDialog {
+                    InitialDirectory = Helpers.GlobalRef.g_Ein.strBilderPfad,
+                    DefaultExt = "*",   //"jpg";
+                    Filter = "Images (*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|All files (*.*)|*.*"
+                };
                 //"JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|" +
                 //"GIF Files (*.gif)|*.gif|Alle Files (*.*)|*.*";           
                 //dlg.Filter = "PNG|*.png|DOT|*.dot|Windows Bitmap Format|*.bmp|GIF|*.gif|" +
@@ -67,7 +68,7 @@ namespace MeineFinanzen.View {
                     Helpers.GlobalRef.g_Ein.strStartBild = bildname;
                     _filename = Helpers.GlobalRef.g_Ein.strBilderPfad + @"\" +
                         Helpers.GlobalRef.g_Ein.strStartBild;
-                    setzeImageSource();
+                    SetzeImageSource();
                     Helpers.GlobalRef.g_Ein.SerializeWriteEinstellungen(
                         Helpers.GlobalRef.g_Ein.strEinstellungen,
                         Helpers.GlobalRef.g_Ein);
@@ -89,11 +90,11 @@ namespace MeineFinanzen.View {
                 }
             }
         }
-        private void btAbbrechen_Click(object sender, RoutedEventArgs e) {
+        private void BtAbbrechen_Click(object sender, RoutedEventArgs e) {
             DialogResult = false;
             return;
         }
-        private void btOk_Click(object sender, RoutedEventArgs e) {
+        private void BtOk_Click(object sender, RoutedEventArgs e) {
             DialogResult = true;
             return;
         }
@@ -136,8 +137,8 @@ namespace MeineFinanzen.View {
             passwordBox.PasswordChanged += PasswordChanged;
         }
         private static void Attach(DependencyObject sender, DependencyPropertyChangedEventArgs e) {
-            PasswordBox passwordBox = sender as PasswordBox;
-            if (passwordBox == null)
+
+            if (!(sender is PasswordBox passwordBox))
                 return;
             if ((bool)e.OldValue) {
                 passwordBox.PasswordChanged -= PasswordChanged;

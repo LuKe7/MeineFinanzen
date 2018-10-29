@@ -260,7 +260,7 @@ namespace MeineFinanzen.View {
             dgvVorgabeInt2.EnableRowVirtualization = false;
             dgvVorgabeInt2.UpdateLayout();
         }
-        private void dgvUrls_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
+        private void DgvUrls_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is System.Windows.Controls.DataGridCell))
                 dep = VisualTreeHelper.GetParent(dep);
@@ -421,7 +421,7 @@ namespace MeineFinanzen.View {
             //SetDataRowColor("R");
             return 3;    // Wenn kein 'row quotebox' gefunden.
         }
-        private void dgvVorgabeInt2_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
+        private void DgvVorgabeInt2_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
             /* var source = e.Source;
             if (e.RightButton == MouseButtonState.Pressed) {
                 URLsVerwaltenContextMenu gk = new URLsVerwaltenContextMenu();
@@ -465,22 +465,22 @@ namespace MeineFinanzen.View {
             DataContext = null;
             DataContext = this;
         }
-        private void wb1_DocumentTitleChanged(object sender, EventArgs e) {
+        private void Wb1_DocumentTitleChanged(object sender, EventArgs e) {
             AddTextStr("wb1_DocumentTitleChanged");
         }
-        private void wb1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e) {
+        private void Wb1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e) {
             if (e.Url.AbsolutePath != (sender as System.Windows.Forms.WebBrowser).Url.AbsolutePath) {
                 AddTextStr("Urls !=");
             } else if (wb1.ReadyState == WebBrowserReadyState.Complete) {
                 AddTextStr("Complete");
-                wb1.Document.Click += new HtmlElementEventHandler(wb1_Document_Click);
+                wb1.Document.Click += new HtmlElementEventHandler(Wb1_Document_Click);
             } else if (wb1.ReadyState == WebBrowserReadyState.Loading) {
                 AddTextStr("Loading");
             } else {
                 AddTextStr("wb1-DocumentCompleted: " + wb1.ReadyState + " unbekannt!!!");
             }
         }
-        private void cbBoxanfang_Loaded(object sender, RoutedEventArgs e) {
+        private void CbBoxanfang_Loaded(object sender, RoutedEventArgs e) {
             //cbBoxanfang.Text = "BoxAnfang - Text";
             //cbBoxanfang.Items.Add("BoxAnfang-Text");
             //cbBoxanfang.SelectedIndex = 0;            
@@ -490,10 +490,10 @@ namespace MeineFinanzen.View {
                 System.Windows.MessageBox.Show("Fehler in cbBoxanfang_Loaded: " + ex);
             }
         }
-        private void cbBoxanfang_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+        private void CbBoxanfang_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             System.Windows.Forms.MessageBox.Show("NOCH    cbBoxanfang_SelectionChanged");
         }
-        private void cbAusschluss1_Loaded(object sender, RoutedEventArgs e) {
+        private void CbAusschluss1_Loaded(object sender, RoutedEventArgs e) {
             //cbUrl2.Text = "URL2";
             //cbUrl2.Items.Add("URL2");
             //cbUrl2.SelectedIndex = 0;
@@ -505,17 +505,17 @@ namespace MeineFinanzen.View {
                 }
             }
         }
-        private void cbAusschluss1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+        private void CbAusschluss1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             System.Windows.Forms.MessageBox.Show("NOCH    cbAusschluss1_SelectionChanged");
         }
-        private void cbWert1_Loaded(object sender, RoutedEventArgs e) {
+        private void CbWert1_Loaded(object sender, RoutedEventArgs e) {
             //System.Windows.Forms.MessageBox.Show("NOCH    cbWert1_Loaded");
         }
-        private void cbWert1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+        private void CbWert1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             System.Windows.Forms.MessageBox.Show("NOCH    cbWert1_SelectionChanged");
         }
-        private void wb1_Navigating(object sender, WebBrowserNavigatingEventArgs e) { }
-        private void dgvUrls_Neu_Click(object sender, RoutedEventArgs e) {
+        private void Wb1_Navigating(object sender, WebBrowserNavigatingEventArgs e) { }
+        private void DgvUrls_Neu_Click(object sender, RoutedEventArgs e) {
             DatagridContextMenu.IsOpen = false;
             string xxx = DatagridContextMenu.ToString();
             string strType = dgRow1.Item.GetType().ToString();      // MeineFinanzen.Model.WertpapSynchroNeu
@@ -528,29 +528,29 @@ namespace MeineFinanzen.View {
             //https://www.google.com/search?q=XXYY&ie=utf-8&oe=utf-8&client=firefox-b
             //string browser = GetDefaultBrowser();
         }
-        private void dgvUrls_bearbeiten_Click(object sender, RoutedEventArgs e) {
+        private void DgvUrls_bearbeiten_Click(object sender, RoutedEventArgs e) {
             System.Windows.Forms.MessageBox.Show("NOCH    dgvUrls_bearbeiten_Click");
         }
-        private void myMenuButton_ContextMenu_Closed(object sender, RoutedEventArgs e) {
+        private void MyMenuButton_ContextMenu_Closed(object sender, RoutedEventArgs e) {
             //Console.WriteLine("intercepted!!!!");
             e.Handled = true;
         }
-        private void searchButton_Click(object sender, EventArgs e) {
+        private void SearchButton_Click(object sender, EventArgs e) {
             wb1.GoSearch();
         }
         private void _Beenden_Click(object sender, RoutedEventArgs e) {
             System.Windows.Forms.MessageBox.Show("NOCH    _Beenden_Click");
         }
-        private void searchButton_Click(object sender, RoutedEventArgs e) {
+        private void SearchButton_Click(object sender, RoutedEventArgs e) {
             wb1.GoSearch();
         }
-        private void homeButton_Click(object sender, RoutedEventArgs e) {
+        private void HomeButton_Click(object sender, RoutedEventArgs e) {
             wb1.GoHome();
         }
-        private void wb1_Navigated(object sender, WebBrowserNavigatedEventArgs e) {
+        private void Wb1_Navigated(object sender, WebBrowserNavigatedEventArgs e) {
             TxtUrl.Text = wb1.Url.ToString();
         }
-        private void wb1_Document_Click(Object sender, HtmlElementEventArgs e) {
+        private void Wb1_Document_Click(Object sender, HtmlElementEventArgs e) {
             if (e.ClientMousePosition.IsEmpty) {
                 _elem1 = null;
                 _posx = -1;
@@ -676,7 +676,7 @@ namespace MeineFinanzen.View {
             //SetDataRowColor("R");
             return 3;    // Wenn kein 'row quotebox' gefunden.
         }
-        private void btOk_Click(object sender, RoutedEventArgs e) {
+        private void BtOk_Click(object sender, RoutedEventArgs e) {
             /* if (!boDgvRowAusgewählt)
                 return;
             if (_foundRow == null)
@@ -687,9 +687,9 @@ namespace MeineFinanzen.View {
             }  */
             //AddTextStr("btOk() _foundRow[\"WPKurs\"]: " + _foundRow.WPKurs.ToString());
             //AllesReset();
-            wb1.Document.Click -= new HtmlElementEventHandler(wb1_Document_Click);
+            wb1.Document.Click -= new HtmlElementEventHandler(Wb1_Document_Click);
         }
-        private void dgvUrls_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
+        private void DgvUrls_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is System.Windows.Controls.DataGridCell))
                 dep = VisualTreeHelper.GetParent(dep);
@@ -710,7 +710,7 @@ namespace MeineFinanzen.View {
             //string strIsin = ((MeineFinanzen.Model.WertpapSynchroNeu)item).WPVISIN;
 
         }
-        private void labKurs(object sender, MouseButtonEventArgs e) {
+        private void LabKurs(object sender, MouseButtonEventArgs e) {
             string strKurs = null;
             if (_elem1 != null) {
                 try {
@@ -728,11 +728,11 @@ namespace MeineFinanzen.View {
                 }
             }
         }
-        private void labZeit(object sender, MouseButtonEventArgs e) {
+        private void LabZeit(object sender, MouseButtonEventArgs e) {
             string strKurszeit = null;
             if (_elem1 != null) {
                 try {
-                    String pattZeit = @"(\d+)(\d+)([:])(\d+)(\d+)([:])(\d+)(\d+)";              // 99.99.99  
+                    //String pattZeit = @"(\d+)(\d+)([:])(\d+)(\d+)([:])(\d+)(\d+)";              // 99.99.99  
                     String pattDatum = @"(\d+)(\d+)([.])(\d+)(\d+)([.])(\d+)(\d+)(\d+)(\d+)";   // 99.99.9999                   
                     foreach (Match m in Regex.Matches(_elem1.InnerText, pattDatum))
                         strKurszeit += String.Format("{0} ", m.Value);
@@ -746,7 +746,7 @@ namespace MeineFinanzen.View {
                 }
             }
         }
-        private void labÄnder(object sender, MouseButtonEventArgs e) {
+        private void LabÄnder(object sender, MouseButtonEventArgs e) {
             string strÄnd = null;
             if (_elem1 != null) {
                 try {
@@ -763,7 +763,7 @@ namespace MeineFinanzen.View {
                 }
             }
         }
-        private void labSharpe(object sender, MouseButtonEventArgs e) {
+        private void LabSharpe(object sender, MouseButtonEventArgs e) {
             string strSharpe = null;
             if (_elem1 != null) {
                 try {
@@ -804,7 +804,7 @@ return browser;
         private void Abmelden_Click(object sender, RoutedEventArgs e) {
             System.Windows.Forms.MessageBox.Show("NOCH    Abmelden_Click");
         }
-        private void dgvVorgabeInt2_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+        private void DgvVorgabeInt2_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             System.Windows.Forms.MessageBox.Show("NOCH    dgvVorgabeInt2_SelectionChanged");
         }
         protected void DoEvents() {

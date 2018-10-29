@@ -1,4 +1,4 @@
-﻿// 03.03.2018 DgBanken.cs 
+﻿// 27.10.2018 DgBanken.cs 
 // 28.11.2016 KontenSynchronisieren() hier.
 // 08.01.2017 Keine Extra-Zeilenende in Umsätze_....
 // 08.06.2017 depHolen._bank ohn Blanks.
@@ -42,8 +42,13 @@ namespace MeineFinanzen.ViewModel {
             ConWrLi("---- -x- DgBanken vor Deserialisierung -read-");
             GlobalRef.g_Büb = new BankÜbersicht();
             GlobalRef.g_Büb.DeserializeReadBankÜbersicht(GlobalRef.g_Ein.myDepotPfad + @"\Daten\BankÜbersichtsDaten.xml", out banken);
+
             mw.dgBankenÜbersicht.ItemsSource = null;
             mw.dgBankenÜbersicht.ItemsSource = banken;
+
+            mw.dgFinanzübersicht.ItemsSource = null;
+            mw.dgFinanzübersicht.ItemsSource = banken;
+
             mw.tabControl1.SelectedItem = mw.tabFinanzübersicht;
             mw.dgBankenÜbersicht.EnableRowVirtualization = false;
             CollectionViewSource.GetDefaultView(mw.dgWertpapiere.ItemsSource).Refresh();
@@ -127,8 +132,9 @@ namespace MeineFinanzen.ViewModel {
             ConWrLi("---- -29e- In KontoumsatzFüllen " + kto);
             string[] strResult2;
             Directory.SetCurrentDirectory(Helpers.GlobalRef.g_Ein.strSubsemblyAPI);
-            ProcessStartInfo startInfo = new ProcessStartInfo("FinCmd");
-            startInfo.Arguments = cmdLine;
+            ProcessStartInfo startInfo = new ProcessStartInfo("FinCmd") {
+                Arguments = cmdLine
+            };
             mw.swLog.WriteLine("{0}", startInfo.Arguments);
             startInfo.UseShellExecute = false;
             startInfo.RedirectStandardOutput = true;
@@ -193,12 +199,13 @@ namespace MeineFinanzen.ViewModel {
             }
         public void KontoUmsätzeFinCmdStmt(string cmdLine, string ktoNr) {
             Directory.SetCurrentDirectory(Helpers.GlobalRef.g_Ein.strSubsemblyAPI);
-            ProcessStartInfo startInfo = new ProcessStartInfo("FinCmd");
-            startInfo.Arguments = cmdLine;
-            startInfo.UseShellExecute = false;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.CreateNoWindow = true;
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            ProcessStartInfo startInfo = new ProcessStartInfo("FinCmd") {
+                Arguments = cmdLine,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden
+            };
             string result1 = "";
             using (Process process = Process.Start(startInfo)) {
                 using (StreamReader reader = process.StandardOutput) {
@@ -223,7 +230,7 @@ namespace MeineFinanzen.ViewModel {
             string[] strArray;
             string zeile;
             string Line = strResult1[0].Trim().Replace("\"", "");
-            Line = zeileKürzen("Kontonummer;" + Line);
+            Line = ZeileKürzen("Kontonummer;" + Line);
             string[] strArrayTitel = Line.Split(seperator);
             try {
                 if (DataSetAdmin.dtKontoumsätze.Columns.Count == 0) {
@@ -239,8 +246,8 @@ namespace MeineFinanzen.ViewModel {
                 foreach (string strLine in strResult1) {
                     if ((strLine.Length <= 2) || (strLine.Contains("EntryDate")))
                         continue;
-                    zeile = zeileKürzen(ktoNr + ";" + strLine);
-                    strArray = csvParser(zeile, ';');
+                    zeile = ZeileKürzen(ktoNr + ";" + strLine);
+                    strArray = CsvParser(zeile, ';');
                     //Console.WriteLine("strLine: {0}", strLine);
                     if (strArray[1] == "2013-02-29")
                         strArray[1] = "2013-02-28";
@@ -270,7 +277,7 @@ namespace MeineFinanzen.ViewModel {
             ConWrLi("---- -29h- ErstelledtKontoumsätzeGesamt " + ktoNr);
             return;
             }
-        public string[] csvParser(string csv, char separator = ',') {
+        public string[] CsvParser(string csv, char separator = ',') {
             List<string> parsed = new List<string>();
             string[] temp = csv.Split(separator);
             int counter = 0;
@@ -282,7 +289,7 @@ namespace MeineFinanzen.ViewModel {
                 }
             return parsed.ToArray();
             }
-        public string zeileKürzen(string strLine) {
+        public string ZeileKürzen(string strLine) {
             for (int i = strLine.Length - 1; i >= 0; i--)
                 if (strLine.Substring(i, 1) == ";") {
                     if (i < strLine.Length - 1)
@@ -294,7 +301,7 @@ namespace MeineFinanzen.ViewModel {
         public void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
             }
-        public void testBankAnzeige() {
+        public void TestBankAnzeige() {
             Console.WriteLine("============ TestAnzeige aus DgBanken.cs  BankÜbersicht ============");
             Console.WriteLine("-ArrayOfBankÜbersicht");
             foreach (var ban in banken) {

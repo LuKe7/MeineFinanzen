@@ -202,6 +202,7 @@
     <Compile Include="Helpers\UmsätzeHolen.cs" />
     <Compile Include="Model\CollEinstellungen.cs" />
     <Compile Include="Model\CollKontoumsätze.cs" />
+    <Compile Include="Model\CollOrdnerÜbersicht.cs" />
     <Compile Include="Model\CollPortFol.cs" />
     <Compile Include="Model\CollUser.cs" />
     <Compile Include="Model\CollURLsVerwalten.cs" />
@@ -212,6 +213,11 @@
     <Compile Include="Model\CollZahlungen.cs" />
     <Compile Include="Model\CollKontenaufstellung.cs" />
     <Compile Include="Model\PortFolDatensatz.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModel\DgBanken.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />
@@ -224,8 +230,8 @@
     <Compile Include="View\EinstellungenView.xaml.cs">
       <DependentUpon>EinstellungenView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\KontenSynchronisierenInt2.xaml.cs">
-      <DependentUpon>KontenSynchronisierenInt2.xaml</DependentUpon>
+    <Compile Include="View\KontenSynchronisierenInt.xaml.cs">
+      <DependentUpon>KontenSynchronisierenInt.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\KontenSynchronisierenSubsembly.cs">
       <SubType>Form</SubType>
@@ -251,20 +257,17 @@
     <Compile Include="View\KontenAufstellungHBCI4j.xaml.cs">
       <DependentUpon>KontenAufstellungHBCI4j.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\KontenSynchronisierenInt.xaml.cs">
-      <DependentUpon>KontenSynchronisierenInt.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\KontenSynchronisierenHBCI4j.xaml.cs">
       <DependentUpon>KontenSynchronisierenHBCI4j.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Konten_Knotenliste_Erstellen.xaml.cs">
-      <DependentUpon>Konten_Knotenliste_Erstellen.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\EröffnungsView.xaml.cs">
       <DependentUpon>EröffnungsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Ordnermanager.xaml.cs">
+      <DependentUpon>Ordnermanager.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
@@ -310,19 +313,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\KontenSynchronisierenInt.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\KontenSynchronisierenHBCI4j.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\KontenSynchronisierenInt2.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Konten_Knotenliste_Erstellen.xaml">
+    <Page Include="View\KontenSynchronisierenInt.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -349,6 +344,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Ordnermanager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\SplashWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -370,11 +369,6 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
@@ -382,8 +376,8 @@
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="View\KontenSynchronisierenSubsembly.resx">
       <DependentUpon>KontenSynchronisierenSubsembly.cs</DependentUpon>
@@ -391,7 +385,6 @@
     <None Include="app.config" />
     <None Include="Doku\MeineFinanzen.pptx" />
     <None Include="Doku\MeineFinanzen_Übersicht.docx" />
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -423,13 +416,10 @@
     <Resource Include="MeineBilder\20160825_084354.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Goldbarren.jpg" />
+    <Resource Include="Resources\Goldbarren.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Doku\MeineFinanzen.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Doku\Synchronisatzion.txt" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="MeineBilder\Aktualisieren1.png" />
@@ -458,10 +448,64 @@
     <Resource Include="MeineBilder\Leer.png" />
     <Resource Include="MeineBilder\new2.jpg" />
     <Resource Include="MeineBilder\nichts.jpg" />
-    <Resource Include="MeineBilder\Penrose_triangle_%28animation%29.gif" />
+    <Resource Include="MeineBilder\Triangle.gif" />
     <Resource Include="MeineBilder\Spk.png" />
     <Resource Include="MeineBilder\wertpapiere2.jpg" />
     <Resource Include="MeineBilder\wertpapierejpg.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\folder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\book.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\folderclosed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\folderlogo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\folderopen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\folderselected.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\home.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\info.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\movie.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\music.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\remove.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\star.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MeineBilder\winfolder.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\book.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\diskdrive.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />

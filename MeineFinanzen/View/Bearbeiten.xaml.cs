@@ -44,7 +44,7 @@ namespace MeineFinanzen.View {
             wb1.GoHome();
             wb1.Navigate(new Uri("https://www.google.de/"));
 
-            Model.Wertpapier wp = findWP(_isin);
+            Model.Wertpapier wp = FindWP(_isin);
             DataTable dtt1 = new DataTable();
             DataSetAdmin.dvPortFol.Sort = "WPISIN";
             dtt1 = DataSetAdmin.dtPortFol.DefaultView.ToTable();
@@ -66,7 +66,7 @@ namespace MeineFinanzen.View {
             keys3[0] = DataSetAdmin.dtDepot.Columns["DepotID"];
             DataSetAdmin.dtDepot.PrimaryKey = keys3;
 
-            _rowDepot = findDepotID(wp.DepotID.ToString());
+            _rowDepot = FindDepotID(wp.DepotID.ToString());
             if (_rowDepot != null)
                 DepotList.Add(_rowDepot["DepotName"].ToString());
             for (int ir = 0; ir < DataSetAdmin.dvDepot.Count; ir++)
@@ -91,7 +91,7 @@ namespace MeineFinanzen.View {
             txtKaufKurs.Text = (_wertpap[_nwp].Kaufsumme / _wertpap[_nwp].Anzahl).ToString("#.##0,00");
             DoEvents();
         }
-        public DataRow findDepotID(string depotID) {
+        public DataRow FindDepotID(string depotID) {
             for (int ir = 0; ir < DataSetAdmin.dvDepot.Count; ir++) {
                 DataRow dr = DataSetAdmin.dvDepot[ir].Row;
                 if (dr["DepotID"].ToString() == depotID.ToString())
@@ -99,7 +99,7 @@ namespace MeineFinanzen.View {
             }
             return null;
         }
-        public DataRow findDepotName(string name) {
+        public DataRow FindDepotName(string name) {
             for (int ir = 0; ir < DataSetAdmin.dvDepot.Count; ir++) {
                 DataRow dr = DataSetAdmin.dvDepot[ir].Row;
                 if (dr["DepotName"].ToString() == name)
@@ -107,7 +107,7 @@ namespace MeineFinanzen.View {
             }
             return null;
         }
-        public DataRow findTypeName(string name) {
+        public DataRow FindTypeName(string name) {
             for (int ir = 0; ir < DataSetAdmin.dvAnlKat.Count; ir++) {
                 DataRow dr = DataSetAdmin.dvAnlKat[ir].Row;
                 //Debug.WriteLine("{0} {1}", dr["AKName"].ToString(), name);
@@ -116,7 +116,7 @@ namespace MeineFinanzen.View {
             }
             return null;
         }
-        public Model.Wertpapier findWP(string isin) {
+        public Model.Wertpapier FindWP(string isin) {
             foreach (Model.Wertpapier wp in _wertpap) {
                 if (wp.isSumme)
                     continue;
@@ -126,10 +126,10 @@ namespace MeineFinanzen.View {
             }
             return null;
         }
-        private void btOk_Ende(object sender, RoutedEventArgs e) {
+        private void BtOk_Ende(object sender, RoutedEventArgs e) {
             Close();
         }
-        private void btAbbrechen_Click(object sender, RoutedEventArgs e) {
+        private void BtAbbrechen_Click(object sender, RoutedEventArgs e) {
             Close();
         }
         private void BtSpeichern_Click(object sender, RoutedEventArgs e) {
@@ -160,27 +160,27 @@ namespace MeineFinanzen.View {
                 DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
             }
         }
-        private void cmbSelectionChangedType(object sender, SelectionChangedEventArgs e) {
+        private void CmbSelectionChangedType(object sender, SelectionChangedEventArgs e) {
             if (cbType == null || cbType.SelectedItem == null)
                 return;
-            _rowAnlKat = findTypeName(cbType.SelectedItem.ToString());
+            _rowAnlKat = FindTypeName(cbType.SelectedItem.ToString());
             if (_rowAnlKat["AKName"].ToString() == cbType.SelectedItem.ToString())
                 _rowPortFol["WPTypeID"] = _rowAnlKat["AKID"];
         }
-        private void cmbSelectionChangedDepot(object sender, SelectionChangedEventArgs e) {
+        private void CmbSelectionChangedDepot(object sender, SelectionChangedEventArgs e) {
             if (cbDepot == null || cbDepot.SelectedItem == null)
                 return;
-            _rowDepot = findDepotName(cbDepot.SelectedItem.ToString());
+            _rowDepot = FindDepotName(cbDepot.SelectedItem.ToString());
             if (_rowDepot["DepotName"].ToString() == cbDepot.SelectedItem.ToString())
                 _rowPortFol["WPDepotID"] = Convert.ToInt32(_rowDepot["DepotID"]);
         }
         private void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
         }
-        private void txtKaufKurs_SourceUpdated(object sender, System.Windows.Data.DataTransferEventArgs e) {
+        private void TxtKaufKurs_SourceUpdated(object sender, System.Windows.Data.DataTransferEventArgs e) {
             MessageBox.Show("txtKaufKurs_SourceUpdated() Aktualisierung durchgeführt.");
         }
-        private void txtKaufKurs_TargetUpdated(object sender, System.Windows.Data.DataTransferEventArgs e) {
+        private void TxtKaufKurs_TargetUpdated(object sender, System.Windows.Data.DataTransferEventArgs e) {
             MessageBox.Show("txtKaufKurs_TargetUpdated() Aktualisierung durchgeführt.");
         }
         private void Wb1_DocumentTitleChanged(object sender, EventArgs e) {
@@ -217,7 +217,7 @@ namespace MeineFinanzen.View {
                 MessageBox.Show("Fehler TxtWrLi()" + ex);
             }
         }
-        private void cmbSelectionChangedUrl1(object sender, SelectionChangedEventArgs e) {
+        private void CmbSelectionChangedUrl1(object sender, SelectionChangedEventArgs e) {
             if (cbUrl1 == null || cbUrl1.SelectedItem == null)
                 return;
             // _rowDepot = findDepotxxxxxxxxxxxxx NOCH Name(cbUrl1.SelectedItem.ToString());

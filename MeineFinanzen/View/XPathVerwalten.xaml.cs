@@ -1,6 +1,7 @@
 ﻿// 23.03.2018 XPathVerwalten.xaml.cs
 // DataGrids aufbauen.
 // 
+using MeineFinanzen.Helpers;
 using MeineFinanzen.Model;
 using System;
 using System.Collections.Generic;
@@ -16,13 +17,14 @@ namespace MeineFinanzen.View {
         public static UrlTeil urlteil = new UrlTeil();
         public static List<UrlTeil> liUrlTeile = new List<UrlTeil>();
         public static List<Wertpap> liWertpaps = new List<Wertpap>();
+        public CollWertpapSynchro _wertpapsynchro = null;
         public DataGridRow dgRow1;
         string _ColHeader = "";             // durch dgvUrls_PreviewMouseDown() gesetzt.
         string _curName = null;
         string _curUrl = null;
         string _curIsin = null;
         string _curUrlSharpe = null;
-        Konten_Knotenliste_Erstellen _mw = null;
+        // NOCH Konten_Knotenliste_Erstellen _mw = null;
 
         bool _navigiert = false;
         System.Windows.Forms.HtmlElement _elem1 = null;
@@ -33,14 +35,15 @@ namespace MeineFinanzen.View {
             wb1.ScrollBarsEnabled = true;
         }
         private void Window_Loaded(Object sender, RoutedEventArgs e) { }
-        public void Ausführen(Konten_Knotenliste_Erstellen mw) {
-            _mw = mw;
-            XPathVerwaltenAusführen();                         // liUrlTeile und liUrlIndices erstellen.                          
-        }
+       // public void Ausführen(Konten_Knotenliste_Erstellen mw) {
+       //     _mw = mw;
+       //     XPathVerwaltenAusführen();                         // liUrlTeile und liUrlIndices erstellen.                          
+       // }
         private void XPathVerwaltenAusführen() {
             // Liste URLTeile.
             // Zu jedem WP zusätzlich n Einträge mit Verweis in die URL-Teile-Tabelle.
-            // XPath kommt aus: node = doc.GetElementbyId(uniqueId);                      
+            // XPath kommt aus: node = doc.GetElementbyId(uniqueId); 
+            HauptFenster _mw = GlobalRef.g_mw;
             string strUrl = null;
             string[] separators = { "/" };
             string[] strsplit;
@@ -48,7 +51,8 @@ namespace MeineFinanzen.View {
             liUrlTeile.Clear();
             liWertpaps = new List<Wertpap>();
             string strIndices;
-            foreach (WertpapSynchro wps in _mw._wertpapsynchro) {   // Loop Wertpapiere
+            _wertpapsynchro = (CollWertpapSynchro)Resources["wertpapsynchro"];
+            foreach (WertpapSynchro wps in _wertpapsynchro) {   // Loop Wertpapiere
                 strUrl = wps.WPSURL;                // https://www.finanzen.net/fonds/sharperatio/spsw_-_whc_global_discovery
                 Console.WriteLine("{0,-120} ", strUrl);
                 if (strUrl.Length < 31) {
@@ -108,7 +112,7 @@ namespace MeineFinanzen.View {
             }
             return -1;
         }
-        private void dgvUrls_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
+        private void DgvUrls_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is DataGridCell))
                 dep = VisualTreeHelper.GetParent(dep);
@@ -142,17 +146,17 @@ namespace MeineFinanzen.View {
             _navigiert = true;
             wb1.Navigate(new Uri(address));
         }
-        private void wb1_Navigating(object sender, System.Windows.Forms.WebBrowserNavigatingEventArgs e) { }
-        private void wb1_DocumentCompleted(object sender, System.Windows.Forms.WebBrowserDocumentCompletedEventArgs e) {
-            addTextStr("wb1_DocumentCompleted.");// + _elem1.InnerText);
+        private void Wb1_Navigating(object sender, System.Windows.Forms.WebBrowserNavigatingEventArgs e) { }
+        private void Wb1_DocumentCompleted(object sender, System.Windows.Forms.WebBrowserDocumentCompletedEventArgs e) {
+            AddTextStr("wb1_DocumentCompleted.");// + _elem1.InnerText);
             if (wb1.Document != null && _navigiert) {
                 //SetFontSize(webBrowser1.Document.Body);
-                wb1.Document.Click += new System.Windows.Forms.HtmlElementEventHandler(wb1_Document_Click);
+                wb1.Document.Click += new System.Windows.Forms.HtmlElementEventHandler(Wb1_Document_Click);
                 _navigiert = false;
             }
         }
-        private void wb1_DocumentTitleChanged(object sender, EventArgs e) { }
-        private void wb1_Document_Click(Object sender, System.Windows.Forms.HtmlElementEventArgs e) {
+        private void Wb1_DocumentTitleChanged(object sender, EventArgs e) { }
+        private void Wb1_Document_Click(Object sender, System.Windows.Forms.HtmlElementEventArgs e) {
             if (e.ClientMousePosition.IsEmpty) {
                 _elem1 = null;
                 //posx = -1;
@@ -162,9 +166,9 @@ namespace MeineFinanzen.View {
                 //posy = e.ClientMousePosition.Y;
                 _elem1 = wb1.Document.GetElementFromPoint(e.ClientMousePosition); // Ruft das an den angegebenen Clientkoordinaten befindliche HTML-Element ab.                            
                 if (_elem1 != null)
-                    addTextStr("wb1_Document_Click: " + _elem1.InnerText); // wb1_Document_Click: 376,36 EUR -1,72 EUR -0,45%                
+                    AddTextStr("wb1_Document_Click: " + _elem1.InnerText); // wb1_Document_Click: 376,36 EUR -1,72 EUR -0,45%                
                 else
-                    addTextStr("wb1_Document_Click: null");
+                    AddTextStr("wb1_Document_Click: null");
             }
         }
         private string[] SearchWebPage() {
@@ -173,7 +177,7 @@ namespace MeineFinanzen.View {
             System.Windows.Forms.HtmlElementCollection elemColl = null;
             System.Windows.Forms.HtmlDocument doc = wb1.Document;
             if (doc != null) {
-                addTextStr("--- Start ---");
+                AddTextStr("--- Start ---");
             }
             string strText = "";
             foreach (System.Windows.Forms.HtmlElement elem in elemColl) {
@@ -186,7 +190,7 @@ namespace MeineFinanzen.View {
                     foreach (string split in strarr) {
                         if (split.StartsWith("Kurs")) {
                             Console.WriteLine("{0,3} split:{1}", ++nn, split);
-                            addTextStr(split);
+                            AddTextStr(split);
                         }
                     }
                     Console.WriteLine("---------------------------------------------------------------");
@@ -198,7 +202,7 @@ namespace MeineFinanzen.View {
         private void BtPrintDom_Click(object sender, RoutedEventArgs e) {
             SearchWebPage();
         }
-        private void addTextStr(string str) {
+        private void AddTextStr(string str) {
             txtBox.AppendText(Environment.NewLine + str);
             txtBox.ScrollToEnd();
             txtBox.InvalidateVisual();

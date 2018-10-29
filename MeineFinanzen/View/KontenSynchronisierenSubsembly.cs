@@ -1,4 +1,4 @@
-﻿// 08.03.2018 KontensynchronisierenSubsembly 
+﻿// 27.10.2018 KontensynchronisierenSubsembly 
 // Aus FinPadForm erstellt 19.01.2014
 // Sub sembly FinTS(Financial Transaction Services) API.    Copyright © 2004-2012 Sub sembly GmbH
 // Financial Transaction Services, kurz FinTS, ist ein deutscher Standard für den Betrieb von Online-Banking.
@@ -998,6 +998,7 @@ namespace MeineFinanzen {
         internal DgBanken _b;
         public static DepotHolen _depHolen;
         string pathMeineBilder;
+        string filenameBÜD = GlobalRef.g_Ein.myDepotPfad + @"\Daten\BankÜbersichtsDaten.xml";
         public VMKontenSynchronisierenSubsembly() {
             _b = GlobalRef.g_dgBanken;
             pathMeineBilder = GlobalRef.g_Ein.strBilderPfad + @"\";
@@ -1049,7 +1050,7 @@ namespace MeineFinanzen {
                 // D :\Visual Studio 2015\Projects\SubsemblyFinTS\DiBa.png
                 DgBanken.bank.BLZ7 = aContact.BankCode;
                 DgBanken.bank.UserID7 = aContact.UserID;
-                DgBanken.bank.Datum7 = File.GetLastWriteTime(GlobalRef.g_Ein.myDepotPfad + @"Log\BankKontoStand.xml");
+                DgBanken.bank.Datum7 = File.GetLastWriteTime(filenameBÜD);
                 DgBanken.bank.Bearbeitungsart7 = "bearb...";
                 DgBanken.bank.FunktionenPfad7 = pathMeineBilder + "Aktualisieren1.png";
                 DgBanken.bank.Status7 = "sta";
@@ -1061,7 +1062,7 @@ namespace MeineFinanzen {
                     if (aAcctInfo.AcctTypeClass.ToString().Contains("Portfolio")) {
                         _b.Betrag = Convert.ToDouble(_depHolen.DepotHolen_ausführen()); // ===> Wertpapiere   Bank ---> dtWertpapSubsembly  <<Subsembly.FinTS>>                               
                         WertpapSubsemblyToPortFol();                    // dtWertpapSubsembly ---> dtPortFol.
-                        mw._tabwertpapiere.ErstelleWertpapiere(mw);     // dtPortFol          ---> (CollWertpapiere)_wertpapiere     // aus dtWertpapSubsembly                   
+                        mw._tabwertpapiere.ErstelleDgBankenWertpapiere(mw);     // dtPortFol          ---> (CollWertpapiere)_wertpapiere     // aus dtWertpapSubsembly                   
                         if (aAcctInfo.AcctName == "Wertpapierdepot") {
                             if (DgBanken._wertpapiere.Count > 0) {
                                 DgBanken.konto.OCWertpap = new ObservableCollection<Wertpapier>(DgBanken._wertpapiere);
@@ -1093,7 +1094,7 @@ namespace MeineFinanzen {
                     DgBanken.konto.KontoNr8 = aAcctInfo.AcctNo;                              // +KontoNr8                     
                     DgBanken.konto.KontoValue8 = _b.Betrag;                                  // +KontoValue8                                  
 
-                    DateTime dt = File.GetLastWriteTime(Helpers.GlobalRef.g_Ein.myDepotPfad + @"Log\BankKontoStand.xml");// +KontoDatum8
+                    DateTime dt = File.GetLastWriteTime(filenameBÜD);// +KontoDatum8
                     DgBanken.konto.KontoDatum8 = dt;
 
                     List<Kontoumsatz> liku = _b.KontoumsatzFüllen(aAcctInfo.AcctNo);  // aus dtKontoumsätze
@@ -1118,7 +1119,7 @@ namespace MeineFinanzen {
             DgBanken.bank.SortFeld7 = "888";
             DgBanken.bank.Bearbeitungsart7 = "bearb...";
             DgBanken.bank.FunktionenPfad7 = pathMeineBilder + "Aktualisieren1.png";
-            DgBanken.bank.Datum7 = File.GetLastWriteTime(GlobalRef.g_Ein.myDepotPfad + @"Log\BankKontoStand.xml");
+            DgBanken.bank.Datum7 = File.GetLastWriteTime(filenameBÜD);
             DgBanken.bank.BankName7 = "GeschlFonds";                                         // +BankName7     
             DgBanken.bank.BildPfad7 = pathMeineBilder + "Aktualisieren1.png";                // +BildPfad7 
             // @"C :\U sers\Public\Pictures\index.png";                 
@@ -1129,18 +1130,18 @@ namespace MeineFinanzen {
             DgBanken.banken.Add(DgBanken.bank);
             DgBanken.bank.SortFeld7 = "889";
             DgBanken.bank.Bearbeitungsart7 = "bearb...";
-            DgBanken.bank.FunktionenPfad7 = pathMeineBilder + "Aktualisieren1.png";
-            DgBanken.bank.Datum7 = File.GetLastWriteTime(Helpers.GlobalRef.g_Ein.myDepotPfad + @"Log\BankKontoStand.xml");
+            DgBanken.bank.FunktionenPfad7 = pathMeineBilder + "Aktualisieren1.png";                  
+            DgBanken.bank.Datum7 = File.GetLastWriteTime(filenameBÜD);
             DgBanken.bank.BankName7 = "Alle Konten";                                         // +BankName7     
             DgBanken.bank.BildPfad7 = pathMeineBilder + "Aktualisieren1.png";                // +BildPfad7 
             // @"C :\U sers\Public\Pictures\index.png";                
             DgBanken.bank.BankValue7 = GesamtBetrag + _b.SummeGeschlFonds();                 // +BankValue7  NOCH
             mw.swLog.Close();
-            string str = DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
+            string str = DataSetAdmin.DatasetSichernInXml(GlobalRef.g_Ein.myDataPfad);
             if (str != null) {
                 MessageBox.Show("Fehler DatasetSichernInXml(): " + str);
             } else {
-                Helpers.GlobalRef.g_Büb.SerializeWriteBankÜbersicht(Helpers.GlobalRef.g_Ein.myDepotPfad
+                GlobalRef.g_Büb.SerializeWriteBankÜbersicht(GlobalRef.g_Ein.myDepotPfad
                     + @"\Daten\BankÜbersichtsDaten.xml", DgBanken.banken);
                 ConWrLi("---- -29- In KontenSynchronisierenSubsembly");
             }

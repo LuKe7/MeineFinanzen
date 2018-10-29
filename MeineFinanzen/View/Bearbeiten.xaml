@@ -91,7 +91,7 @@
                   Height="20"
                   HorizontalAlignment="Left"
                   SelectedItem="{Binding DepotID, Mode=TwoWay}"
-                  SelectionChanged="cmbSelectionChangedDepot" />
+                  SelectionChanged="CmbSelectionChangedDepot" />
         <Label Content="Type:"
                Grid.Column="0"
                Grid.Row="2" />
@@ -102,7 +102,7 @@
                   Height="20"
                   HorizontalAlignment="Left"
                   SelectedItem="{Binding Type, Mode=TwoWay}"
-                  SelectionChanged="cmbSelectionChangedType" />
+                  SelectionChanged="CmbSelectionChangedType" />
         <Label Content="Bezeichnung:"
                Grid.Column="0"
                Grid.Row="3" />
@@ -147,8 +147,8 @@
                  Grid.Column="1"
                  Grid.Row="7"
                  Height="20"
-                 SourceUpdated="txtKaufKurs_SourceUpdated"
-                 TargetUpdated="txtKaufKurs_TargetUpdated"
+                 SourceUpdated="TxtKaufKurs_SourceUpdated"
+                 TargetUpdated="TxtKaufKurs_TargetUpdated"
                  HorizontalAlignment="Left" />
         <!-- DataContext="xxxx"
                  Text="{Binding Path=KaufKurs,  UpdateSourceTrigger=LostFocus, Mode=TwoWay}" /> -->
@@ -223,7 +223,7 @@
                   HorizontalAlignment="Left"
                   Loaded="CbUrl1_Loaded"
                   SelectedItem="{Binding DepotID, Mode=TwoWay}"
-                  SelectionChanged="cmbSelectionChangedUrl1" />
+                  SelectionChanged="CmbSelectionChangedUrl1" />
         <Button Content="Speichern"
                 Grid.Column="0"
                 Grid.Row="20"
@@ -239,7 +239,7 @@
                 Width="90"
                 Height="20"
                 HorizontalAlignment="Left"
-                Click="btOk_Ende" />
+                Click="BtOk_Ende" />
         <Button Content="Abbrechen"
                 Grid.Column="1"
                 Grid.Row="20"
@@ -247,6 +247,6 @@
                 Height="20"
                 Name="btAbbrechen"
                 HorizontalAlignment="Center"
-                Click="btAbbrechen_Click" />
+                Click="BtAbbrechen_Click" />
     </Grid>
 </Window>

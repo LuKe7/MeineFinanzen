@@ -65,9 +65,9 @@
                       x:Name="mnuMenu1">
                     <MenuItem Header="_Web">
                         <MenuItem Header="_Search"
-                                  Click="searchButton_Click" />
+                                  Click="SearchButton_Click" />
                         <MenuItem Header="_GoHome"
-                                  Click="homeButton_Click" />
+                                  Click="HomeButton_Click" />
                         <Separator />
                         <MenuItem Header="_Speichern" />
                         <MenuItem Header="Speichern _unter ..." />
@@ -94,22 +94,22 @@
                          HorizontalScrollBarVisibility="Visible"></TextBox>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Kurs"
-                           MouseUp="labKurs"></Label>
+                           MouseUp="LabKurs"></Label>
                     <TextBox Name="txtKurs"
                              Width="50"></TextBox>
                     
                     <Label Content="Datum"
-                           MouseUp="labZeit"></Label>
+                           MouseUp="LabZeit"></Label>
                     <TextBox Name="txtZeit"
                              Width="70"></TextBox>
                     
                     <Label Content="%Änd"
-                           MouseUp="labÄnder"></Label>
+                           MouseUp="LabÄnder"></Label>
                     <TextBox Name="txtÄnd"
                              Width="40"></TextBox>
                     
                     <Label Content="Sharpe"
-                           MouseUp="labSharpe"></Label>
+                           MouseUp="LabSharpe"></Label>
                     <TextBox Name="txtSharpe"
                              Width="40"></TextBox>
                     
@@ -120,10 +120,10 @@
                 <!-- Mit winforms: könnt ihr eine Form auswählen und mit 
                  x: den Namen FieldModifier oder UID festlegen-->
                 <winforms:WebBrowser x:Name="wb1"
-                                     DocumentTitleChanged="wb1_DocumentTitleChanged"
-                                     DocumentCompleted="wb1_DocumentCompleted"
-                                     Navigating="wb1_Navigating"
-                                     Navigated="wb1_Navigated" />
+                                     DocumentTitleChanged="Wb1_DocumentTitleChanged"
+                                     DocumentCompleted="Wb1_DocumentCompleted"
+                                     Navigating="Wb1_Navigating"
+                                     Navigated="Wb1_Navigated" />
             </WindowsFormsHost>
         </Grid>
         <Grid x:Name="GridRechts"
@@ -182,17 +182,17 @@
                       SelectionUnit="FullRow"
                       HorizontalGridLinesBrush="Black"
                       VerticalGridLinesBrush="Black"
-                      PreviewMouseDown="dgvUrls_PreviewMouseDown">
+                      PreviewMouseDown="DgvUrls_PreviewMouseDown">
                 <!--MouseEnter="OnMouseEnterHandler"
                       MouseLeave="OnMouseLeaveHandler"
                       MouseMove="dgvUrls_MouseMove"    -->
                 <DataGrid.ContextMenu>
                     <ContextMenu Name="DatagridContextMenu"
-                                 Closed="myMenuButton_ContextMenu_Closed">
+                                 Closed="MyMenuButton_ContextMenu_Closed">
                         <MenuItem Header="URL neu"
-                                  Click="dgvUrls_Neu_Click" />
+                                  Click="DgvUrls_Neu_Click" />
                         <MenuItem Header="URL bearbeiten"
-                                  Click="dgvUrls_bearbeiten_Click" />
+                                  Click="DgvUrls_bearbeiten_Click" />
                     </ContextMenu>
                 </DataGrid.ContextMenu>
                 <DataGrid.RowDetailsTemplate>
@@ -368,8 +368,8 @@
                       SelectionUnit="FullRow"
                       HorizontalGridLinesBrush="#E600FA00"
                       VerticalGridLinesBrush="#9B7D7B62"
-                      PreviewMouseDown="dgvVorgabeInt2_PreviewMouseDown"
-                      SelectionChanged="dgvVorgabeInt2_SelectionChanged">
+                      PreviewMouseDown="DgvVorgabeInt2_PreviewMouseDown"
+                      SelectionChanged="DgvVorgabeInt2_SelectionChanged">
                 <DataGrid.RowStyle>
                     <Style TargetType="{x:Type DataGridRow}">
                         <Setter Property="FontWeight"
@@ -439,24 +439,24 @@
                               Text="Boxanfang"
                               IsEditable="true"
                               IsReadOnly="true"
-                              Loaded="cbBoxanfang_Loaded"
-                              SelectionChanged="cbBoxanfang_SelectionChanged"></ComboBox>
+                              Loaded="CbBoxanfang_Loaded"
+                              SelectionChanged="CbBoxanfang_SelectionChanged"></ComboBox>
                     <TextBlock Text="{Binding ElementName=cbBoxanfang, Path=SelectedItem}" />
                     <ComboBox Name="cbAusschluss1"
                               ItemsSource="{StaticResource myAusschluss1}"
                               Text="Ausschluss1"
                               IsEditable="true"
                               IsReadOnly="true"
-                              Loaded="cbAusschluss1_Loaded"
-                              SelectionChanged="cbAusschluss1_SelectionChanged"></ComboBox>
+                              Loaded="CbAusschluss1_Loaded"
+                              SelectionChanged="CbAusschluss1_SelectionChanged"></ComboBox>
                     <TextBlock Text="{Binding ElementName=cbAusschluss1, Path=SelectedItem}" />
                     <ComboBox Name="cbWert1"
                               ItemsSource="{StaticResource myWert1}"
                               Text="Wert1"
                               IsEditable="true"
                               IsReadOnly="true"
-                              Loaded="cbWert1_Loaded"
-                              SelectionChanged="cbWert1_SelectionChanged"></ComboBox>
+                              Loaded="CbWert1_Loaded"
+                              SelectionChanged="CbWert1_SelectionChanged"></ComboBox>
                     <TextBlock Text="{Binding ElementName=cbWert1, Path=SelectedItem}" />
                 </StackPanel>
             </Border>

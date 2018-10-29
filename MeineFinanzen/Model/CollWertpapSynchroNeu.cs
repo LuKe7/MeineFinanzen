@@ -108,13 +108,10 @@ namespace MeineFinanzen.Model {
         public string WPVURLSharp { get; set; }             
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e) {
-            if (PropertyChanged != null)
-                PropertyChanged(this, e);
+            PropertyChanged?.Invoke(this, e);
         }
         private void NotifyPropertyChanged(string propertyName) {
-            if (PropertyChanged != null) {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         public void BeginEdit() { }
         public void CancelEdit() { }

@@ -53,7 +53,7 @@ namespace MeineFinanzen.ViewModel {
         const int Anleihe = 70;
         DateTime keinDatum = Convert.ToDateTime("01.01.1980");
         public TabWertpapiere() { }
-        public void ErstelleWertpapiere(View.HauptFenster mw) {
+        public void ErstelleDgBankenWertpapiere(View.HauptFenster mw) {
             mw.tabWertpapiere.Visibility = Visibility.Visible;
             mw.dgWertpapiere.EnableRowVirtualization = false;
             DgBanken._wertpapiere = (CollWertpapiere)mw.Resources["wertpapiereXXX"];
@@ -164,7 +164,7 @@ namespace MeineFinanzen.ViewModel {
                         sharpe = (Single)DataSetAdmin.dtPortFol.Rows[ir]["WPSharpe"];
                         url = (string)DataSetAdmin.dtPortFol.Rows[ir]["WPUrlText"];
                     } catch (Exception ex) {
-                        MessageBox.Show("ErstelleWertpapiere() Fehler: " + ex);
+                        MessageBox.Show("ErstelleDgBankenWertpapiere() Fehler: " + ex);
                     }
                 }
                 if (typeid == Anleihe) {

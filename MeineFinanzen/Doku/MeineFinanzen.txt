@@ -1,6 +1,6 @@
 ﻿Model View ViewModel (MVVM)
 In DataSetAdmin HolenAusXml() dataset.xml + .xsd --> dtPortfol.
-In TabWertpapiere ErstelleWertpapiere() dtPortfol --> DgBanken._wertpapiere.
+In TabWertpapiere ErstelleDgBankenWertpapiere() dtPortfol --> DgBanken._wertpapiere.
 
 DgBanken.cs
 // ===> Wertpapiere   Bank ---> dtWertpapSubsembly  <<Subsembly.FinTS>>                               
@@ -20,7 +20,7 @@ View's
 	KontenAufstellungHBCI4j
 	KontenSynchronisierenHBCI4j
 	KontenSynchronisierenInt
-	KontenSynchronisierenInt2
+	KontenSynchronisierenInt
 	KontenSynchronisierenSubsembly
 	LoginView	
 	SplashWindow
@@ -34,3 +34,13 @@ wertpapiereXXX:
   TabWertpapiere.cs(58):        DgBanken._wertpapiere = (CollWertpapiere)Resources["wertpapiereXXX"];
   JahreswechselView.xaml.cs(20):_wertpap =				(CollWertpapiere)Resources["wertpapiereXXX"];          
   Bearbeiten.xaml.cs(30):       _wertpap =				(CollWertpapiere)Resources["wertpapiereXXX"];
+  
+TabWertpapiere.cs(59):        DgBanken._wertpapiere = (CollWertpapiere)mw.Resources["wertpapiereXXX"];
+Synchronisieren: 4 Werte in dtPortFol setzen: WPKurs WPStand WPProzentAenderung WPSharpe.
+	Woher: 1)Internet, 2)Internet2, 3)HBCI4=Bank, 4)Subsembly=Bank.
+		1) Über Internet: Per Konten_Knotenliste_Erstellen = XPathVerwalten.cs wird die Knotenliste erstellt.
+			Die WPX...-Felder aus tblPortfol zeigen dann im HTML-Dokument auf die 4 Werte(XPath).
+		2) Über Internet2: Per URLsVerwalten.cs die Vorgabeparameter setzen.
+			Die tblVorgabeIn2-Felder zeigen dann den Weg im ElementeLoop(Textsuche).
+		3) Über HBCI4:
+		4) Über Subsembly:

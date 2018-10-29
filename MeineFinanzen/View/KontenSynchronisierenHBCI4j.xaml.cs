@@ -1,6 +1,16 @@
 ﻿// 08.07.2018 KontenSynchronisierenHBCI4j.cs
-// In KursDaten\Depot-aus-hbci4j werden alte Sätze NICHT gelöscht!!!
+// In 'KursDaten\Depot-aus-hbci4j' werden alte Sätze NICHT gelöscht!!!
 // Daher Datum Heute abfragen!!
+// C:\Users\LuKe\Downloads\hbci4java-master(2)\hbci4java-master
+// C:\Users\LuKe\eclipse-workspace\hbci4java-master.zip_expanded\hbci4java-master
+// In D:\MeineFinanzen\MyDepot\KursDaten\Depot-aus-hbci4j\ :
+//  Kontenaufstellung_1004902.xml
+//  Kontenaufstellung_5497047602149346.xml
+//  Kontenaufstellung_189227812.xml
+//  GiroUmsatz_DE85213522400001004902.xml
+//  GiroUmsatz_DE83213522400189227812.xml
+//  DepotUmsatz_700617681.xml
+//  Wertpapier_DE000A0NEKQ8.xml             für alle Wertpapiere(Alte WP enhalten!!)
 using System;
 using System.Collections.Generic;
 using System.Data;

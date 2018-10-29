@@ -1,4 +1,4 @@
-﻿// 09.07.2018   -View-  HauptFenster.cs 
+﻿// 26.10.2018   -View-  HauptFenster.cs 
 // Tja, wenn man die Grundlagen nicht lernen will, stolpert man halt ständig beim Ausprobieren.
 // Wenn du eine DataTable an ein DG bindest, spiegelt der DefaultView der DT die Daten wieder. Mit allen Filter- und Sort-Angaben.
 // 16.11.2014 Ser/Deserialize 'Wertpapiere' zu/von Xml-Datei. 
@@ -24,7 +24,7 @@ using System.Threading;
 using System.Windows.Threading;
 using Subsembly.FinTS;
 using DataSetAdminNS;
-using Subsembly.FinTS.Admin;
+//using Subsembly.FinTS.Admin;
 using MeineFinanzen.Model;
 using MeineFinanzen.ViewModel;
 using MeineFinanzen.Helpers;
@@ -36,9 +36,9 @@ namespace MeineFinanzen.View {
         internal DgBanken _dgBanken;
         internal KontenSynchronisierenHBCI4j _kosyHBCI4j;
         internal VMKontenSynchronisierenSubsembly _kosySubsembly;
-        internal KontenSynchronisierenInt _kosyInt;
-        internal KontenSynchronisierenInt2 _kosyInt2;
-        internal Konten_Knotenliste_Erstellen _kosyErstellen;         
+        // NOCH internal KontenSynchronisierenInt _kosyInt;
+        internal KontenSynchronisierenInt _kosyInt2;
+        // NOCH internal Konten_Knotenliste_Erstellen _kosyErstellen;         
         internal StreamWriter swLog;
         internal DateTime _Datum;
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
@@ -102,14 +102,14 @@ namespace MeineFinanzen.View {
             dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 5);
             dispatcherTimer.Start();
-            DateTime dt7 = DataSetAdmin.HolenAusXml(Helpers.GlobalRef.g_Ein.myDataPfad);
+            DateTime dt7 = DataSetAdmin.HolenAusXml(GlobalRef.g_Ein.myDataPfad);
             if (dt7 == null) {
                 MessageBox.Show("MeineFinbanzen HauptFenster.xaml.cs HauptFenster() Fehler bei HolenAusXml() DataSetAdmin");
                 this.Close();
                 }
             ConWrLi("---- -2b- Nach DataSetAdmin.HolenAusXml()");
             var counters = new List<PerformanceCounter>();
-            foreach (FinContact aContact in FinAdmin.DefaultFolder) { // FinContactFolder.Default) {  
+            foreach (FinContact aContact in Subsembly.FinTS.Admin.FinAdmin.DefaultFolder) { // FinContactFolder.Default) {  
                 ConWrLi("---- -2b+- FinContact: " + aContact.BankCode + "/" + aContact.ContactName);
                 liContacte.Add(aContact);           // Banken    zwischenspeichern. Wg. Blockade.
                 }
@@ -193,11 +193,11 @@ namespace MeineFinanzen.View {
         public string GetCurrentCpuUsage() {
             return cpuCounter.NextValue().ToString("#,##0.00") + " %";
         }
-        public string getAvailableRAM() {
+        public string GetAvailableRAM() {
             return (ramCounter.NextValue() / 1000).ToString("#,##0.00") + " GB";
         }
         private void CPUSpeedAnzeigen() {
-            txbCPU.Text = "CPU: " + GetCurrentCpuUsage() + ",   Freier RAM: " + getAvailableRAM();
+            txbCPU.Text = "CPU: " + GetCurrentCpuUsage() + ",   Freier RAM: " + GetAvailableRAM();
         } 
         //private IEnumerable<CollZahlungen> _zahlungen;     
         private void ConWrLi(string str1) {
@@ -239,7 +239,6 @@ namespace MeineFinanzen.View {
                 }
             if (_boAktualisieren) {                         // Wenn gestartet
                 if (!PrüfeKurseAktualisierenLäuft()) {      // und nicht mehr läuft               
-                    _boAktualisieren = false;
                     KontenSynchronisierenInt_Fertig();
                     }
                 }
@@ -254,11 +253,13 @@ namespace MeineFinanzen.View {
             return false;
             }
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            var item = sender as TabControl;
+            var selected = item.SelectedItem as TabItem;
+            this.Title = selected.Header.ToString();
             ConWrLi("---- -04t- TabControl_SelectionChanged()");
-            //var item = sender as TabControl;
-            //var selected = item.SelectedItem as TabItem;
-            //this.Title = selected.Header.ToString();
-            }
+            ItemCollection view = tabControl1.Items;
+            //view.CurrentChanged += new EventHandler(view_CurrentChanged);
+        }
         private void TabFinanzen() {
             // _tabFinanzen.maches(this);
             //GridGesamtvermögen.Visibility = Visibility.Visible;
@@ -270,7 +271,7 @@ namespace MeineFinanzen.View {
             ConWrLi("---- -8a2- in HauptFenster in TabWertpap()");
             _tabwertpapiere.FelderLöschen();
             ConWrLi("---- -8a3- in HauptFenster in TabWertpap()");
-            _tabwertpapiere.ErstelleWertpapiere(this);  // Aus dtPortFol
+            _tabwertpapiere.ErstelleDgBankenWertpapiere(this);  // Aus dtPortFol
             ConWrLi("---- -8a4- in HauptFenster in TabWertpap()");
             tabWertGefüllt = true;
             ConWrLi("---- -8a5- in HauptFenster in TabWertpap()");  // 3 Sek.
@@ -288,7 +289,7 @@ namespace MeineFinanzen.View {
             dgWertpapiere.UpdateLayout();
             ConWrLi("---- -8c- in WertPapStart nach dgWertpapiere.UpdateLayout()");
             }
-        private void BtKategorien_Click(object sender, RoutedEventArgs e) {
+        private void Kategorien_Click(object sender, RoutedEventArgs e) {
             Kategorien myKat = new Kategorien(this);
             myKat.ShowDialog();    // Window_Loaded                
             myKat.Close();
@@ -343,9 +344,9 @@ namespace MeineFinanzen.View {
             if (cvWertpapiere != null && cvWertpapiere.CanGroup == true) {
                 _isGroup = false;
                 cvWertpapiere.GroupDescriptions.Clear();
-                }
             }
-        private void GroupButton_Click(object sender, RoutedEventArgs e) {            
+        }
+        private void GroupButton_Click(object sender, RoutedEventArgs e) {
             e.Handled = true;
             ICollectionView cvWertpapiere = CollectionViewSource.GetDefaultView(dgWertpapiere.ItemsSource);
             if (cvWertpapiere != null && cvWertpapiere.CanGroup == true) {
@@ -353,8 +354,8 @@ namespace MeineFinanzen.View {
                 cvWertpapiere.GroupDescriptions.Clear();
                 cvWertpapiere.GroupDescriptions.Add(new PropertyGroupDescription("AKName"));
                 //cvWertpapiere.GroupDescriptions.Add(new PropertyGroupDescription("ISIN"));
-                }
             }
+        }
         private void ISINFilter_Changed(object sender, RoutedEventArgs e) {
             // Refresh the view to apply filters.
             CollectionViewSource.GetDefaultView(dgWertpapiere.ItemsSource).Refresh();
@@ -367,29 +368,27 @@ namespace MeineFinanzen.View {
          * Alternativ können Sie Elemente in einem DataGrid filtern, indem Sie eine Methode erstellen,
          * die die Filterlogik bereitstellt, und die CollectionView.Filter-Eigenschaft zum Anwenden des Filters festlegen.
          * Ein Beispiel für diese Methode finden Sie unter Gewusst wie: Filtern von Daten in einer Ansicht. */
-            Model.Wertpapier t = e.Item as Model.Wertpapier;
             //if (t.BisDatum.Year == 1980)
 
-            if (t != null)
+            if (e.Item is Wertpapier t)
             // If filter is turned on, filter ISINd items.
             {
                 //if (this.cbISINFilter.IsChecked == true && t.ISIN == "1004902")
                 //    e.Accepted = false;
                 //else
                 e.Accepted = true;
-                }
             }
+        }
         private void CollectionViewSourceFinanz_Filter(object sender, FilterEventArgs e) {
-            Model.BankÜbersicht t = e.Item as Model.BankÜbersicht;
-            if (t != null)
+            if (e.Item is Model.BankÜbersicht t)
             // If filter is turned on, filter ISINd items.
             {
                 //if (this.cbISINFilter.IsChecked == true && t.ISIN == "1004902")
                 //    e.Accepted = false;
                 //else
                 e.Accepted = true;
-                }
             }
+        }
         private void GridWertpapiere_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             DataGrid dg = sender as DataGrid;
             /*
@@ -416,36 +415,12 @@ namespace MeineFinanzen.View {
         private void Abmelden_Click(object sender, RoutedEventArgs e) {
             App.Current.Shutdown();
             }
-        private void Konten_Knotenliste_Erstellen_Click(object sender, RoutedEventArgs e) {
-            /* string strDir = @"C :\U sers\LuKe\Documents\Visual Studio 2015\Projects\MeineFinanzen Projekte\SynchronisierenInit\bin\Debug";            
-             Directory.SetCurrentDirectory(strDir);
-             ProcessStartInfo startInfo = new ProcessStartInfo("SynchronisierenInit");
-             startInfo.Arguments = null;
-             startInfo.UseShellExecute = false;
-             startInfo.RedirectStandardOutput = true;
-             startInfo.CreateNoWindow = false;
-             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-             _myProcess = null;
-             _myProcess = Process.Start(startInfo);
-             {
-                 if (!_myProcess.HasExited) {
-                     _myProcess.Refresh();
-                 }
-             } */
-            _kosyErstellen = new Konten_Knotenliste_Erstellen(this);
-            _kosyErstellen.ShowDialog();
-            NeuStarten();
-            }
         private void KontenSynchronisierenInt_Click(object sender, RoutedEventArgs e) {
             if (_boAktualisieren)
-                return;
+                return;           
+            _kosyInt2 = new KontenSynchronisierenInt();    // ===> Wertpapiere Internet ---> dtPortFol Kurs Änd% ÄndDat Sharpe 
+            _kosyInt2.Ausführen();                          // Kehrt SOFORT zurück. Wenn fertig: Rest starten s.u.   
             _boAktualisieren = true;
-            _kosyInt = new KontenSynchronisierenInt();  // ===> Wertpapiere Internet ---> dtPortFol Kurs Änd% ÄndDat Sharpe 
-            _kosyInt.Ausführen(this, true);             // Kehrt SOFORT zurück. Wenn fertig: Rest starten s.u.       
-            }
-        private void KontenSynchronisierenInt2_Click(object sender, RoutedEventArgs e) {
-            _kosyInt2 = new KontenSynchronisierenInt2();
-            _kosyInt2.Ausführen();
         }
         private void KontenSynchronisierenInt_Fertig() {
             WertPapStart();
@@ -469,6 +444,7 @@ namespace MeineFinanzen.View {
             string filename = GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\PortFol_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
             GlobalRef.g_WP.SerializeWertpapiere(filename, DgBanken._wertpapiere); 
             ConWrLi("---- -xx- Nach SerializeWertpapiere Subsembly()");
+            _boAktualisieren = false;
         }
         private void KontenSynchronisierenHBCI4j_Click(Object sender, RoutedEventArgs e) {
             ConWrLi("---- -xx- KontenSynchronisierenHBCI4j_Click()");
@@ -1007,6 +983,11 @@ namespace MeineFinanzen.View {
             URLsVerwalten _urlsverwalten = new URLsVerwalten();
             _urlsverwalten.Show();             // Nicht Modal, kehrt zurück.
         }
+        private void Ordnermanager_Click(object sender, RoutedEventArgs e) {
+            ConWrLi("---- -xx- Ordnermanager_Click()");
+            Ordnermanager ordman = new Ordnermanager();
+            ordman.Show();
+        }
         /* private void InnereDatagridBanken3_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e) {
 DataGridRow dgrow = e.Row as DataGridRow;
 Model.Umsatz ums = (Model.Umsatz)dgrow.Data-Context;
@@ -1348,10 +1329,9 @@ return;
             }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
             string strValue = value as string;
-            DateTime resultDateTime;
-            if (DateTime.TryParse(strValue, out resultDateTime)) {
+            if (DateTime.TryParse(strValue, out DateTime resultDateTime)) {
                 return resultDateTime;
-                }
+            }
             return DependencyProperty.UnsetValue;
             }
         }
@@ -1510,6 +1490,32 @@ return;
             throw new NotSupportedException();
             }
         }
+    public class SignedConvert2 : IValueConverter {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            if (value == null)
+                return null;
+            if (value.ToString() == String.Empty)
+                return null;
+            double val = 0;
+            try {
+                val = double.Parse(value.ToString());
+            } catch (FormatException) { }
+            if (val == 0)
+                return Brushes.Transparent;          //Brushes.Pink;
+            /*
+            if (parameter == "AktKurs")
+            {
+                double kursVorher = TabWertpapiere.wpVorher[0].AktKurs;
+                if (val < kursVorher)
+                    return Brushes.Red;
+            }
+            */
+            return (val < 0) ? Brushes.Red : Brushes.Blue;
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+            throw new NotSupportedException();
+        }
+    }
     public class SignedConvertFi : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
             if (value.ToString() == String.Empty)

@@ -31,9 +31,9 @@
             <!-- Mit winforms: könnt ihr eine Form auswählen und mit 
                  x: den Namen FieldModifier oder UID festlegen-->
             <winforms:WebBrowser x:Name="wb1"
-                                 DocumentTitleChanged="wb1_DocumentTitleChanged"
-                                 DocumentCompleted="wb1_DocumentCompleted"                                
-                                 Navigating="wb1_Navigating" />
+                                 DocumentTitleChanged="Wb1_DocumentTitleChanged"
+                                 DocumentCompleted="Wb1_DocumentCompleted"                                
+                                 Navigating="Wb1_Navigating" />
         </WindowsFormsHost>
         <DataGrid  x:Name="dgvUrls"
                    Grid.Column="1"
@@ -48,7 +48,7 @@
                    HorizontalGridLinesBrush="#E600FA00"
                    VerticalGridLinesBrush="#9B7D7B62"
                    VerticalAlignment="Top"
-                   PreviewMouseDown="dgvUrls_PreviewMouseDown">
+                   PreviewMouseDown="DgvUrls_PreviewMouseDown">
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
                     <Setter Property="FontWeight"
@@ -115,7 +115,7 @@
                    HorizontalGridLinesBrush="#E600FA00"
                    VerticalGridLinesBrush="#9B7D7B62"
                    VerticalAlignment="Top"
-                   PreviewMouseDown="dgvUrls_PreviewMouseDown">
+                   PreviewMouseDown="DgvUrls_PreviewMouseDown">
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
                     <Setter Property="FontWeight"

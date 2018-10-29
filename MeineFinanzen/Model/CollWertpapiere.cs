@@ -1,4 +1,4 @@
-﻿// 29.06.2018   -Model-  CollWertpapiere.cs 
+﻿// 27.10.2018   -Model-  CollWertpapiere.cs 
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -39,19 +39,20 @@ namespace MeineFinanzen.Model {
         }
     }
     public class Wertpapier : INotifyPropertyChanged, IEditableObject {
-        public string _name;
-        public float _anzahl;
-        public float _heute;
-        public double _rend;
-        public float _rend1J;
-        public double _ertrag;
-        public string _URL;
-        public DateTime _kursZeit;
-        public double _aktKurs;
-        public double _aktWert;
-        public Single _sharpe;
-        public double _kaufsumme;
-        public DateTime _kaufDatum;
+        private string _name;
+        private float _anzahl;
+        private float _heute;
+        private double _rend;
+        private float _rend1J;
+        private double _ertrag;
+        private string _URL;
+        private DateTime _kursZeit;
+        private double _aktKurs;
+        private double _aktWert;
+        private Single _sharpe;
+        private double _kaufsumme;
+        private DateTime _kaufDatum;
+        private double _zahlungen;
         public float Anzahl {
             get { return _anzahl; }
             set {
@@ -107,8 +108,7 @@ namespace MeineFinanzen.Model {
                 _kursZeit = value;
                 RaisePropertyChanged("KursZeit");
             }
-        }
-        public double _zahlungen;
+        }       
         public string ISIN { get; set; }
         public double AktKurs {
             get { return _aktKurs; }

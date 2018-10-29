@@ -1,4 +1,4 @@
-﻿// 03.10.2016   -View-  Kategorien.xaml.cs
+﻿// 19.10.2018   -View-  Kategorien.xaml.cs
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -8,14 +8,12 @@ using System.Data;
 using System.Windows.Input;
 using System.Windows.Controls;
 using DataSetAdminNS;
-using System.Diagnostics;
-
 namespace MeineFinanzen.View {
     public partial class Kategorien : Window {
         public List<Kategorie> lika;
         public Kategorie kat = null;
         public OCKategorien OCK = null;
-        public View.HauptFenster _mw;
+        public HauptFenster _mw;
         public Kategorien(View.HauptFenster mw) {
             _mw = mw;
             InitializeComponent();
@@ -65,8 +63,7 @@ namespace MeineFinanzen.View {
                         }
                     }
                 }
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 MessageBox.Show("Fehler: " + ex);
             }
         }
@@ -104,9 +101,10 @@ namespace MeineFinanzen.View {
             return lkuXX;
         }
         public static List<Kategorie> KategorienFüllen(List<Kategorie> liKategorie, ref Kategorie Kategorie0) {
-            Kategorie0 = new Kategorie("Kategorien");
-            Kategorie0.IsInitiallySelected = true;
-            Kategorie0.IstExpanded = true;
+            Kategorie0 = new Kategorie("Kategorien") {
+                IsInitiallySelected = true,
+                IstExpanded = true
+            };
             Kategorie Kategorie1 = null;
             Kategorie Kategorie2 = null;
             Kategorie Kategorie3 = null;
@@ -127,8 +125,9 @@ namespace MeineFinanzen.View {
                     continue;
                 strHeader = row1["Header"].ToString();
                 //Debug.WriteLine("{0, -2} {1}", ID1, strHeader);
-                Kategorie1 = new Kategorie(strHeader);
-                Kategorie1.IstExpanded = true;
+                Kategorie1 = new Kategorie(strHeader) {
+                    IstExpanded = true
+                };
                 string strHeader2 = "";
                 foreach (DataRow row2 in dtKat.Rows) {
                     ID2 = Convert.ToInt32(row2["ID"]);
@@ -141,9 +140,10 @@ namespace MeineFinanzen.View {
                         continue;
                     strHeader2 = row2["Header"].ToString();
                     //Debug.WriteLine("     {0, -2} {1}", ID2, strHeader2);
-                    Kategorie2 = new Kategorie(strHeader2);
-                    Kategorie2.IsChecked = true;
-                    Kategorie2.IstExpanded = true;
+                    Kategorie2 = new Kategorie(strHeader2) {
+                        IsChecked = true,
+                        IstExpanded = true
+                    };
                     Kategorie1.KatChildren.Add(Kategorie2);
 
                     string strHeader3 = "";
@@ -158,8 +158,9 @@ namespace MeineFinanzen.View {
                             continue;
                         strHeader3 = row3["Header"].ToString();
                         //Debug.WriteLine("         {0, -2} {1}", ID3, strHeader3);
-                        Kategorie3 = new Kategorie(strHeader3);
-                        Kategorie3.IstExpanded = true;
+                        Kategorie3 = new Kategorie(strHeader3) {
+                            IstExpanded = true
+                        };
                         Kategorie2.KatChildren.Add(Kategorie3);
                     }
                 }
@@ -199,26 +200,20 @@ namespace MeineFinanzen.View {
         /// will set all children to the same check state, and setting it 
         /// to any value will cause the parent to verify its check state.
         /// </summary>
-        public bool? IsChecked
-        {
+        public bool? IsChecked {
             get { return _isChecked; }
             set { this.SetIsChecked(value, true, true); }
         }
         void SetIsChecked(bool? value, bool updateChildren, bool updateParent) {
             if (value == _isChecked)
                 return;
-
             _isChecked = value;
-
             if (updateChildren && _isChecked.HasValue)
                 this.KatChildren.ForEach(c => c.SetIsChecked(_isChecked, true, false));
-
             if (updateParent && _parent != null)
                 _parent.VerifyCheckState();
-
             this.OnPropertyChanged("IsChecked");
         }
-
         void VerifyCheckState() {
             //IntPtr windowHandle = new WindowInteropHelper(Application.Current.HauptFenster).Handle;
             //windowHandle.
@@ -234,30 +229,28 @@ namespace MeineFinanzen.View {
             i:1 Count: 9 Name: Bürokratie
             ----OnPropertyChanged Kategorien IsChecked
             */
-           Console.WriteLine("---- 1.VerifyCheckState()");
+            Console.WriteLine("---- 1.VerifyCheckState()");
             bool? state = null;
             for (int i = 0; i < this.KatChildren.Count; ++i) {
                 bool? current = this.KatChildren[i].IsChecked;
-               Console.WriteLine("---- i:{0} Count:{1} Name:{2}", i, this.KatChildren.Count, this.KatChildren[i].KatName);
+                Console.WriteLine("---- i:{0} Count:{1} Name:{2}", i, this.KatChildren.Count, this.KatChildren[i].KatName);
                 if (i == 0) {
                     state = current;
-                   Console.WriteLine("---- == 0       i:{0} Count:{1} Name:{2}", i, this.KatChildren.Count, this.KatChildren[i].KatName);
-                }
-                else if (state != current) {
+                    Console.WriteLine("---- == 0       i:{0} Count:{1} Name:{2}", i, this.KatChildren.Count, this.KatChildren[i].KatName);
+                } else if (state != current) {
                     state = null;
                     //Debug.WriteLine("!= current i:{0} Count:{1} Name:{2}", i, this.Children.Count, this.Children[i].Name);
                     break;
                 }
             }
             this.SetIsChecked(state, false, true);
-           Console.WriteLine("---- Count:{0} Name[0]:{1}", this.KatChildren.Count, this.KatChildren[0].KatName);
+            Console.WriteLine("---- Count:{0} Name[0]:{1}", this.KatChildren.Count, this.KatChildren[0].KatName);
         }
         #endregion // IsChecked
-
         #region INotifyPropertyChanged Members
         void OnPropertyChanged(string prop) {
             if (this.PropertyChanged != null) {
-               Console.WriteLine("----OnPropertyChanged {0} {1}", this.KatName, prop);
+                Console.WriteLine("----OnPropertyChanged {0} {1}", this.KatName, prop);
                 this.PropertyChanged(this, new PropertyChangedEventArgs(prop));
             }
         }
