@@ -457,7 +457,7 @@ namespace MeineFinanzen.ViewModel {
         public Wertpapier HoleWertpapier(string fiName, string isin) {
             XmlSerializer xmlserializer = new XmlSerializer(typeof(CollWertpapiere));
             CollWertpapiere wp;
-            string pfad = Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten";
+            string pfad = Helpers.GlobalRef.g_Ein.MyDataPfad + @"MyDepot\KursDaten";
 
             using (Stream reader = new FileStream(pfad + @"\" + fiName, FileMode.Open)) {
                 wp = (CollWertpapiere)xmlserializer.Deserialize(reader);
@@ -471,7 +471,7 @@ namespace MeineFinanzen.ViewModel {
             // wp ab 01.01 des Vorjahres holen.            
             XmlSerializer xmlserializer = new XmlSerializer(typeof(CollWertpapiere));
             Wertpapier wp;
-            string pfad = Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten";
+            string pfad = Helpers.GlobalRef.g_Ein.MyDataPfad + @"MyDepot\KursDaten";
             DirectoryInfo ParentDirectory = new DirectoryInfo(pfad);
             FileInfo[] fis = ParentDirectory.GetFiles();
             DateTime dtvj = DateTime.Now.Date.AddYears(-1);
@@ -524,7 +524,7 @@ namespace MeineFinanzen.ViewModel {
             DateTime dt = DateTime.Now;
             string[] arrFiles;
             int nFiles = 0;
-            pfad = Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten";        //\PortFol_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
+            pfad = Helpers.GlobalRef.g_Ein.MyDataPfad + @"MyDepot\KursDaten";        //\PortFol_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
             foreach (string fi in Directory.GetFiles(pfad)) {
                 FileInfo fsi = new FileInfo(fi);
                 if ((fsi.Attributes & FileAttributes.Directory) == 0)
@@ -571,7 +571,7 @@ namespace MeineFinanzen.ViewModel {
             DateTime dt = DateTime.Now;
             for (int i = 1; i < 50; i++) {
                 s = (dt - new TimeSpan(i, 0, 0, 0, 0)).ToString();
-                pfad = Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\PortFol_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
+                pfad = Helpers.GlobalRef.g_Ein.MyDataPfad + @"MyDepot\KursDaten\PortFol_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
                 bool gef = File.Exists(pfad);
                 if (gef)
                     break;

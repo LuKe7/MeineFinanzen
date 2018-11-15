@@ -1,4 +1,4 @@
-﻿// 27.10.2018 KontensynchronisierenSubsembly 
+﻿// 03.11.2018 KontensynchronisierenSubsembly 
 // Aus FinPadForm erstellt 19.01.2014
 // Sub sembly FinTS(Financial Transaction Services) API.    Copyright © 2004-2012 Sub sembly GmbH
 // Financial Transaction Services, kurz FinTS, ist ein deutscher Standard für den Betrieb von Online-Banking.
@@ -225,8 +225,9 @@ namespace MeineFinanzen {
                 // WARNING: This procedure does not work with banks that keep multiple differing
                 // accounts with the the same account number!
 
-                m_aAcct = new FinAcct(sAcctNo, "280", m_aContact.BankCode);
-                m_aAcct.Currency = "EUR";
+                m_aAcct = new FinAcct(sAcctNo, "280", m_aContact.BankCode) {
+                    Currency = "EUR"
+                };
 
                 //
 
@@ -677,13 +678,9 @@ namespace MeineFinanzen {
         private string _MakeFinancialInstrumentLine(SwiftStatementOfHoldingsFinancialInstrument aFinancialInstrument) {
             Debug.Assert(aFinancialInstrument != null);
 
-            string sSecurityID = String.Format("{0,12}", (aFinancialInstrument.WKN == null) ?
-                aFinancialInstrument.ISIN : aFinancialInstrument.WKN);
+            string sSecurityID = String.Format("{0,12}", aFinancialInstrument.WKN ?? aFinancialInstrument.ISIN);
 
-            string sQuantity = String.Format("{0,16} {1,3}",
-                aFinancialInstrument.Quantity,
-                (aFinancialInstrument.QuantityCurrency != null) ?
-                    aFinancialInstrument.QuantityCurrency : "STK");
+            string sQuantity = String.Format("{0,16} {1,3}", aFinancialInstrument.Quantity, aFinancialInstrument.QuantityCurrency ?? "STK");
 
             string sPrice = String.Format("{0,16:N2} {1,3}", aFinancialInstrument.Price,
                 (aFinancialInstrument.PriceType == SwiftPriceType.PRCT) ? "%" : aFinancialInstrument.PriceCurrency);
@@ -997,8 +994,8 @@ namespace MeineFinanzen {
     public class VMKontenSynchronisierenSubsembly {
         internal DgBanken _b;
         public static DepotHolen _depHolen;
-        string pathMeineBilder;
-        string filenameBÜD = GlobalRef.g_Ein.myDepotPfad + @"\Daten\BankÜbersichtsDaten.xml";
+        protected string pathMeineBilder;
+        protected string filenameBÜD = GlobalRef.g_Ein.myDepotPfad + @"\Daten\BankÜbersichtsDaten.xml";
         public VMKontenSynchronisierenSubsembly() {
             _b = GlobalRef.g_dgBanken;
             pathMeineBilder = GlobalRef.g_Ein.strBilderPfad + @"\";
@@ -1137,7 +1134,7 @@ namespace MeineFinanzen {
             // @"C :\U sers\Public\Pictures\index.png";                
             DgBanken.bank.BankValue7 = GesamtBetrag + _b.SummeGeschlFonds();                 // +BankValue7  NOCH
             mw.swLog.Close();
-            string str = DataSetAdmin.DatasetSichernInXml(GlobalRef.g_Ein.myDataPfad);
+            string str = DataSetAdmin.DatasetSichernInXml(GlobalRef.g_Ein.MyDataPfad);
             if (str != null) {
                 MessageBox.Show("Fehler DatasetSichernInXml(): " + str);
             } else {
@@ -1335,7 +1332,7 @@ namespace MeineFinanzen {
         public DataSet dsWertpapiere;
         static KontensynchronisierenSubsembly fkü;
         public string _bank = "", _pin = "", _blz = "", _ktoNr = "", _ktoType = "";
-        Random rand = new Random();
+        protected Random rand = new Random();
         public decimal total;
         public DepotHolen() {
             fkü = new KontensynchronisierenSubsembly {

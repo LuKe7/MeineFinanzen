@@ -20,7 +20,6 @@ View's
 	KontenAufstellungHBCI4j
 	KontenSynchronisierenHBCI4j
 	KontenSynchronisierenInt
-	KontenSynchronisierenInt
 	KontenSynchronisierenSubsembly
 	LoginView	
 	SplashWindow
@@ -37,10 +36,8 @@ wertpapiereXXX:
   
 TabWertpapiere.cs(59):        DgBanken._wertpapiere = (CollWertpapiere)mw.Resources["wertpapiereXXX"];
 Synchronisieren: 4 Werte in dtPortFol setzen: WPKurs WPStand WPProzentAenderung WPSharpe.
-	Woher: 1)Internet, 2)Internet2, 3)HBCI4=Bank, 4)Subsembly=Bank.
-		1) Über Internet: Per Konten_Knotenliste_Erstellen = XPathVerwalten.cs wird die Knotenliste erstellt.
-			Die WPX...-Felder aus tblPortfol zeigen dann im HTML-Dokument auf die 4 Werte(XPath).
-		2) Über Internet2: Per URLsVerwalten.cs die Vorgabeparameter setzen.
-			Die tblVorgabeIn2-Felder zeigen dann den Weg im ElementeLoop(Textsuche).
+	Woher: 1) Internet.   2) HBCI4=Bank.   3) Subsembly=Bank.		
+		1) Über Internet: 
 		3) Über HBCI4:
+			D:\MeineFinanzen\MyDepot\KursDaten\PortFolHBCI_20181101.xml
 		4) Über Subsembly:

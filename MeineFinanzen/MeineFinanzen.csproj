@@ -207,6 +207,7 @@
     <Compile Include="Model\CollUser.cs" />
     <Compile Include="Model\CollURLsVerwalten.cs" />
     <Compile Include="Model\CollWertpapSynchroNeu.cs" />
+    <Compile Include="Model\SynchroV.cs" />
     <Compile Include="Model\VacationSpots.cs" />
     <Compile Include="Model\WertpapHBCI4j.cs" />
     <Compile Include="Model\CollWertpapSynchro.cs" />
@@ -219,6 +220,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
+    <Compile Include="Model\SynchroVs.cs" />
     <Compile Include="ViewModel\DgBanken.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />
     <Compile Include="ViewModel\TabKontoumsätze.cs" />
@@ -271,6 +273,9 @@
     </Compile>
     <Compile Include="View\SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\SynchronVergleich.xaml.cs">
+      <DependentUpon>SynchronVergleich.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\URLsVerwalten.xaml.cs">
       <DependentUpon>URLsVerwalten.xaml</DependentUpon>
@@ -349,6 +354,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\SplashWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SynchronVergleich.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

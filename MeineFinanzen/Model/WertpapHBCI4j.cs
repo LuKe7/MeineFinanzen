@@ -1,6 +1,5 @@
 ﻿// 06.01.2018   -Model-  WertpapHBCI4j.cs 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml.Serialization;

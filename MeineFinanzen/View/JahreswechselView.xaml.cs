@@ -43,7 +43,7 @@ namespace MeineFinanzen.View {
         public Model.Wertpapier holeWertpapier(string fiName, string isin) {
             XmlSerializer xmlserializer = new XmlSerializer(typeof(Model.CollWertpapiere));
             Model.CollWertpapiere wp;
-            string pfad = Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten";
+            string pfad = Helpers.GlobalRef.g_Ein.MyDataPfad + @"MyDepot\KursDaten";
            
             using (Stream reader = new FileStream(pfad + @"\" + fiName, FileMode.Open)) {
                 wp = (Model.CollWertpapiere)xmlserializer.Deserialize(reader);
@@ -57,7 +57,7 @@ namespace MeineFinanzen.View {
             // wp ab 01.01 des Vorjahres holen.            
             XmlSerializer xmlserializer = new XmlSerializer(typeof(Model.CollWertpapiere));
             Model.Wertpapier wp;
-            string pfad = Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten";
+            string pfad = Helpers.GlobalRef.g_Ein.MyDataPfad + @"MyDepot\KursDaten";
             DirectoryInfo ParentDirectory = new DirectoryInfo(pfad);
             FileInfo[] fis = ParentDirectory.GetFiles();
             DateTime dtvj = DateTime.Now.Date.AddYears(-1);

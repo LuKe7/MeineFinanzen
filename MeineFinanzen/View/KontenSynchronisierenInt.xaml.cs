@@ -59,7 +59,7 @@ namespace MeineFinanzen.View {
         public void BeginEdit() { }
         public void CancelEdit() { }
         public void EndEdit() { }
-        string _strFile = Helpers.GlobalRef.g_Ein.myDocPfad + @"\MeineFinanzen\MyDepot\Daten";
+        string _strFile = Helpers.GlobalRef.g_Ein.MyDocPfad + @"\MeineFinanzen\MyDepot\Daten";
         // NOCH Helpers.GlobalRef.g_Ein.myDepotPfad + @"Daten\";       
         DataTable dtPortFol = new DataTable();
         public PortFol _portfol = new PortFol();
@@ -79,7 +79,7 @@ namespace MeineFinanzen.View {
             txtUnten.FontSize = 10;
             txtUnten.FontFamily = new FontFamily("Courier New, Verdana");
             PrintTxtUnten("Start -KontenAusInternetSynchronisieren-2-");
-            DateTime dt = DataSetAdmin.HolenAusXml(Helpers.GlobalRef.g_Ein.myDataPfad);
+            DateTime dt = DataSetAdmin.HolenAusXml(Helpers.GlobalRef.g_Ein.MyDataPfad);
             if (dt == null) {
                 System.Windows.MessageBox.Show("MeineFinanzen HauptFenster.xaml.cs HauptFenster() Fehler HolenAusXml() DataSetAdmin");
                 System.Windows.MessageBox.Show("MyPortfolio Fehler!!  Dateien nicht geladen!!!!");

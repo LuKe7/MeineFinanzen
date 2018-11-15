@@ -157,7 +157,7 @@ namespace MeineFinanzen.View {
             }
             if (geändert == true) {
                 MessageBox.Show("---- Bearbeiten: DatasetSichernInXml()");
-                DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
+                DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.MyDataPfad);
             }
         }
         private void CmbSelectionChangedType(object sender, SelectionChangedEventArgs e) {

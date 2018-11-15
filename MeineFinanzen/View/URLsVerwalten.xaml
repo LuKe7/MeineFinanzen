@@ -29,7 +29,7 @@
             </CollectionViewSource.SortDescriptions>
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="WPVURL" />
-                <PropertyGroupDescription PropertyName="WPVColor" />
+                <PropertyGroupDescription PropertyName="WPVRowColor" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
         <model:CollURLsVerwalten x:Key="collvorgabeInt2" />
@@ -253,27 +253,27 @@
                                 <Setter Property="Background"
                                         Value="White" />
                             </Trigger>
-                            <DataTrigger Binding="{Binding WPVColor}"
+                            <DataTrigger Binding="{Binding WPVRowColor}"
                                          Value="1">
                                 <Setter Property="Background"
                                         Value="White" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding WPVColor}"
+                            <DataTrigger Binding="{Binding WPVRowColor}"
                                          Value="2">
                                 <Setter Property="Background"
                                         Value="LightSeaGreen" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding WPVColor}"
+                            <DataTrigger Binding="{Binding WPVRowColor}"
                                          Value="3">
                                 <Setter Property="Foreground"
                                         Value="Red" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding WPVColor}"
+                            <DataTrigger Binding="{Binding WPVRowColor}"
                                          Value="4">
                                 <Setter Property="Background"
                                         Value="AliceBlue" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding WPVColor}"
+                            <DataTrigger Binding="{Binding WPVRowColor}"
                                          Value="5">
                                 <Setter Property="Background"
                                         Value="Beige" />
@@ -296,7 +296,7 @@
                     <DataGridTextColumn Header="URL"
                                         Binding="{Binding WPVURL}" />
                     <DataGridTextColumn Header="Color"
-                                        Binding="{Binding WPVColor}" />
+                                        Binding="{Binding WPVRowColor}" />
                 </DataGrid.Columns>
                 <DataGrid.GroupStyle>
                     <!-- Style for groups at top level. -->
@@ -339,7 +339,7 @@
                         <GroupStyle.HeaderTemplate>
                             <DataTemplate>
                                 <DockPanel Background="LightBlue">
-                                    <TextBlock Text="{Binding Path=WPVColor, Converter={StaticResource completeConverter}}"
+                                    <TextBlock Text="{Binding Path=WPVRowColor, Converter={StaticResource completeConverter}}"
                                                Foreground="Blue"
                                                Margin="30,0,0,0"
                                                Width="100" />

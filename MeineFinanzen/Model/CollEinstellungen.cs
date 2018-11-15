@@ -26,12 +26,12 @@ namespace MeineFinanzen.Model {
         public int iTabControl1SizeHeight { get; set; }
         public int iTabControl1ItemWidth { get; set; }
         public int iTabControl1ItemHeight { get; set; }
-        public float bsHeight { get; set; }
-        public float bsWidth { get; set; }
-        public float bsHkorr { get; set; }
-        public float bsWkorr { get; set; }
-        public string myDocPfad { get; set; }       
-        public string myDataPfad { get; set; }
+        public float BsHeight { get; set; }
+        public float BsWidth { get; set; }
+        public float BsHkorr { get; set; }
+        public float BsWkorr { get; set; }
+        public string MyDocPfad { get; set; }       
+        public string MyDataPfad { get; set; }
         public string myDepotPfad { get; set; }
         public string strKompileTime { get; set; }
         public string strUrlIndizes { get; set; }
@@ -94,24 +94,24 @@ namespace MeineFinanzen.Model {
             // fiExe.FullName: D :\Visual Studio 2015\Projects\MeineFinanzenProjekte\MeineFinanzen\MeineFinanzen\bin\Debug\MeineFinanzen.exe
             einD.strKompileTime = dtLeUmw.ToString();
             // 21.06.2016 10:22:33           
-            einD.myDocPfad = fiExe.FullName.Substring(0, 2);
-            einD.myDataPfad = einD.myDocPfad + @"\" + Assembly.GetExecutingAssembly().GetName().Name + @"\";
+            einD.MyDocPfad = fiExe.FullName.Substring(0, 2);
+            einD.MyDataPfad = einD.MyDocPfad + @"\" + Assembly.GetExecutingAssembly().GetName().Name + @"\";
             // D :\\MeineFinanzen\\                     
-            einD.myDepotPfad = einD.myDataPfad + @"MyDepot"; // NOCH MyDepot aus Datei holen: DepotNr=1.
+            einD.myDepotPfad = einD.MyDataPfad + @"MyDepot"; // NOCH MyDepot aus Datei holen: DepotNr=1.
             einD.strVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             // 1.0.0.0            
             einD.strEinstellungen = einD.myDepotPfad + @"\Einstellungen\EinstellungsDaten.xml";
             // D :\MeineFinanzen\MyDepot\Einstellungen\EinstellungsDaten.xml            
-            einD.strSubsemblyAPI = einD.myDocPfad + @"\Visual Studio 2015\Projects\SubsemblyFinTS";
+            einD.strSubsemblyAPI = einD.MyDocPfad + @"\Visual Studio 2015\Projects\SubsemblyFinTS";
             // D :\Visual Studio 2015\Projects\SubsemblyFinTS
             // C :\U sers\username\Documents\Subsembly FinTs API
             einD.strEclipseHbci4jClasses = einD.strMyProfile + @"\eclipse-workspace\hbci4java-master.zip_expanded\hbci4java-master\target\classes";
             einD.strHBCI4j = einD.strMyProfile + @"/hbci4j-core/hbci4j-core-3.0.10/";    // xxxxxxx.properties";
-            einD.strBilderPfad = einD.myDocPfad + @"\Visual Studio 2015\Projects\MeineFinanzenProjekte\MeineFinanzen\MeineFinanzen\MeineBilder";
-            einD.bsHeight = (int)SystemParameters.PrimaryScreenWidth;
-            einD.bsWidth = (int)SystemParameters.PrimaryScreenHeight;
-            einD.bsHkorr = einD.bsHeight / 1080;
-            einD.bsWkorr = einD.bsWidth / 1920;                    
+            einD.strBilderPfad = einD.MyDocPfad + @"\Visual Studio 2015\Projects\MeineFinanzenProjekte\MeineFinanzen\MeineFinanzen\MeineBilder";
+            einD.BsHeight = (int)SystemParameters.PrimaryScreenWidth;
+            einD.BsWidth = (int)SystemParameters.PrimaryScreenHeight;
+            einD.BsHkorr = einD.BsHeight / 1080;
+            einD.BsWkorr = einD.BsWidth / 1920;                    
         }
         /*  [Einstellungen]
                 [Allgemein]

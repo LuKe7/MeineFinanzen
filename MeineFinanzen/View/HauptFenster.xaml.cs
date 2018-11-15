@@ -1,4 +1,4 @@
-﻿// 26.10.2018   -View-  HauptFenster.cs 
+﻿// 12.11.2018   -View-  HauptFenster.cs 
 // Tja, wenn man die Grundlagen nicht lernen will, stolpert man halt ständig beim Ausprobieren.
 // Wenn du eine DataTable an ein DG bindest, spiegelt der DefaultView der DT die Daten wieder. Mit allen Filter- und Sort-Angaben.
 // 16.11.2014 Ser/Deserialize 'Wertpapiere' zu/von Xml-Datei. 
@@ -28,6 +28,7 @@ using DataSetAdminNS;
 using MeineFinanzen.Model;
 using MeineFinanzen.ViewModel;
 using MeineFinanzen.Helpers;
+using System.Collections.ObjectModel;
 namespace MeineFinanzen.View {
     public partial class HauptFenster : Window {
         internal string strSplash = "MeineFinanzen... loading";
@@ -54,6 +55,7 @@ namespace MeineFinanzen.View {
         DirectoryInfo rootDir = null;
         PerformanceCounter cpuCounter;
         PerformanceCounter ramCounter;
+        private delegate void EmptyDelegate();
         public HauptFenster() {
             //splash = new SplashWindow(this);
             // NOCH splash.Show();
@@ -102,22 +104,22 @@ namespace MeineFinanzen.View {
             dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 5);
             dispatcherTimer.Start();
-            DateTime dt7 = DataSetAdmin.HolenAusXml(GlobalRef.g_Ein.myDataPfad);
+            DateTime dt7 = DataSetAdmin.HolenAusXml(GlobalRef.g_Ein.MyDataPfad);
             if (dt7 == null) {
                 MessageBox.Show("MeineFinbanzen HauptFenster.xaml.cs HauptFenster() Fehler bei HolenAusXml() DataSetAdmin");
                 this.Close();
-                }
+            }
             ConWrLi("---- -2b- Nach DataSetAdmin.HolenAusXml()");
             var counters = new List<PerformanceCounter>();
             foreach (FinContact aContact in Subsembly.FinTS.Admin.FinAdmin.DefaultFolder) { // FinContactFolder.Default) {  
                 ConWrLi("---- -2b+- FinContact: " + aContact.BankCode + "/" + aContact.ContactName);
                 liContacte.Add(aContact);           // Banken    zwischenspeichern. Wg. Blockade.
-                }
+            }
             ConWrLi("---- -2c- In Window_Loaded()");
             _stopwatch.Start();
             _dgBanken = new DgBanken();
             _dgBanken.Machdgbanken();               // Mit DeSerialize banken also Read                   
-            
+
             GlobalRef.g_KoHBCI.Kontenaufstellung_ReadXml();
             //_kontenaufHBCI4j = new KontenaufstellungHBCI4j();
             ConWrLi("---- -4- Nach machdgbanken()");
@@ -144,7 +146,7 @@ namespace MeineFinanzen.View {
             //Console.WriteLine("");
             //RowDef3.Height = new GridLength(1, GridUnitType.Star);
             ConWrLi("---- -03-- HauptFenster Window_Loaded() fertig");
-            }
+        }
         private void CbKonten_Loaded(object sender, RoutedEventArgs e) {
             cbKonten.Text = "";
             cbKonten.Items.Add("Alle Konten");
@@ -157,14 +159,14 @@ namespace MeineFinanzen.View {
                         if (DBNull.Value.Equals(fin.OCBankKonten[0].KontoArt8) || (fin.OCBankKonten[0].KontoArt8 == ""))
                             continue;
                         cbKonten.Items.Add(fin.OCBankKonten[0].KontoNr8);
-                        }
-                }
-            try {
-                } catch (Exception ex) {
-                MessageBox.Show("Fehler in cbKonten_Loaded: " + ex);
-                }
-            ConWrLi("---- -04-- HauptFenster _dgBanken.banken.Count " + DgBanken.banken.Count);
+                    }
             }
+            try {
+            } catch (Exception ex) {
+                MessageBox.Show("Fehler in cbKonten_Loaded: " + ex);
+            }
+            ConWrLi("---- -04-- HauptFenster _dgBanken.banken.Count " + DgBanken.banken.Count);
+        }
         private void CbNeueVerbindung_Loaded(object sender, RoutedEventArgs e) {
             ConWrLi("---- -04a- CbNeueVerbindung_Loaded()");
             cbNeueVerbindung.Text = "";
@@ -173,13 +175,13 @@ namespace MeineFinanzen.View {
             cbNeueVerbindung.Items.Add("Neues Bank/Konto B");
             cbNeueVerbindung.Items.Add("Neues Bank/Konto C");
             cbNeueVerbindung.SelectedIndex = 0;
-            }
+        }
         private void CbNeueVerbindung_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             ConWrLi("---- -04b- CbNeueVerbindung_SelectionChanged()");
             //if (cbNeueVerbindung.Items.CurrentItem == null)
             //    return;
             //string text = (sender as ComboBox).SelectedItem as string;
-            }
+        }
         private void WbAktuelles_LoadCompleted(object sender, NavigationEventArgs e) {
             ConWrLi("---- -04c- Start wbAktuelles_LoadCompleted()");
             WebBrowser wb = (WebBrowser)sender;
@@ -188,8 +190,8 @@ namespace MeineFinanzen.View {
             WindowState = WindowState.Maximized;
             ConWrLi("---- -04d- wbAktuelles_LoadCompleted()");
             // NOCH splash.Close();
-            ConWrLi("---- -04e- wbAktuelles_LoadCompleted()");           
-            }
+            ConWrLi("---- -04e- wbAktuelles_LoadCompleted()");
+        }
         public string GetCurrentCpuUsage() {
             return cpuCounter.NextValue().ToString("#,##0.00") + " %";
         }
@@ -198,11 +200,11 @@ namespace MeineFinanzen.View {
         }
         private void CPUSpeedAnzeigen() {
             txbCPU.Text = "CPU: " + GetCurrentCpuUsage() + ",   Freier RAM: " + GetAvailableRAM();
-        } 
+        }
         //private IEnumerable<CollZahlungen> _zahlungen;     
         private void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
-            }
+        }
         private static void ExecuteInForeground() {
             DateTime start = DateTime.Now;
             var sw = Stopwatch.StartNew();
@@ -210,24 +212,24 @@ namespace MeineFinanzen.View {
             do {
                 //Debug.WriteLine("Thread {0}: Elapsed {1:N2} seconds", Thread.CurrentThread.ManagedThreadId, sw.ElapsedMilliseconds / 1000.0);
                 Thread.Sleep(500);
-                } while (sw.ElapsedMilliseconds <= 5000);
+            } while (sw.ElapsedMilliseconds <= 5000);
             sw.Stop();
-            }
+        }
         private void DrawChart() {
             Helpers.ChartDatenHolen dh = new Helpers.ChartDatenHolen();
             DataTable dtWochen = dh.ChartDatenHolenX();
             graphchart.GeneriereGraph(dtWochen);
-            }
+        }
         internal void NeuStarten() {
             ConWrLi("---- -8h- in neuStarten-1");
-            DateTime dt = DataSetAdminNS.DataSetAdmin.HolenAusXml(Helpers.GlobalRef.g_Ein.myDataPfad);
+            DateTime dt = DataSetAdminNS.DataSetAdmin.HolenAusXml(Helpers.GlobalRef.g_Ein.MyDataPfad);
             if (dt == null) {
                 MessageBox.Show("MeineFinanzen HauptFenster.xaml.cs HauptFenster() Fehler bei HolenAusXml() DataSetAdmin");
                 this.Close();
-                }
+            }
             WertPapStart();
             ConWrLi("---- -8i- in neuStarten-2");
-            }
+        }
         private void DispatcherTimer_Tick(object sender, EventArgs e) {
             TimeSpan ts = _stopwatch.Elapsed;   // Die vergangene Zeit
             CPUSpeedAnzeigen();
@@ -236,22 +238,22 @@ namespace MeineFinanzen.View {
                 dispatcherTimer.Interval = new TimeSpan(0, 0, 5);
                 dispatcherTimer.Start();
                 _stopwatch.Restart();
-                }
+            }
             if (_boAktualisieren) {                         // Wenn gestartet
                 if (!PrüfeKurseAktualisierenLäuft()) {      // und nicht mehr läuft               
                     KontenSynchronisierenInt_Fertig();
-                    }
                 }
             }
+        }
         private bool PrüfeKurseAktualisierenLäuft() {
             foreach (Process p in Process.GetProcesses()) {
                 //Console.WriteLine("{0}", p.MainWindowTitle);
                 if (p.MainWindowTitle.Contains("KontenSynchronisierenInt")) {
                     return true;
-                    }
                 }
-            return false;
             }
+            return false;
+        }
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             var item = sender as TabControl;
             var selected = item.SelectedItem as TabItem;
@@ -264,7 +266,7 @@ namespace MeineFinanzen.View {
             // _tabFinanzen.maches(this);
             //GridGesamtvermögen.Visibility = Visibility.Visible;
             //cbNeueVerbindung.Visibility = Visibility.Visible;
-            }
+        }
         private void TabWertpap() {
             ConWrLi("---- -8a1- in HauptFenster in TabWertpap()");
             _tabwertpapiere = new TabWertpapiere();
@@ -288,12 +290,12 @@ namespace MeineFinanzen.View {
             ConWrLi("---- -8b- in WertPapStart nach tabWertpap");
             dgWertpapiere.UpdateLayout();
             ConWrLi("---- -8c- in WertPapStart nach dgWertpapiere.UpdateLayout()");
-            }
+        }
         private void Kategorien_Click(object sender, RoutedEventArgs e) {
             Kategorien myKat = new Kategorien(this);
             myKat.ShowDialog();    // Window_Loaded                
             myKat.Close();
-            }
+        }
         private void AlleTabsHidden() {
             //StackCheckBoxen.Visibility = System.Windows.Visibility.Hidden;
             cbGraph.Visibility = Visibility.Collapsed;
@@ -314,7 +316,7 @@ namespace MeineFinanzen.View {
             tabWertpapiereGesamt.Visibility = Visibility.Hidden;
             tabKategorien.Visibility = Visibility.Hidden;
             tabGuckMalHier.Visibility = Visibility.Hidden;
-            }
+        }
         private void GridWertpapiere_LoadingRow(object sender, DataGridRowEventArgs e) { }
         private void BtWertpapiereGesamt_Click(object sender, RoutedEventArgs e) {
             AlleTabsHidden();
@@ -322,14 +324,14 @@ namespace MeineFinanzen.View {
             tabWertpapiereGesamt.Visibility = Visibility.Visible;
             //btWertpapiereGesamt.BorderThickness = new Thickness(6.0);
             gridWertpapiereGesamt.UpdateLayout();
-            }
+        }
         private void BtKontoumsatz_Click(object sender, RoutedEventArgs e) {
             AlleTabsHidden();
             tabControl1.SelectedItem = tabKontoumsätze;
             tabKontoumsätze.Visibility = Visibility.Visible;
             //btKontoumsatz.BorderThickness = new Thickness(6.0);
             ViewModel.TabKontoumsätze tabkto = new ViewModel.TabKontoumsätze(this);
-            }
+        }
         private void BtGuckMalHier_Click(object sender, RoutedEventArgs e) {
             AlleTabsHidden();
             tabControl1.SelectedItem = tabGuckMalHier;
@@ -338,7 +340,7 @@ namespace MeineFinanzen.View {
             //tagesw = new Tageswerte(this);
             //tagesw.Show();            
             //Close();
-            }
+        }
         private void UngroupButton_Click(object sender, RoutedEventArgs e) {
             ICollectionView cvWertpapiere = CollectionViewSource.GetDefaultView(dgWertpapiere.ItemsSource);
             if (cvWertpapiere != null && cvWertpapiere.CanGroup == true) {
@@ -359,7 +361,7 @@ namespace MeineFinanzen.View {
         private void ISINFilter_Changed(object sender, RoutedEventArgs e) {
             // Refresh the view to apply filters.
             CollectionViewSource.GetDefaultView(dgWertpapiere.ItemsSource).Refresh();
-            }
+        }
         private void CollectionViewSource_Filter(object sender, FilterEventArgs e) {
             /* So filtern Sie Elemente in einem DataGrid.
          * Fügen Sie einen Handler für das CollectionViewSource.Filter-Ereignis hinzu.
@@ -401,7 +403,7 @@ namespace MeineFinanzen.View {
                Console.WriteLine("kein Datum nach: {0}", dtr["AbDatum"]);
             } */
             //Now to get the cell value just write dtr[0], dtr["ID"], etc.
-            }
+        }
         private void CbKonten_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (cbKonten.Items.Count == 1)
                 return;
@@ -411,13 +413,13 @@ namespace MeineFinanzen.View {
             tabControl1.SelectedItem = tabKontoumsätze;
             tabKontoumsätze.Visibility = Visibility.Visible;
             //btKontoumsätzeGesamt.BorderThickness = new Thickness(6.0);
-            }
+        }
         private void Abmelden_Click(object sender, RoutedEventArgs e) {
             App.Current.Shutdown();
-            }
+        }
         private void KontenSynchronisierenInt_Click(object sender, RoutedEventArgs e) {
             if (_boAktualisieren)
-                return;           
+                return;
             _kosyInt2 = new KontenSynchronisierenInt();    // ===> Wertpapiere Internet ---> dtPortFol Kurs Änd% ÄndDat Sharpe 
             _kosyInt2.Ausführen();                          // Kehrt SOFORT zurück. Wenn fertig: Rest starten s.u.   
             _boAktualisieren = true;
@@ -426,7 +428,7 @@ namespace MeineFinanzen.View {
             WertPapStart();
             GlobalRef.g_dgBanken.Machdgbanken();
             string s = Convert.ToString(DateTime.Now).Trim();
-            string filename = GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\PortFolInt_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
+            string filename = GlobalRef.g_Ein.MyDataPfad + @"MyDepot\KursDaten\PortFolInt_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
             GlobalRef.g_WP.SerializeWertpapiere(filename, DgBanken._wertpapiere);
             ConWrLi("---- -xx- Nach SerializeWertpapiere Int()");
             _boAktualisieren = false;
@@ -439,10 +441,10 @@ namespace MeineFinanzen.View {
             GlobalRef.g_dgBanken.Machdgbanken();
             do { }
             while (!_kosySubsembly.WertpapSubsemblyToPortFol());
-            WertPapStart();            
+            WertPapStart();
             string s = Convert.ToString(DateTime.Now).Trim();
-            string filename = GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\PortFol_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
-            GlobalRef.g_WP.SerializeWertpapiere(filename, DgBanken._wertpapiere); 
+            string filename = GlobalRef.g_Ein.MyDataPfad + @"MyDepot\KursDaten\PortFol_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
+            GlobalRef.g_WP.SerializeWertpapiere(filename, DgBanken._wertpapiere);
             ConWrLi("---- -xx- Nach SerializeWertpapiere Subsembly()");
             _boAktualisieren = false;
         }
@@ -452,16 +454,27 @@ namespace MeineFinanzen.View {
                 return;
             _kosyHBCI4j = new KontenSynchronisierenHBCI4j();    // Mit InitializeComponent
             ConWrLi("---- -xx- Vor _kosyHBCI4j.Show();");
+            DoEvents();
             _kosyHBCI4j.Show();
+            DoEvents();
             ConWrLi("---- -yy- Nach _kosyHBCI4j.Show();");
             GlobalRef.g_dgBanken.Machdgbanken();
             do { }
             while (!_kosyHBCI4j.WertpapHBCI4jToPortFol());
             WertPapStart();
             string s = Convert.ToString(DateTime.Now).Trim();
-            string filename = GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\PortFolHBCI_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
+            string filename = GlobalRef.g_Ein.MyDataPfad + @"MyDepot\KursDaten\PortFolHBCI_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
             GlobalRef.g_WP.SerializeWertpapiere(filename, DgBanken._wertpapiere);
             ConWrLi("---- -zz- Nach SerializeWertpapiere HBCI()");
+        }
+        protected void DoEvents() {
+            //  if (System.Windows.Application.Current != null)
+            //      System.Windows.Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new ThreadStart(delegate { }));
+            Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new EmptyDelegate(delegate { }));
+            //* Diese Funktion uebernimmt die Unterbrechnung zur Anzeige und Eventbearbeitung in C#, WPF beim langen Loop Berechnungen
+            //* mit einer Dispatcher
+            //* EmptyDelegate im Header definieren
+            //* using System.Windows.Threading; im Header festlegen   
         }
         internal Single USDtoEuro(Single Kurs) {
             Single USKurs = 0;
@@ -478,10 +491,10 @@ namespace MeineFinanzen.View {
                     //{
                     //    USKurs = 0.01m;
                     //}
-                    }
                 }
-            return Kurs * (1 / USKurs);   //' z.Zt. 1/1.35 ca. 0.74 Euro pro Dollar
             }
+            return Kurs * (1 / USKurs);   //' z.Zt. 1/1.35 ca. 0.74 Euro pro Dollar
+        }
         private Single SGDtoEuro(Single Kurs) {
             Single SGDKurs = 0;  //'2.03072
             SGDKurs = HoleSGDKurs();
@@ -496,14 +509,14 @@ namespace MeineFinanzen.View {
                 {
                     SGDKurs = 1.00m;
                 } */
-                }
-            return Kurs * (1 / SGDKurs);
             }
+            return Kurs * (1 / SGDKurs);
+        }
         private Single HoleUSDKurs() {
             Single USDKurs = 0;
             int i0, i1;
             string str;
-            string[] Zeilen = File.ReadAllLines(Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\Daten\USD.html");
+            string[] Zeilen = File.ReadAllLines(Helpers.GlobalRef.g_Ein.MyDataPfad + @"MyDepot\Daten\USD.html");
             string Zeile = "";
             int nz = -1;
             if (Zeilen.Length == 0)
@@ -525,23 +538,23 @@ namespace MeineFinanzen.View {
                             str = Zeile.Substring(i1 - 1, 6);
                             USDKurs = Convert.ToSingle(str);
                             return USDKurs;
-                            }
-                        } else {
-                        //MessageBox.Show("HoleUSDKurs-Encoding-Fehler.");
                         }
+                    } else {
+                        //MessageBox.Show("HoleUSDKurs-Encoding-Fehler.");
                     }
+                }
                 nz++;
                 if (nz >= Zeilen.Length)
                     return USDKurs;
                 Zeile = Zeilen[nz];
-                }
-            return USDKurs;
             }
+            return USDKurs;
+        }
         private Single HoleSGDKurs() {
             Single SGDKurs = 0;
             int i1, i2, i3;
             string str;
-            string Zeile = File.ReadAllText(Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\SGD.html");
+            string Zeile = File.ReadAllText(Helpers.GlobalRef.g_Ein.MyDataPfad + @"MyDepot\KursDaten\SGD.html");
             if (Zeile.Length == 0)
                 return SGDKurs;
             i1 = Zeile.IndexOf(@"""kurs""");
@@ -550,27 +563,27 @@ namespace MeineFinanzen.View {
                 i3 = Zeile.IndexOf("<", i2);
                 str = Zeile.Substring(i2 + 1, i3 - i2 - 1);
                 SGDKurs = Convert.ToSingle(str);
-                } else
+            } else
                 MessageBox.Show("HoleSGDKurs-Encoding-Fehler.");
             return SGDKurs;
-            }
+        }
         private int FindRowIndex(DataGridRow row) {
             DataGrid dataGrid = ItemsControl.ItemsControlFromItemContainer(row) as DataGrid;
             int index = dataGrid.ItemContainerGenerator.IndexFromContainer(row);
             return index;
-            }
+        }
         private void GridWertpapiere_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is DataGridCell))
                 dep = VisualTreeHelper.GetParent(dep);
             if (dep == null)
                 return;
-            DataGridCell cell1 = dep as DataGridCell;
+            // DataGridCell cell1 = dep as DataGridCell;
             DataGridRow row1 = dep as DataGridRow;
             while ((dep != null) && !(dep is DataGridRow))
                 dep = VisualTreeHelper.GetParent(dep);
             row1 = dep as DataGridRow;
-            DataGridCell cell2 = null;
+            //DataGridCell cell2 = null;
             string isi = null;
             string nam = null;
             int nro = -1;
@@ -579,10 +592,10 @@ namespace MeineFinanzen.View {
                 try {
                     isi = ((Wertpapier)(row1.Item)).ISIN;
                     nam = ((Wertpapier)(row1.Item)).Name;
-                    } catch (Exception) {
+                } catch (Exception) {
                     //MessageBox.Show("gridWertpapiere_PreviewMouseDown() Fehler: " + ex);
                     return;
-                    }
+                }
                 nro = FindRowIndex(row1);
                 int lfd = -1;
                 foreach (Wertpapier wp in DgBanken._wertpapiere) {
@@ -590,25 +603,25 @@ namespace MeineFinanzen.View {
                     if (wp.ISIN == isi) {
                         nwp = lfd;
                         break;
-                        }
                     }
-                cell2 = GetCell(nro, 0);
+                }
+                // cell2 = GetCell(nro, 0);
                 if (e.RightButton == MouseButtonState.Pressed) {
                     GridKlick gk = new GridKlick(this, isi, nro, nwp);
                     gk.ShowDialog();
-                    } else if (e.LeftButton == MouseButtonState.Pressed) {
+                } else if (e.LeftButton == MouseButtonState.Pressed) {
                     if (_isGroup) {
                         _isGroup = false;
                         return;
-                        }
+                    }
                     if (row1.DetailsVisibility == Visibility.Collapsed) {
                         row1.DetailsVisibility = Visibility.Visible;
-                        } else {
+                    } else {
                         row1.DetailsVisibility = Visibility.Collapsed;
-                        }
                     }
                 }
             }
+        }
         private DataGridCell GetCell(int row, int column) {
             DataGridRow rowContainer = GetRow(row);
             if (rowContainer != null) {
@@ -617,20 +630,20 @@ namespace MeineFinanzen.View {
                 if (cell == null) {
                     dgWertpapiere.ScrollIntoView(rowContainer, dgWertpapiere.Columns[column]);
                     cell = (DataGridCell)presenter.ItemContainerGenerator.ContainerFromIndex(column);
-                    }
-                return cell;
                 }
-            return null;
+                return cell;
             }
+            return null;
+        }
         private DataGridRow GetRow(int index) {
             DataGridRow row = (DataGridRow)dgWertpapiere.ItemContainerGenerator.ContainerFromIndex(index);
             if (row == null) {
                 dgWertpapiere.UpdateLayout();
                 dgWertpapiere.ScrollIntoView(dgWertpapiere.Items[index]);
                 row = (DataGridRow)dgWertpapiere.ItemContainerGenerator.ContainerFromIndex(index);
-                }
-            return row;
             }
+            return row;
+        }
         private static T GetVisualChild<T>(Visual parent) where T : Visual {
             T child = default(T);
             int numVisuals = VisualTreeHelper.GetChildrenCount(parent);
@@ -639,51 +652,51 @@ namespace MeineFinanzen.View {
                 child = v as T;
                 if (child == null) {
                     child = GetVisualChild<T>(v);
-                    }
+                }
                 if (child != null) {
                     break;
-                    }
                 }
-            return child;
             }
+            return child;
+        }
         private void GridWertpapiere_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e) {
             //Detail.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));           
-            }
+        }
         private void AlsTextRestore_Click(object sender, RoutedEventArgs e) {
 
-            }
+        }
         private void AlsTextSpeichern_Click(object sender, RoutedEventArgs e) {
 
-            }
+        }
         private void Einstellungen_Click(object sender, RoutedEventArgs e) {
             EinstellungenView ein = new EinstellungenView();
             ein.ShowDialog();
-            }
+        }
         private void _Beenden_Click(object sender, RoutedEventArgs e) {
             App.Current.Shutdown();
-            }
+        }
         private void Zahlungen_Click(object sender, RoutedEventArgs e) {
             Zahlungen zah = new Zahlungen(this);
             zah.ShowDialog();
-            }
+        }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
             string s = Convert.ToString(DateTime.Now).Trim();
-            string filename = Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\PortFol_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
-            string obok = DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
+            //string filename = Helpers.GlobalRef.g_Ein.myDataPfad + @"MyDepot\KursDaten\PortFol_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
+            string obok = DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.MyDataPfad);
             if (obok != null) {
                 MessageBox.Show("MeineFinanzen HauptFenster.xaml.cs HauptFenster() Fehler DatasetSichernInXlm() in WindowClose() DataSetAdmin: " + obok);
                 this.Close();
-                }
+            }
             GlobalRef.g_Ein.SerializeWriteEinstellungen(GlobalRef.g_Ein.strEinstellungen, GlobalRef.g_Ein);
             Properties.Settings.Default.Save();
             App.Current.Shutdown();
-            }
+        }
         private void InnereDatagrid_PreviewMouseDown(object sender, MouseEventArgs e) {
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is DataGridCell))
                 dep = VisualTreeHelper.GetParent(dep);
             if (dep == null)
-                return; 
+                return;
             DataGridRow row1 = dep as DataGridRow;
             while ((dep != null) && !(dep is DataGridRow))
                 dep = VisualTreeHelper.GetParent(dep);
@@ -699,21 +712,21 @@ namespace MeineFinanzen.View {
                 tabWertpapiere.Visibility = Visibility.Visible;
                 TabWertpap();
                 dgWertpapiere.UpdateLayout();
-                } else if (kontoArt.Contains("Giro")) {
+            } else if (kontoArt.Contains("Giro")) {
                 AlleTabsHidden();
                 tabControl1.SelectedItem = tabKontoumsätze;
                 tabKontoumsätze.Visibility = Visibility.Visible;
                 ViewModel.TabKontoumsätze tabkto = new ViewModel.TabKontoumsätze(this);
-                } else if (kontoArt.Contains("CreditCard")) {
+            } else if (kontoArt.Contains("CreditCard")) {
 
-                } else
+            } else
                 MessageBox.Show("InnereDatagrid_PreviewMouseDown() Fehler: Unbekannte KontoArt : " + kontoArt);
-            }
+        }
         internal void OpenLogFile() {
             swLog = new StreamWriter(Helpers.GlobalRef.g_Ein.myDepotPfad + @"\Log\logKontoUmsätzeHolen.txt");
             swLog.WriteLine("Start KontoumsätzeHolen(): ---------------------------------------- " + DateTime.Now);
             swLog.Flush();
-            }
+        }
         private void ÄnderungDurchClick() {
             TextBox1.Clear();
             TextBox1.AppendText(Environment.NewLine + "Start Kategorien anzeigen.");
@@ -732,36 +745,36 @@ namespace MeineFinanzen.View {
                             foreach (Kategorie kat4 in kat3.KatChildren) {
                                 if (kat4.IsChecked == true)
                                     TextBox1.AppendText(Environment.NewLine + "    " + kat4.KatName);
-                                }
                             }
                         }
                     }
-                } catch (Exception ex) {
-                MessageBox.Show("Fehler: " + ex);
                 }
+            } catch (Exception ex) {
+                MessageBox.Show("Fehler: " + ex);
             }
+        }
         private void BtTest_Click(object sender, RoutedEventArgs e) {
             //MeineFinanzen.Helpers.Extended.DiesUndDas.test7777(GridTabitemKontoumsatz, 1, 0);
             ÄnderungDurchClick();
             //GridFilterKategorienAnzeige.Height = 20;
-            }
+        }
         private void CmbSelectionChangedBetragVon(object sender, SelectionChangedEventArgs e) {
 
-            }
+        }
         private void Initialized_cbBetragVon(object sender, EventArgs e) {
 
-            }
+        }
         private void CmbSelectionChangedBetragBis(object sender, SelectionChangedEventArgs e) {
 
-            }
+        }
         private void Initialized_cbBetragBis(object sender, EventArgs e) {
 
-            }
+        }
         private void Initialized_GridFilterKategorienAnzeige(object sender, EventArgs e) {
             GridFilterKategorienAnzeige.Height = 100;
             Grid grid = sender as Grid;
             //Debug.WriteLine("{0} {1}", grid.Name, grid.ActualHeight);
-            }
+        }
         private void CbFilter2_Loaded(object sender, RoutedEventArgs e) {
             ConWrLi("---- -04u- HauptFenster CbFilter2_Loaded()");
             cbFilter2.Items.Clear();
@@ -775,14 +788,14 @@ namespace MeineFinanzen.View {
             cbFilter2.Items.Add("Aktuelles Quartal(3)");
             cbFilter2.Items.Add("Letztes Quartal(2)");
             cbFilter2.SelectedIndex = 0;
-            }
+        }
         private void CmbSelectionChangedFilter2(object sender, SelectionChangedEventArgs e) {
             ConWrLi("---- -04w- HauptFenster CmbSelectionChangedFilter2()");
             if (cbFilter2 == null || cbFilter2.SelectedItem == null)
                 return;
             string str = cbFilter2.SelectedItem.ToString();
             //Debug.WriteLine("{0}", str);      // Aktuelles Jahr(2015)
-            }
+        }
         private void OnOpened(object sender, RoutedEventArgs e) { }
         private void OnClosed(object sender, RoutedEventArgs e) { }
         /* private void dgBankenÜbersicht_LoadingRowDetails(object sender, DataGridRowDetailsEventArgs e) {
@@ -816,7 +829,7 @@ namespace MeineFinanzen.View {
                    }
                }
            } */
-        private void DgBankenÜbersicht_SelectionChanged(object sender, SelectionChangedEventArgs e) {  }
+        private void DgBankenÜbersicht_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
         private void DgBankenÜbersicht_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
             DependencyObject dep = (DependencyObject)e.OriginalSource;
             while ((dep != null) && !(dep is DataGridCell))
@@ -833,7 +846,7 @@ namespace MeineFinanzen.View {
             try {
                 if (strType == "MeineFinanzen.Model.BankKonto") {
                     //Title = ((Model.BankKonto)(row1.Item)).KontoName 8;
-                    }
+                }
                 //Title = ((Model.BankÜbersicht)(row1.Item)).BankName7;   // ist BankKonto. Kann nicht in BankÜbersicht umgew werden.
                 AlleTabsHidden();
                 tabControl1.SelectedItem = tabFinanzübersicht;
@@ -841,10 +854,10 @@ namespace MeineFinanzen.View {
                 //GridGesamtvermögen.Visibility = Visibility.Visible;
                 TabFinanzen();
                 //dgFinanzübersicht.UpdateLayout();
-                } catch (Exception ex) {
+            } catch (Exception ex) {
                 MessageBox.Show("dgBankenÜbersicht_PreviewMouseDown Fehler: " + ex);
-                }
             }
+        }
         /*  private void dgFinanzÜbersicht_LoadingRow(object sender, DataGridRowEventArgs e) {
               int ind = e.Row.GetIndex();
               string str = e.Row.Item.ToString();
@@ -939,25 +952,25 @@ namespace MeineFinanzen.View {
              //Console.WriteLine("+++>(ind:{0} Bank:{1,-40} Konten:{2}   dgFinanzÜbersicht_LoadingRowDetails", ind, item.BankName7, item.OCBankKonten.Count);
          } */
         private void DgFinanzÜbersicht_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            }
+        }
         private void DgFinanzÜbersicht_Loaded(object sender, RoutedEventArgs e) {
-            }
+        }
         private void Jahreswechsel_Click(object sender, RoutedEventArgs e) {
             JahreswechselView jw = new JahreswechselView();
             jw.ShowDialog();
-            }
+        }
         private void HistorieGesamt_Click(object sender, RoutedEventArgs e) {
             HistorieGesamt hg = new HistorieGesamt(this);
             hg.ShowDialog();
-            }
+        }
         private void TestWPAktualisieren_Click(Object sender, RoutedEventArgs e) {
             foreach (Wertpapier wp in DgBanken._wertpapiere) {
                 if (!wp.Name.Contains("#")) {
                     wp.Name += "#";
                     break;
-                    }
                 }
             }
+        }
         private void TextWPXlöschen_Click(Object sender, RoutedEventArgs e) {
             DataTable dtPortFol = new DataTable();
             dtPortFol = DataSetAdmin.dsHier.Tables["tblPortFol"];
@@ -966,11 +979,11 @@ namespace MeineFinanzen.View {
                 dtrow["WPXZeitY"] = "0";
                 dtrow["WPXKursX"] = "0";
                 dtrow["WPXKursY"] = "0";
-                }
-            DataSetAdmin.dtPortFol = dtPortFol;
-            DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
-            Close();
             }
+            DataSetAdmin.dtPortFol = dtPortFol;
+            DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.MyDataPfad);
+            Close();
+        }
         private void KontenaufstellungHBCI4j_Click(Object sender, RoutedEventArgs e) {
             Console.WriteLine("---- -10-- HauptFenster _dgBanken.ko4js.Count {0}", DgBanken.ko4js.Count);
             KontenaufstellungHBCI4j koauf = new KontenaufstellungHBCI4j();
@@ -978,7 +991,7 @@ namespace MeineFinanzen.View {
             koauf.dgKontenaufstellung.ItemsSource = DgBanken.ko4js;
             koauf.dgKontenaufstellung.EnableRowVirtualization = false;
             koauf.Show();
-            }
+        }
         private void URLsVerwalten_Click(object sender, RoutedEventArgs e) {
             URLsVerwalten _urlsverwalten = new URLsVerwalten();
             _urlsverwalten.Show();             // Nicht Modal, kehrt zurück.
@@ -987,6 +1000,11 @@ namespace MeineFinanzen.View {
             ConWrLi("---- -xx- Ordnermanager_Click()");
             Ordnermanager ordman = new Ordnermanager();
             ordman.Show();
+        }
+        private void SynchronVergleich_Click(object sender, RoutedEventArgs e) {
+            ConWrLi("---- -xx- SynchronVergleich_Click()");
+            SynchronVergleich synvergl = new SynchronVergleich();
+            synvergl.Show();
         }
         /* private void InnereDatagridBanken3_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e) {
 DataGridRow dgrow = e.Row as DataGridRow;
@@ -1287,8 +1305,24 @@ return;
                 else //No child nodes, so we just write the text
                     sr.WriteLine(node.Header);
             }
-        }  */
+        }  */       
     }
+    public class SynchroVergleichChangedEventArgs : EventArgs {
+        public readonly SynchroV ChangedItem;
+        public readonly ChangeType ChangeType;
+        public readonly SynchroV ReplacedWith;
+        public SynchroVergleichChangedEventArgs(ChangeType change, SynchroV item, SynchroV replacement) {
+            ChangeType = change;
+            ChangedItem = item;
+            ReplacedWith = replacement;
+        }
+    }
+    public enum ChangeType {
+        Added,
+        Removed,
+        Replaced,
+        Cleared
+    };
     [ValueConversion(typeof(Boolean), typeof(String))]
     public class CompleteConverter : IValueConverter {
         // This converter changes the value of a XTas ksX Complete status from true/false to a string value of
@@ -1321,6 +1355,47 @@ return;
             throw new NotImplementedException();
             }
         }
+    public class SignedConvert7 : IValueConverter {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            if (value == null)
+                return null;
+            if (value.ToString() == String.Empty)
+                return null;
+            /*
+            int input;
+            try {
+                DataGridCell dgc = (DataGridCell)value;
+                System.Data.DataRowView rowView = (System.Data.DataRowView)dgc.DataContext;
+                input = (int)rowView.Row.ItemArray[dgc.Column.DisplayIndex];
+            } catch (InvalidCastException e) {
+                return DependencyProperty.UnsetValue;
+            }
+            switch (input) {
+                case 1: return Brushes.Red;
+                case 2: return Brushes.White;
+                case 3: return Brushes.Blue;
+                default: return DependencyProperty.UnsetValue;
+            }
+            */
+            //var dg = (Model.SynchroV)value;
+            double val = 0;
+            try {
+                val = double.Parse(value.ToString());
+            } catch (FormatException fex) {
+                MessageBox.Show("SignedConvert7; " + fex);
+            }
+            //if (val == 0)
+            //    return Brushes.Transparent;          //Brushes.Pink;            
+            //if ((string)parameter == "WPVKurs") {
+            //    if (val < 0)
+            //        return Brushes.Red;
+            //}
+            return (val < 0) ? Brushes.Red : Brushes.Black;
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+            throw new NotSupportedException();
+        }
+    }
     [ValueConversion(typeof(DateTime), typeof(String))]
     public class DateConverterShort : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
@@ -1473,23 +1548,19 @@ return;
             double val = 0;
             try {
                 val = double.Parse(value.ToString());
-                } catch (FormatException) { }
+            } catch (FormatException) { }
             if (val == 0)
-                return Brushes.Transparent;          //Brushes.Pink;
-            /*
-            if (parameter == "AktKurs")
-            {
-                double kursVorher = TabWertpapiere.wpVorher[0].AktKurs;
-                if (val < kursVorher)
+                return Brushes.Transparent;          //Brushes.Pink;            
+            if ((string)parameter == "WPVKurs") {
+                if (val < 100)
                     return Brushes.Red;
             }
-            */
             return (val < 0) ? Brushes.Red : Brushes.Black;
-            }
+        }
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
             throw new NotSupportedException();
-            }
         }
+    }
     public class SignedConvert2 : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
             if (value == null)

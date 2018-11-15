@@ -1,0 +1,326 @@
+﻿<Window x:Class="MeineFinanzen.View.SynchronVergleich"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:view="clr-namespace:MeineFinanzen.View"
+        xmlns:model="clr-namespace:MeineFinanzen.Model"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="SynchronVergleich"
+        WindowState="Maximized"
+        FontSize="12"
+        FontFamily="Tahoma"
+        Loaded="Window_Loaded"
+        Closing="Window_Closing">
+    <Window.Resources>
+        <!-- <view:CompleteConverterSynchroVergl x:Key="completeConverterSynchroVergl" /> -->
+        <model:SynchroVs x:Key="MyDataSource" />
+        <CollectionViewSource x:Key="cvsSynchro"
+                              Source="{StaticResource MyDataSource}"
+                              Filter="CollectionViewSourceSynchro_Filter">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="WPVSort"
+                                     Direction="Ascending" />
+            </CollectionViewSource.SortDescriptions>
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="WPVName" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+        <DataTemplate x:Key="SynchroVerglDetail">
+            <Border BorderThickness="1"
+                    Background="BlanchedAlmond"
+                    Padding="10">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontSize="12"
+                                   Text="Anzahl:    "
+                                   VerticalAlignment="Center" />
+                        <TextBlock FontSize="16"
+                                   Foreground="MidnightBlue"
+                                   Text="{Binding WPVAnzahl}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontSize="12"
+                                   Text="ISIN:      "
+                                   VerticalAlignment="Center" />
+                        <TextBlock FontSize="16"
+                                   Foreground="MidnightBlue"
+                                   Text="{Binding WPVISIN}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontSize="12"
+                                   Text="Bezeichnung: "
+                                   VerticalAlignment="Center" />
+                        <TextBlock FontSize="16"
+                                   Foreground="MidnightBlue"
+                                   Text="{Binding WPVName}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+        <view:SignedConvert7 x:Key="SignedConvert7" />
+        <view:DateConvert x:Key="dateConvert" />
+        <view:IconPathConverter x:Key="iconPathConverter" />
+        <!-- -->
+        <view:SignedConvert2 x:Key="SignedConvert2" />
+        <!--
+        <Style x:Key="MyDataGridCell"
+               TargetType="DataGridCell"
+               BasedOn="{StaticResource {x:Type DataGridCell}}">
+            <Setter Property="Background"
+                    Value="White" />
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center" />
+            <Style.Triggers>
+                <Trigger Property="IsSelected"
+                         Value="True">
+                    <Setter Property="Background"
+                            Value="Red" />
+                    <Setter Property="Foreground"
+                            Value="White" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        -->
+    </Window.Resources>
+    <Grid x:Name="Grid1">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30*" />
+            <ColumnDefinition Width="16*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="10*" />
+        </Grid.RowDefinitions>
+        <Label Content="---- Daten der Synchronisation vergleichen ----"
+               Grid.Row="0"
+               FontSize="14"
+               HorizontalContentAlignment="Center"
+               FontWeight="Bold"
+               FontStyle="Italic" />
+        <StackPanel x:Name="StackButtons"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    VerticalAlignment="Top"
+                    Orientation="Horizontal">
+            <Button Content="Group"
+                    Click="GroupButton_Click" />
+            <Button Content="UnGroup"
+                    Click="UngroupButton_Click"
+                    Margin="10,0,0,0" />
+            <Button Content="Anzeige PreisDifferenzen toggle"
+                    Click="BtPreisDifferenzen_Click"
+                    Margin="10,0,0,0" />
+            <Button Content="Test Datagrid auslesen"
+                    Click="BtnAuslesen_Click"
+                    Margin="10,0,0,0" />
+        </StackPanel>
+        <DataGrid  x:Name="dgSynchroVergleich"
+                   Grid.Column="0"
+                   Grid.Row="1"
+                   Grid.ColumnSpan="2"
+                   Language="DE-de"
+                   ScrollViewer.CanContentScroll="True"
+                   ScrollViewer.VerticalScrollBarVisibility="Visible"
+                   ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                   RowDetailsVisibilityMode="Collapsed"
+                   HorizontalAlignment="Left"
+                   RowDetailsTemplate="{StaticResource SynchroVerglDetail}"
+                   RowDetailsVisibilityChanged="GridSynchroVergl_RowDetailsVisibilityChanged"
+                   ItemsSource="{Binding Source={StaticResource cvsSynchro}}"
+                   AutoGenerateColumns="False"
+                   SelectionUnit="Cell"
+                   VerticalAlignment="Top"
+                   PreviewMouseDown="GridSynchroVergl_PreviewMouseDown">
+            <DataGrid.GroupStyle>
+                <!-- Style for groups at top level. -->
+                <GroupStyle>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="{x:Type GroupItem}">
+                            <Setter Property="Margin"
+                                    Value="0,0,0,5" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                                        <Expander IsExpanded="True"
+                                                  BorderBrush="LightGreen"
+                                                  Foreground="Black"
+                                                  BorderThickness="1,1,1,1"
+                                                  Background="GhostWhite"
+                                                  FontWeight="DemiBold"
+                                                  FontSize="11">
+                                            <Expander.Header>
+                                                <DockPanel>
+                                                    <TextBlock FontWeight="UltraBlack"
+                                                               Text="{Binding Name}"
+                                                               Margin="32,0,0,0"
+                                                               Width="200"
+                                                               Height="11"
+                                                               FontSize="11"
+                                                               FontStyle="Italic" />
+                                                </DockPanel>
+                                            </Expander.Header>
+                                            <ItemsPresenter Margin="0,0,0,0" />
+                                        </Expander>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </DataGrid.GroupStyle>
+            <DataGrid.RowStyle>
+                <Style TargetType="{x:Type DataGridRow}">
+                    <Setter Property="FontWeight"
+                            Value="Normal" />
+                    <Setter Property="Foreground"
+                            Value="Black" />
+                    <Setter Property="Margin"
+                            Value="0" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected"
+                                 Value="True">
+                            <Setter Property="BorderBrush"
+                                    Value="Blue" />
+                            <Setter Property="BorderThickness"
+                                    Value="2" />
+                        </Trigger>
+                        <DataTrigger Binding="{Binding WPVAnzeigen}"
+                                     Value="true">
+                            <Setter Property="Visibility"
+                                    Value="Visible" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding WPVAnzeigen}"
+                                     Value="false">
+                            <Setter Property="Visibility"
+                                    Value="Hidden" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding WPVRowColor}"
+                                     Value="0">
+                            <Setter Property="Background"
+                                    Value="Green" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding WPVRowColor}"
+                                     Value="1">
+                            <Setter Property="Background"
+                                    Value="Yellow" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding WPVRowColor}"
+                                     Value="2">
+                            <Setter Property="Background"
+                                    Value="Cyan" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding WPVRowColor}"
+                                     Value="Y">
+                            <Setter Property="Background"
+                                    Value="DarkTurquoise" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name"
+                                    Binding="{Binding WPVName}" />
+                <DataGridTextColumn Header="ISIN"
+                                    Binding="{Binding WPVISIN}" />
+                <DataGridTextColumn  Header="Type"
+                                     Binding="{Binding WPVType}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Style.Triggers>
+                                <Trigger Property="Text"
+                                         Value="Anleihe">
+                                    <Setter Property="Background"
+                                            Value="LawnGreen" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTemplateColumn Header="Anzahl">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding WPVAnzahl, StringFormat=\{0:#\,##0.00 \}}"
+                                       Foreground="{Binding WPVAnzahl, Converter={StaticResource SignedConvert7}}"
+                                       HorizontalAlignment="Right" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="KursZeit">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding WPVKursZeit, StringFormat=\{0:dd/MM/yy HHmm\}}"
+                                       Foreground="{Binding WPVKursZeit, Converter={StaticResource dateConvert}}"
+                                       HorizontalAlignment="Right" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Kurs1"
+                                    Width="SizeToCells"
+                                    MinWidth="150"
+                                    Binding="{Binding WPVKurs}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="TextBlock.Background"
+                                    Value="{Binding WPVForegroundColor}" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTemplateColumn Header="Kurs2">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding WPVKurs, StringFormat=\{0:#\,##0.00 \}}"
+                                       Foreground="{Binding WPVKurs, ConverterParameter=WPVKurs, Converter={StaticResource SignedConvert7}}"
+                                       HorizontalAlignment="Right" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="AktWert">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding WPVAktWert, StringFormat=\{0:###\,##0.00 \}}"
+                                       Foreground="{Binding WPVAktWert, Converter={StaticResource SignedConvert7}}"
+                                       HorizontalAlignment="Right" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="%Änd">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding WPVProzentAenderung, Mode=TwoWay, StringFormat=\{0:###\,##0.00 \}}"
+                                       Foreground="{Binding WPVProzentAenderung, Converter={StaticResource SignedConvert7}}"
+                                       HorizontalAlignment="Right" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Sharpe">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding WPVSharpe, Mode=TwoWay, StringFormat=\{0:###\,##0.00 \}}"
+                                       Foreground="{Binding WPVSharpe, Converter={StaticResource SignedConvert7}}"
+                                       HorizontalAlignment="Right" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Bemerkung"
+                                    Binding="{Binding WPVBemerkung}"
+                                    IsReadOnly="True"
+                                    SortDirection="Ascending" />
+                <DataGridTextColumn Header="Sort"
+                                    Binding="{Binding WPVSort}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <TextBox x:Name="txtUnten"
+                 Grid.Column="1"
+                 Grid.Row="1"
+                 Grid.ColumnSpan="2"
+                 Text="txtUnten"
+                 VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Auto" />
+    </Grid>
+</Window>

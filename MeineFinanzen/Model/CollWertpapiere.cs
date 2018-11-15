@@ -1,4 +1,5 @@
-﻿// 27.10.2018   -Model-  CollWertpapiere.cs 
+﻿// 02.11.2018   -Model-  CollWertpapiere.cs 
+using MeineFinanzen.Helpers;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -7,7 +8,7 @@ using System.Windows;
 using System.Xml.Serialization;
 namespace MeineFinanzen.Model {
     public class CollWertpapiere : ObservableCollection<Wertpapier>, IComparable {
-        XmlSerializer ser = new XmlSerializer(typeof(Collection<Wertpapier>));
+        static XmlSerializer ser = new XmlSerializer(typeof(Collection<Wertpapier>));
         public void SerializeWertpapiere(string filename, CollWertpapiere wp) {
             string s = Convert.ToString(DateTime.Now).Trim();
             // Write
@@ -19,21 +20,11 @@ namespace MeineFinanzen.Model {
             } catch (Exception ex) {
                 MessageBox.Show("Fehler: in SerializeWertpapiere() " + ex + Environment.NewLine + filename);
             }
-        }
-        public CollWertpapiere DeserializeWertpapiereNichtBenutzt() {
-            string s = Convert.ToString(DateTime.Now).Trim();
-            string pfad = Helpers.GlobalRef.g_Ein.myDepotPfad + @"KursDaten\PortFol_" + s.Substring(6, 4) + s.Substring(3, 2) + s.Substring(0, 2) + ".xml";
-            CollWertpapiere wp;
-            using (Stream rd = new FileStream(pfad, FileMode.Open)) {
-                wp = (CollWertpapiere)ser.Deserialize(rd);
-            }
-            return wp;
-        }
+        }       
         public int CompareTo(object obj) {
             if (obj == null)
                 return 1;
-            Wertpapier wp = obj as Wertpapier;
-            if (wp != null)
+            if (obj is Wertpapier wp)
                 return wp.DepotID.CompareTo(((Wertpapier)obj).DepotID);
             throw new NotImplementedException();
         }
@@ -168,12 +159,11 @@ namespace MeineFinanzen.Model {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         protected void RaisePropertyChanged(string name) {
-            if (PropertyChanged != null) {
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
         public void BeginEdit() { }
         public void CancelEdit() { }
         public void EndEdit() { }
+
     }
 }

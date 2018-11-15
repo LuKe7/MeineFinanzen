@@ -97,11 +97,11 @@ namespace MeineFinanzen.Model {
                 OnPropertyChanged(new PropertyChangedEventArgs("WPVSharpeNeu"));
             }
         }
-        public string WPVColor {
+        public string WPVRowColor {
             get { return _WPVColor; }
             set {
                 _WPVColor = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("WPVColor"));
+                OnPropertyChanged(new PropertyChangedEventArgs("WPVRowColor"));
             }
         }
         public int WPVType { get; set; }              

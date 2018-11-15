@@ -1,7 +1,8 @@
-﻿// 03.03.2018   -Model-  CollBanken.cs 
+﻿// 03.11.2018   -Model-  CollBanken.cs 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -30,11 +31,7 @@ namespace MeineFinanzen.Model {
                 }
             } catch (Exception ex) {
                 MessageBox.Show("Fehler: DeserializeReadBankÜbersicht -Read- " + ex);
-            }
-            AktualisiereBankÜbersichtsDaten(filename, bankÜ);
-            Console.WriteLine("===>DeserializeReadBankÜbersicht = " + bankÜ[0].BildPfad7 + "\n--->" + bankÜ[0].BankName7 +
-               " " + bankÜ[0].BankValue7 + " " + bankÜ[0].OCBankKonten.Count);
-            //ConWrLi("---- -x- DeserializeReadBankÜbersicht()");
+            }            
         }
         public void SerializeWriteBankÜbersicht(string filename, IList<BankÜbersicht> bankÜ) {
             // Write             
@@ -49,23 +46,11 @@ namespace MeineFinanzen.Model {
                " " + bankÜ[0].BankValue7 + " " + bankÜ[0].OCBankKonten.Count);
             //ConWrLi("---- -x- SerializeWriteBankÜbersicht()");
         }
-        private void AktualisiereBankÜbersichtsDaten(string filename, IList<BankÜbersicht> bankÜ) {
-            FileInfo fiExe = (new FileInfo(Assembly.GetEntryAssembly().Location));
-            DateTime dtLeUmw = File.GetLastWriteTime(fiExe.FullName);
-            //bankÜ[0].Bild Pfad7 = Zahlung.B.;
-            /* bankÜ.Bank Name7 =
-            bankÜ.Bank Value7 =
-            bankÜ.LiBankKonten[0].Konto Art8 =
-            bankÜ.LiBankKonten[0].Konto Datum8 =
-            bankÜ.LiBankKonten[0].Konto Name8 =
-            bankÜ.LiBankKonten[0].Konto Nr8 =
-            bankÜ.LiBankKonten[0].Konto Value8 = */
-        }
         public void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
         }
     }
-    public class BankKonten {
+    public class BankKonten : INotifyPropertyChanged, IEditableObject {
         public string KontoName8 { get; set; }
         public string KontoArt8 { get; set; }
         public string KontoNr8 { get; set; }
@@ -73,5 +58,15 @@ namespace MeineFinanzen.Model {
         public DateTime KontoDatum8 { get; set; }
         public ObservableCollection<Kontoumsatz> OCUmsätze { get; set; }
         public ObservableCollection<Wertpapier> OCWertpap { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+        internal void NotifyPropertyChanged(string propertyName) {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        protected void RaisePropertyChanged(string name) {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+        public void BeginEdit() { }
+        public void CancelEdit() { }
+        public void EndEdit() { }
     }
 }

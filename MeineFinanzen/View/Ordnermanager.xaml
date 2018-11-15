@@ -67,37 +67,7 @@
                       Background="LightGray"
                       BorderBrush="Aquamarine"
                       Foreground="Cyan">
-                <TreeView.Resources>
-                    <Style TargetType="{x:Type TreeViewItem}">
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver"
-                                     Value="True">
-                                <Setter Property="Background"
-                                        Value="LightGreen" />
-                            </Trigger>
-                        </Style.Triggers>
-                        <Setter Property="HeaderTemplate">
-                            <Setter.Value>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Image Name="img"
-                                               Width="20"
-                                               Height="20"
-                                               Stretch="Fill"
-                                               Source="{Binding 
-                                       RelativeSource={RelativeSource 
-                                       Mode=FindAncestor, 
-                                       AncestorType={x:Type TreeViewItem}}, 
-                                       Path=Header, 
-                                       Converter={x:Static local:HeaderToImageConverter.Instance}}" />
-                                        <TextBlock Text="{Binding}"
-                                                   Margin="5,0" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </TreeView.Resources>
+               
             </TreeView>
             <TreeView x:Name="treeView2"
                       Grid.Column="1"

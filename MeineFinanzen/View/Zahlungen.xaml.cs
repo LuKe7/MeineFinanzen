@@ -1,4 +1,4 @@
-﻿// Zahlungen.cs 07.10.2016
+﻿// Zahlungen.cs 05.11.2018
 // Aus CollKontoumsätzeGesamt Zahlungen extrahieren.
 using System;
 using System.ComponentModel;
@@ -132,13 +132,16 @@ namespace MeineFinanzen.View {
                         isi.eingefügt = true;
                     }
                     catch (Exception ex) {
+                        // Die Spalte 'ISIN, Datum, Text1' hat die Einschränkung, dass sie eindeutig sein muss.
+                        // Der Wert 'DE000A0YJMG1, 15.02.2017 00:00:00, Depot 0700617681|Wertpapierertrag 14.02.2017|000054528021880
+                        // WKN A0YJMG|WHC - GLOBAL DISCOVERY|ISIN DE000A0YJMG1' ist bereits vorhanden.
                         Console.WriteLine("Fehler in .Rows.Add:" + ex);
                         Console.WriteLine("{0} {1} {2} {3} {4}", isi.Isin, isi.Name, isi.eingefügt, isi.Datum, isi.Wert);
                         break;
                     }
                 }
             }
-            DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
+            DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.MyDataPfad);
             this.Close();
         }
         public void undLos() {

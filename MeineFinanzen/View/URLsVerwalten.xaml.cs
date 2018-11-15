@@ -85,7 +85,7 @@ namespace MeineFinanzen.View {
         }
         public void VorgabeParameterBearbeiten() {
             liVorg.Clear();
-            DateTime dt = DataSetAdmin.HolenAusXml(Helpers.GlobalRef.g_Ein.myDataPfad);
+            DateTime dt = DataSetAdmin.HolenAusXml(Helpers.GlobalRef.g_Ein.MyDataPfad);
             if (dt == null) {
                 System.Windows.Forms.MessageBox.Show("MeineFinanzen VorgabeParameterBearbeiten.xaml.cs Fehler HolenAusXml() DataSetAdmin");
                 System.Windows.Forms.MessageBox.Show("MeineFinanzen Fehler!!  Dateien nicht geladen!!!!");
@@ -111,7 +111,7 @@ namespace MeineFinanzen.View {
                     WPVSharpe = Convert.ToSingle(dr["WPSharpe"]),
 
                     WPVURLSharp = dr["WPUrlSharpe"].ToString(),
-                    WPVColor = "1",
+                    WPVRowColor = "1",
                     WPVKursNeu = 0,
                     WPVKursZeitNeu = Convert.ToDateTime("01.01.1970"),
                     WPVProzentAenderungNeu = 0,
@@ -244,7 +244,7 @@ namespace MeineFinanzen.View {
         }
         private void Close_Window(object sender, System.ComponentModel.CancelEventArgs e) {
             DataSetAdmin.dtVorgabeInt2 = dtVorgabe;
-            DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.myDataPfad);
+            DataSetAdmin.DatasetSichernInXml(Helpers.GlobalRef.g_Ein.MyDataPfad);
             //mel.Close();
         }
         private void ResetDgRow() {
@@ -253,7 +253,7 @@ namespace MeineFinanzen.View {
                 vg2.Vg2Color = "0";
             }
             foreach (WertpapSynchroNeu sy in _wertpapsynchroneu) {
-                sy.WPVColor = "1";
+                sy.WPVRowColor = "1";
             }
             dgvVorgabeInt2.ItemsSource = null;
             dgvVorgabeInt2.ItemsSource = liVorg;
@@ -280,7 +280,7 @@ namespace MeineFinanzen.View {
                 as System.Windows.Controls.DataGrid;
             WertpapSynchroNeu wpsn = (WertpapSynchroNeu)dataGrid.ItemContainerGenerator.ItemFromContainer(dgRow1);
             //System.Windows.Controls.DataGridCell cell1 = dep as System.Windows.Controls.DataGridCell;
-            //Console.WriteLine("cell1.Column.Header: {0} Color: {1}", cell1.Column.Header, wpsn.WPVColor);
+            //Console.WriteLine("cell1.Column.Header: {0} Color: {1}", cell1.Column.Header, wpsn.WPVRowColor);
             dgRow1.DetailsVisibility = Visibility.Visible;
             dgRow1.Background = new SolidColorBrush(Colors.LightYellow);
             _Url1 = wpsn.WPVURL;

@@ -48,6 +48,7 @@ namespace MeineFinanzen.View {
             // ---- Mit HBCI4j mit Java DepotAbrufTest.bat
             // -----    nach Wertpap_ISIN.xml           
             TxtWrLi("Start HBCI");
+            ConWrLi("---- -51-Start HBCI");
             foreach (var ban in DgBanken.banken) {
                 if (String.Compare(ban.SortFeld7, "888", StringComparison.OrdinalIgnoreCase) >= 0)
                     continue;
@@ -63,6 +64,7 @@ namespace MeineFinanzen.View {
                     if (fi.Length < 500 || fi.Length > 1600)
                         continue;
                     StreamReader file = new StreamReader(fi.FullName);
+                    ConWrLi("---- -51-properties gefunden?: " + fi.FullName);
                     //Console.WriteLine("properties gefunden?: {0}", file);
                     /*  # Angepasste Version von AnalyzeReportOfTransactions                     
                      *  # Kurzanleitung:
@@ -101,16 +103,20 @@ namespace MeineFinanzen.View {
                             //string argumentText = string.Format(@"{0}", propDir);   //, ausgabeDir);
                             Directory.SetCurrentDirectory(GlobalRef.g_Ein.strEclipseHbci4jClasses);
                             TxtWrLi("HBCI läuft");
+                            ConWrLi("---- -51-HBCI läuft");
+                            DoEvents();
                             Process process2 = new Process();
                             process2.StartInfo.FileName = GlobalRef.g_Ein.myDepotPfad + @"\DepotAbrufTest.bat";
                             process2.StartInfo.Arguments = strPfad + " " + datenDir;
                             process2.StartInfo.UseShellExecute = false;
                             process2.StartInfo.RedirectStandardOutput = true;
                             process2.StartInfo.CreateNoWindow = true;
+                            DoEvents();
                             process2.Start();
+                            DoEvents();
                             string strMeldung = process2.StandardOutput.ReadToEnd();
                             // NOCH strMeldung untersuchen ...
-                            Console.WriteLine(strMeldung);
+                            ConWrLi("---- -51- " + strMeldung);
                             process2.WaitForExit();
                         }
                     }   // Zeile in .properties
@@ -155,7 +161,6 @@ namespace MeineFinanzen.View {
             DataSetAdmin.dtPortFol.DefaultView.Sort = "WPISIN ASC";
             dtt2 = DataSetAdmin.dtPortFol.DefaultView.ToTable();
             DataSetAdmin.dtPortFol = dtt2;
-            string PriceCurrency = "";  // EUR oder USD oder so         
             Single quantity = -1;       // Anzahl
             Single wpanzahl = -1;
             string wpname = "";
@@ -166,7 +171,7 @@ namespace MeineFinanzen.View {
             PortFolDatensatz portfolNeu = new PortFolDatensatz();
             foreach (WertpapHBCI4j HBCI4j in wp4js) {
                 int nPortfol = DataSetAdmin.dvPortFol.Find(HBCI4j.ISIN);
-                if (nPortfol < 0) {           // Nicht, also in dtPortFol neu einfügen.
+                if (nPortfol < 0) {           // ISIN nicht in dtPortFol, also in dtPortFol neu einfügen.
                     DataRow newRow = DataSetAdmin.dtPortFol.NewRow();
                     newRow = portfolNeu.dtPortFolAusdtNull(newRow);
                     newRow["WPName"] = HBCI4j.Name;
@@ -219,13 +224,13 @@ namespace MeineFinanzen.View {
                     MessageBox.Show("WPAnzahl (" + wpname + ") wird übernommen! Alt: " + wpanzahl + " Neu: " + quantity);
                     rowPortFol["WPAnzahl"] = quantity;
                 }
-                if (PriceCurrency == "")
-                    PriceCurrency = "EUR";
-                if (PriceCurrency == "USD") {
+                if (HBCI4j.KursWaehrung == "")
+                    HBCI4j.KursWaehrung = "EUR";
+                if (HBCI4j.KursWaehrung == "USD") {
                     //Price = _mw.USDtoEuro(Price);
                     kurs = wpkaufsumme / quantity;      // NOCH
-                } else if (PriceCurrency == "EUR") { } else {
-                    MessageBox.Show("Update_Kaufdatum_KtoKurs Fehler: PriceCurrency: " + PriceCurrency);
+                } else if (HBCI4j.KursWaehrung == "EUR") { } else if (HBCI4j.KursWaehrung == "%") { } else {
+                    MessageBox.Show("Update_Kaufdatum_KtoKurs Fehler: KursWaehrung: " + HBCI4j.KursWaehrung);
                     continue;
                 }
                 if (wpkurs != kurs) {       // NOCH prüfen +- 30%
