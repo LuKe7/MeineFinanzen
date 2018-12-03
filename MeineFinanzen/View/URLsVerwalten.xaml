@@ -32,9 +32,6 @@
                 <PropertyGroupDescription PropertyName="WPVRowColor" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
-        <model:CollURLsVerwalten x:Key="collvorgabeInt2" />
-        <CollectionViewSource x:Key="cvsCollVorgabeInt2"
-                              Source="{StaticResource collvorgabeInt2}" />
         <local:SignedConvert x:Key="SignedConvert" />
         <local:DateConvert x:Key="dateConvert" />
     </Window.Resources>

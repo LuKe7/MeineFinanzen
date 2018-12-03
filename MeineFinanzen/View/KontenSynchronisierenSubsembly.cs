@@ -928,12 +928,13 @@ namespace MeineFinanzen {
                 aPain.PaymentInformations.Add(aPmtInf);
                 aPmtInf.TransactionInformations.Add(aCdtTrfTxInf);
 
-                FinStoDetails aStoDetails = new FinStoDetails();
-                aStoDetails.ExecuteFirstTimeOn = new SwiftDate(tExecDay);
-                aStoDetails.TimeUnit = FinStoTimeUnit.Month;
-                aStoDetails.PeriodLen = 1;
-                aStoDetails.ExecDay = tExecDay.Day;
-                aStoDetails.LastScheduledDate = SwiftDate.NullDate;
+                FinStoDetails aStoDetails = new FinStoDetails {
+                    ExecuteFirstTimeOn = new SwiftDate(tExecDay),
+                    TimeUnit = FinStoTimeUnit.Month,
+                    PeriodLen = 1,
+                    ExecDay = tExecDay.Day,
+                    LastScheduledDate = SwiftDate.NullDate
+                };
 
                 // Build the SEPA document.
                 SepaDocument aDoc = new SepaDocument(aMessageInfo, aPain);
@@ -1030,8 +1031,9 @@ namespace MeineFinanzen {
 
             foreach (FinContact aContact in mw.liContacte) {                                 // Banken
                 Console.WriteLine("Bank: {0}", aContact.ContactName);
-                DgBanken.bank = new BankÜbersicht();                                         // -BankÜbersicht
-                DgBanken.bank.OCBankKonten = new ObservableCollection<BankKonten>();
+                DgBanken.bank = new BankÜbersicht {
+                    OCBankKonten = new ObservableCollection<BankKonten>()
+                };                                         // -BankÜbersicht
                 DgBanken.banken.Add(DgBanken.bank);
                 DgBanken.bank.SortFeld7 = (anzBanken++ + 300).ToString();                    // aContact.BankCode;   50010517
                 DgBanken.bank.BankName7 = aContact.ContactName;                              // +BankName7         
@@ -1058,7 +1060,7 @@ namespace MeineFinanzen {
                     Console.WriteLine("   Konto: {0,-30} {1,-16} {2,-20}", aAcctInfo.AcctName, aAcctInfo.AcctTypeClass, aAcctInfo.AcctNo);
                     if (aAcctInfo.AcctTypeClass.ToString().Contains("Portfolio")) {
                         _b.Betrag = Convert.ToDouble(_depHolen.DepotHolen_ausführen()); // ===> Wertpapiere   Bank ---> dtWertpapSubsembly  <<Subsembly.FinTS>>                               
-                        WertpapSubsemblyToPortFol();                    // dtWertpapSubsembly ---> dtPortFol.
+                        // WertpapSubsemblyToPortFol();                    // dtWertpapSubsembly == NULL!!! --> dtPortFol.
                         mw._tabwertpapiere.ErstelleDgBankenWertpapiere(mw);     // dtPortFol          ---> (CollWertpapiere)_wertpapiere     // aus dtWertpapSubsembly                   
                         if (aAcctInfo.AcctName == "Wertpapierdepot") {
                             if (DgBanken._wertpapiere.Count > 0) {
@@ -1085,11 +1087,12 @@ namespace MeineFinanzen {
                         //Console.WriteLine("nix von Beiden!!!!" + aAcctInfo.AcctTypeClass.ToString());
                         _b.Betrag = 0;
                     }
-                    DgBanken.konto = new BankKonten();
-                    DgBanken.konto.KontoName8 = aAcctInfo.AcctName;                          // +KontoName 8                      
-                    DgBanken.konto.KontoArt8 = aAcctInfo.AcctTypeClass.ToString();           // +KontoArt8                    
-                    DgBanken.konto.KontoNr8 = aAcctInfo.AcctNo;                              // +KontoNr8                     
-                    DgBanken.konto.KontoValue8 = _b.Betrag;                                  // +KontoValue8                                  
+                    DgBanken.konto = new BankKonten {
+                        KontoName8 = aAcctInfo.AcctName,                          // +KontoName 8                      
+                        KontoArt8 = aAcctInfo.AcctTypeClass.ToString(),           // +KontoArt8                    
+                        KontoNr8 = aAcctInfo.AcctNo,                              // +KontoNr8                     
+                        KontoValue8 = _b.Betrag                                   // +KontoValue8                                  
+                    };
 
                     DateTime dt = File.GetLastWriteTime(filenameBÜD);// +KontoDatum8
                     DgBanken.konto.KontoDatum8 = dt;
@@ -1110,8 +1113,9 @@ namespace MeineFinanzen {
             }   //  loop Contact = Bank
             ConWrLi("---- -26- In KontenSynchronisierenSubsembly");
 
-            DgBanken.bank = new BankÜbersicht();                                             // -BankÜbersicht
-            DgBanken.bank.OCBankKonten = new ObservableCollection<BankKonten>();
+            DgBanken.bank = new BankÜbersicht {
+                OCBankKonten = new ObservableCollection<BankKonten>()
+            };                                             // -BankÜbersicht
             DgBanken.banken.Add(DgBanken.bank);
             DgBanken.bank.SortFeld7 = "888";
             DgBanken.bank.Bearbeitungsart7 = "bearb...";
@@ -1122,8 +1126,9 @@ namespace MeineFinanzen {
             // @"C :\U sers\Public\Pictures\index.png";                 
             DgBanken.bank.BankValue7 = _b.SummeGeschlFonds();                                // +BankValue7
 
-            DgBanken.bank = new BankÜbersicht();                                             // -BankÜbersicht
-            DgBanken.bank.OCBankKonten = new ObservableCollection<BankKonten>();
+            DgBanken.bank = new BankÜbersicht {
+                OCBankKonten = new ObservableCollection<BankKonten>()
+            };                                             // -BankÜbersicht
             DgBanken.banken.Add(DgBanken.bank);
             DgBanken.bank.SortFeld7 = "889";
             DgBanken.bank.Bearbeitungsart7 = "bearb...";

@@ -1,12 +1,9 @@
-﻿<!-- 01.12.2016    -View-   -->
+﻿<!-- 01.12.2018    -View-   -->
 <Window x:Class="MeineFinanzen.View.EinstellungenView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MeineFinanzen.View"
-        xmlns:model="clr-namespace:MeineFinanzen.Model"
-        xmlns:viewmodel="clr-namespace:MeineFinanzen.ViewModel"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"        
         mc:Ignorable="d"
         Title="Einstellungen"
         Height="800"

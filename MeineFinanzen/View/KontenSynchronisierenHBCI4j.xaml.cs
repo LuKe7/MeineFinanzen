@@ -1,4 +1,4 @@
-﻿// 08.07.2018 KontenSynchronisierenHBCI4j.cs
+﻿// 27.11.2018 KontenSynchronisierenHBCI4j.cs
 // In 'KursDaten\Depot-aus-hbci4j' werden alte Sätze NICHT gelöscht!!!
 // Daher Datum Heute abfragen!!
 // C:\Users\LuKe\Downloads\hbci4java-master(2)\hbci4java-master
@@ -25,15 +25,22 @@ using System.Windows.Threading;
 using System.Threading;
 namespace MeineFinanzen.View {
     public partial class KontenSynchronisierenHBCI4j : Window {
+        //bool isApplicationActive;
         public WertpapHBCI4j wp4j = new WertpapHBCI4j();
         public List<WertpapHBCI4j> wp4js = new List<WertpapHBCI4j>();
         //internal DgBanken _b;
         public static DepotHolen _depHolen;
         public KontenSynchronisierenHBCI4j() {
             InitializeComponent();
+            PrintText("---- KontenSynchronisierenHBCI4j()");
+            ConWrLi("---- KontenSynchronisierenHBCI4j()");
+            DataContext = this;
         }
-        private void Window_Loaded(Object sender, RoutedEventArgs e) {
-            TxtWrLi("---- KontenSynchronisierenHBCI4j Window_Loaded()");
+        private void Window_Loaded(object sender, RoutedEventArgs e) {
+            Ausführen();
+        }
+        public void Ausführen() {
+            PrintText("---- KontenSynchronisierenHBCI4j Window_Loaded()");
             ConWrLi("---- -50- KontenSynchronisierenHBCI4j Window_Loaded()");
             /* Verzeichnis: @"\KursDaten\Depot-aus-hbci4j\"                                                                      
             * --funktion--            -was-           -wohin-                                                                                
@@ -47,10 +54,10 @@ namespace MeineFinanzen.View {
             //props.Clear();
             // ---- Mit HBCI4j mit Java DepotAbrufTest.bat
             // -----    nach Wertpap_ISIN.xml           
-            TxtWrLi("Start HBCI");
+            PrintText("Start HBCI");
             ConWrLi("---- -51-Start HBCI");
             foreach (var ban in DgBanken.banken) {
-                if (String.Compare(ban.SortFeld7, "888", StringComparison.OrdinalIgnoreCase) >= 0)
+                if (string.Compare(ban.SortFeld7, "888", StringComparison.OrdinalIgnoreCase) >= 0)
                     continue;
                 // ---- props füllen.
                 DirectoryInfo ParentDirectory = new DirectoryInfo(propDir);
@@ -64,32 +71,7 @@ namespace MeineFinanzen.View {
                     if (fi.Length < 500 || fi.Length > 1600)
                         continue;
                     StreamReader file = new StreamReader(fi.FullName);
-                    ConWrLi("---- -51-properties gefunden?: " + fi.FullName);
-                    //Console.WriteLine("properties gefunden?: {0}", file);
-                    /*  # Angepasste Version von AnalyzeReportOfTransactions                     
-                     *  # Kurzanleitung:
-                        # 1. .properties-Datei erstellen mit folgendem Inhalt:
-                        #
-                        # -- Beginn
-                        client.passport.default=PinTan
-                        default.hbciversion=300
-                        log.loglevel.default=2
-                        
-                        client.passport.PinTan.filename=/Users/LuKe/hbci4j-core/hbci4j-core-3.0.10/hbci-ING-DiBa.passport
-                        #                          /home/jonas/java/hbci/pintan_hbci4java.test
-
-                        # client.passport.PinTan.certfile=hbcicerts.bin
-                        client.passport.PinTan.checkcert=1
-                        # client.passport.PinTan.proxy=proxy.intern.domain.com:3128
-                        client.passport.PinTan.init=1
-                        # --Ende
-
-                        # Anzupassen ist nur client.passport.PinTan.filename
-                        # Diese Datei muss nicht existieren, sondern wird beim ersten Start angelegt. Dort fragt HBCI4Java dann auch 
-                        # automatisch die ganzen Informationen zur Verbindung ab (BLZ, Benutzername, usw.)
-
-                        # 2. Unten im Source Code "/home/jonas/java/hbci/jw.hbci4java.properties" durch den Pfad zu dieser .properties-Datei ersetzen
-                        public final class DepotAbrufTest */
+                    ConWrLi("---- -51-properties suchen: " + fi.FullName);                   
                     while ((line = file.ReadLine()) != null) {
                         if (line.Contains("client.passport.default=")) {    // C:\Users\LuKe\hbci4j-core\hbci4j-core-3.0.10\hbci-ING-DiBa.properties
                             string strPfad = fi.FullName.Substring(2);
@@ -102,9 +84,8 @@ namespace MeineFinanzen.View {
                             // ---- Java-Pgm schreibt nach datenDir.
                             //string argumentText = string.Format(@"{0}", propDir);   //, ausgabeDir);
                             Directory.SetCurrentDirectory(GlobalRef.g_Ein.strEclipseHbci4jClasses);
-                            TxtWrLi("HBCI läuft");
-                            ConWrLi("---- -51-HBCI läuft");
-                            DoEvents();
+                            PrintText("---- - 51 - Vor process2.Start() HBCI Bank: " + ban.BankName7);
+                            ConWrLi("---- -51-Vor process2.Start() HBCI Bank: " + ban.BankName7);
                             Process process2 = new Process();
                             process2.StartInfo.FileName = GlobalRef.g_Ein.myDepotPfad + @"\DepotAbrufTest.bat";
                             process2.StartInfo.Arguments = strPfad + " " + datenDir;
@@ -113,24 +94,26 @@ namespace MeineFinanzen.View {
                             process2.StartInfo.CreateNoWindow = true;
                             DoEvents();
                             process2.Start();
-                            DoEvents();
-                            string strMeldung = process2.StandardOutput.ReadToEnd();
-                            // NOCH strMeldung untersuchen ...
-                            ConWrLi("---- -51- " + strMeldung);
+                            string strMeldung = process2.StandardOutput.ReadToEnd();    // Lange Wartezeit. NOCH strMeldung untersuchen ...                       
+                            PrintText("---- - 51 - Vor process2.WaitForExit()");
+                            ConWrLi("---- -51-Vor process2.WaitForExit()");
                             process2.WaitForExit();
+                            PrintText("---- - 51 - Nach process2.WaitForExit()");
+                            ConWrLi("---- -51-Nach process2.WaitForExit()");
                         }
-                    }   // Zeile in .properties
+                    }   // while Zeilen file
                     file.Close();
-                }   // foreach .properties
-            }   // foreach banken
-            ConWrLi("---- -51- nach hbci4j");
-            TxtWrLi("Update HBCI");
+                }   // foreach fi in fis
+            }   // foreach ban in DGBanken.banken
+            ConWrLi("---- -51- nach foreach ban in DGBanken.banken");
+            PrintText("---- -51- nach foreach ban in DGBanken.banken");
             // ---- In List WertpapHBCI4j importieren
             DirectoryInfo ParentDirectory2 = new DirectoryInfo(datenDir);
             FileInfo[] fis2 = ParentDirectory2.GetFiles();
+            ConWrLi("----------- Nur anzeigen " + fis2[0].DirectoryName + " ----------");
             // s.u. DataSet dsHier = new DataSet();
             wp4js.Clear();
-            foreach (FileInfo fi in fis2) {
+            foreach (FileInfo fi in fis2) { // D:\MeineFinanzen\MyDepot\KursDaten\Depot-aus-hbci4j\DepotUmsatz_700617681.xml
                 string strExt = fi.Extension;
                 string strName = fi.Name;
                 string strDatum = fi.LastWriteTime.ToShortDateString(); // 08.07.2018
@@ -139,30 +122,31 @@ namespace MeineFinanzen.View {
                     continue;
                 if ((strDatum != strHeute))
                     continue;
-                Console.Write("{0,-80} ", fi.FullName);
+                //Console.Write("{0,-80} ", fi.FullName);
                 wp4j = null;
                 GlobalRef.g_WPHBCI.DeserializeReadWertpapHBCI4j(fi.FullName, out wp4j);
                 // wird nicht gebraucht: dsHier.ReadXml(fi.FullName, XmlReadMode.Auto);  
                 //D:\MeineFinanzen\MyDepot\KursDaten\Depot-aus-hbci4j\Wertpapier_DE0006791809.xml KANAM GRUNDINVEST FONDS INHABER-ANTEILE  DE0006791809          13,37    06.07.18 20:37:34
                 //D:\MeineFinanzen\MyDepot\KursDaten\Depot-aus-hbci4j\Wertpapier_DE0007483612.xml DEKA-IMMOBILIENGLOBAL INHABER-ANTEILE  DE0007483612          55,03    06.07.18 20:37:34
-                Console.WriteLine("{0,-62} {1,-12} {2,10} {3,18:dd/MM/yy H:mm:ss}", wp4j.Name, wp4j.ISIN, wp4j.Kurs, wp4j.KursZeit);
+                string strForm = string.Format("{0,-62} {1,-12} {2,10} {3,18:dd/MM/yy H:mm:ss} KuWä:{4} DeWä:{5}", wp4j.Name, wp4j.ISIN, wp4j.Kurs, wp4j.KursZeit, wp4j.KursWaehrung, wp4j.DepotWaehrung);
+                ConWrLi(strForm);
+                PrintText(strForm);
                 wp4js.Add(wp4j);
             }
             WertpapHBCI4jToPortFol();
-            TxtWrLi("hbci fertig");
+            PrintText("hbci fertig");
         }
         public bool WertpapHBCI4jToPortFol() {  // Update von List WertpapHBCI4j wp4js nach dtPortFol.          
             if (wp4js.Count == 0)
                 return true;
             //DataView dvWertpapiereGesamt = new DataView(DataSetAdmin.dtWertpapSubsembly, "", "ISIN", DataViewRowState.CurrentRows);
-
             DataTable dtt2 = new DataTable();
             DataSetAdmin.dvPortFol.Sort = "WPISIN";
             DataSetAdmin.dtPortFol.DefaultView.Sort = "WPISIN ASC";
             dtt2 = DataSetAdmin.dtPortFol.DefaultView.ToTable();
             DataSetAdmin.dtPortFol = dtt2;
-            Single quantity = -1;       // Anzahl
-            Single wpanzahl = -1;
+            float quantity = -1;       // Anzahl
+            float wpanzahl = -1;
             string wpname = "";
             string wpisin = "";
             string HoldingCurrency = ""; // EUR
@@ -183,6 +167,7 @@ namespace MeineFinanzen.View {
                         l = 8;
                     newRow["WPKurz"] = HBCI4j.Name.Substring(0, l);
                     newRow["WPAktWert"] = HBCI4j.DepotWert;
+                    newRow["WPStand"] = DateTime.Now;
                     DataSetAdmin.dtPortFol.Rows.Add(newRow);
                 }
             }
@@ -221,20 +206,21 @@ namespace MeineFinanzen.View {
                 if (wpanzahl != quantity) {
                     //Debug.WriteLine("w:{0, -27} {1, -12} {2, -5} {3, -4}", wpname, wpisin, wpanzahl, wpges);
                     //Debug.WriteLine("g:{0, -27} {1, -12} {2, -5} {3, -4}", securityName, ISIN, quantity, wpges);
-                    MessageBox.Show("WPAnzahl (" + wpname + ") wird übernommen! Alt: " + wpanzahl + " Neu: " + quantity);
+                    MessageBox.Show("NEU:  WPAnzahl (" + wpname + ") wird übernommen! Alt: " + wpanzahl + " Neu: " + quantity);
                     rowPortFol["WPAnzahl"] = quantity;
                 }
-                if (HBCI4j.KursWaehrung == "")
+                if (HBCI4j.KursWaehrung == string.Empty)
                     HBCI4j.KursWaehrung = "EUR";
-                if (HBCI4j.KursWaehrung == "USD") {
-                    //Price = _mw.USDtoEuro(Price);
-                    kurs = wpkaufsumme / quantity;      // NOCH
+                if (HBCI4j.KursWaehrung == "USD") {                 
+                    kurs = GlobalRef.g_mw.USDtoEuro((float)HBCI4j.Kurs); // 51.5064 = 55.04      83.41 = 
+                    string strForm = string.Format("WertpapHBCI4jToPortFol() HBCI4j.KursWaehrung == 'USD' {0} = {1} / {2}", kurs, kaufsumme, quantity);
+                    ConWrLi(strForm);
                 } else if (HBCI4j.KursWaehrung == "EUR") { } else if (HBCI4j.KursWaehrung == "%") { } else {
-                    MessageBox.Show("Update_Kaufdatum_KtoKurs Fehler: KursWaehrung: " + HBCI4j.KursWaehrung);
+                    MessageBox.Show("KontenSynchronisierenHBCI4j() WertpapHBCI4jToPortFol() Fehler: KursWaehrung: " + HBCI4j.KursWaehrung);
                     continue;
                 }
-                if (wpkurs != kurs) {       // NOCH prüfen +- 30%
-                    //MessageBox.Show("WPKurs (" + wpname + ") wird übernommen! Alt: " + wpkurs + " Neu: " + kurs);
+                if (wpkurs != kurs) {       // NOCH prüfen +- 10%
+                    ConWrLi("WPKurs (" + wpname + ") wird übernommen! Alt: " + wpkurs + " Neu: " + kurs);
                     rowPortFol["WPKurs"] = kurs;
                 }
                 DateTime stand = HBCI4j.KursZeit;
@@ -261,22 +247,24 @@ namespace MeineFinanzen.View {
         public void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
         }
-        private void CloseWindow(Object sender, System.ComponentModel.CancelEventArgs e) { }
-        void TxtWrLi(string str) {
-            //txbHBCI.Text += Environment.NewLine + str;
-            try {
-                //string str2 = string.Format("{0,-50} {1}", str, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
-                txbHBCI.AppendText(Environment.NewLine + str);
-                txbHBCI.ScrollToEnd();
-                txbHBCI.InvalidateVisual();
-                DoEvents();
-            } catch (Exception ex) {
-                MessageBox.Show("Fehler TxtWrLi()" + ex);
-            }
+        private void CloseWindow(object sender, System.ComponentModel.CancelEventArgs e) { }
+        void PrintText(string str) {
+            txbHBCI.AppendText(Environment.NewLine + str);
+            txbHBCI.ScrollToEnd();
+            txbHBCI.InvalidateVisual();
+            DoEvents();
         }
         protected void DoEvents() {
             if (Application.Current != null)
                 Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new ThreadStart(delegate { }));
+        }       
+        private void App_Deactivated(object sender, EventArgs e) {
+            ConWrLi("---- --App_Deactivated()");
+            //isApplicationActive = false;
+        }
+        private void App_Activated(object sender, EventArgs e) {
+            //isApplicationActive = true;
+            ConWrLi("---- --App_Activated()");
         }
     }
 }

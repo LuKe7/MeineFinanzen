@@ -1,8 +1,8 @@
 ﻿// 27.10.2017 UmsätzeHolen.cs
 // Lade .dtKontoumsätze aus g_Ein.myDepotPfad + \L og\Umsätze-" + sKtoNr + .csv Daten
 // 27.10.2017 Orner angepasst, Notebook.
-using System.Data;
 using DataSetAdminNS;
+using System.Data;
 namespace MeineFinanzen.Helpers {
     public class UmsätzeHolen {
         public Model.CollKontoumsätze _kontoumsätze = null;

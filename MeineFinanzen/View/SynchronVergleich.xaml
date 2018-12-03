@@ -15,7 +15,6 @@
         Loaded="Window_Loaded"
         Closing="Window_Closing">
     <Window.Resources>
-        <!-- <view:CompleteConverterSynchroVergl x:Key="completeConverterSynchroVergl" /> -->
         <model:SynchroVs x:Key="MyDataSource" />
         <CollectionViewSource x:Key="cvsSynchro"
                               Source="{StaticResource MyDataSource}"
@@ -68,34 +67,16 @@
         <view:IconPathConverter x:Key="iconPathConverter" />
         <!-- -->
         <view:SignedConvert2 x:Key="SignedConvert2" />
-        <!--
-        <Style x:Key="MyDataGridCell"
-               TargetType="DataGridCell"
-               BasedOn="{StaticResource {x:Type DataGridCell}}">
-            <Setter Property="Background"
-                    Value="White" />
-            <Setter Property="VerticalContentAlignment"
-                    Value="Center" />
-            <Style.Triggers>
-                <Trigger Property="IsSelected"
-                         Value="True">
-                    <Setter Property="Background"
-                            Value="Red" />
-                    <Setter Property="Foreground"
-                            Value="White" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        -->
     </Window.Resources>
     <Grid x:Name="Grid1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30*" />
-            <ColumnDefinition Width="16*" />
+            <ColumnDefinition Width="10*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
-            <RowDefinition Height="10*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="20*" />
         </Grid.RowDefinitions>
         <Label Content="---- Daten der Synchronisation vergleichen ----"
                Grid.Row="0"
@@ -104,25 +85,32 @@
                FontWeight="Bold"
                FontStyle="Italic" />
         <StackPanel x:Name="StackButtons"
-                    Grid.Row="0"
-                    Grid.Column="1"
+                    Grid.Row="1"
+                    Grid.Column="0"
                     VerticalAlignment="Top"
                     Orientation="Horizontal">
             <Button Content="Group"
+                    Width="100"
                     Click="GroupButton_Click" />
             <Button Content="UnGroup"
+                    Width="100"
                     Click="UngroupButton_Click"
                     Margin="10,0,0,0" />
             <Button Content="Anzeige PreisDifferenzen toggle"
+                    Width="200"
                     Click="BtPreisDifferenzen_Click"
                     Margin="10,0,0,0" />
-            <Button Content="Test Datagrid auslesen"
+            <!-- <Button Content="Test Datagrid auslesen"
                     Click="BtnAuslesen_Click"
-                    Margin="10,0,0,0" />
+                    Margin="10,0,0,0" />  -->
+            <Label Content="Kursdifferenz ab % anzeigen: "                                
+                   HorizontalContentAlignment="Center" />
+            <TextBlock Name="tbErrorMessage"
+                       Text="{Binding Proz}" />
         </StackPanel>
         <DataGrid  x:Name="dgSynchroVergleich"
                    Grid.Column="0"
-                   Grid.Row="1"
+                   Grid.Row="2"
                    Grid.ColumnSpan="2"
                    Language="DE-de"
                    ScrollViewer.CanContentScroll="True"
@@ -220,6 +208,11 @@
                             <Setter Property="Background"
                                     Value="DarkTurquoise" />
                         </DataTrigger>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter Property="Background"
+                                    Value="Green" />
+                        </Trigger>
                     </Style.Triggers>
                 </Style>
             </DataGrid.RowStyle>
@@ -260,10 +253,8 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Kurs1"
-                                    Width="SizeToCells"
-                                    MinWidth="150"
-                                    Binding="{Binding WPVKurs}">
+                <DataGridTextColumn Header="Kurs"
+                                    Binding="{Binding WPVKurs, StringFormat=\{0:#\,##0.00 \}}">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}">
                             <Setter Property="TextBlock.Background"
@@ -271,15 +262,6 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTemplateColumn Header="Kurs2">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding WPVKurs, StringFormat=\{0:#\,##0.00 \}}"
-                                       Foreground="{Binding WPVKurs, ConverterParameter=WPVKurs, Converter={StaticResource SignedConvert7}}"
-                                       HorizontalAlignment="Right" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="AktWert">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -315,12 +297,5 @@
                                     Binding="{Binding WPVSort}" />
             </DataGrid.Columns>
         </DataGrid>
-        <TextBox x:Name="txtUnten"
-                 Grid.Column="1"
-                 Grid.Row="1"
-                 Grid.ColumnSpan="2"
-                 Text="txtUnten"
-                 VerticalScrollBarVisibility="Auto"
-                 HorizontalScrollBarVisibility="Auto" />
     </Grid>
 </Window>

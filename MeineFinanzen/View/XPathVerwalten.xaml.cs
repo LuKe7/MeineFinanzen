@@ -1,11 +1,8 @@
-﻿// 23.03.2018 XPathVerwalten.xaml.cs
+﻿// 03.12.2018 XPathVerwalten.xaml.cs
 // DataGrids aufbauen.
-// 
 using MeineFinanzen.Helpers;
-using MeineFinanzen.Model;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;

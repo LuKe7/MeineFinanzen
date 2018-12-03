@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:MeineFinanzen"
              StartupUri="View/HauptFenster.xaml">
     <Application.Resources>
-        <!--
+        
         <LinearGradientBrush x:Key="GrayBlueGradientBrush"
                              StartPoint="0,0"
                              EndPoint="1,1">
@@ -92,6 +92,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        -->
+        
     </Application.Resources>
 </Application>

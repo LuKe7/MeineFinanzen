@@ -1,4 +1,4 @@
-﻿// 10.03.2018   -ViewModel-  TabWertpapiere.cs DataGrid 'dgWertpapiere' erstellen.
+﻿// 23.11.2018   -ViewModel-  TabWertpapiere.cs DataGrid 'dgWertpapiere' erstellen.
 // 19.02.2014 Text Zahlungen >= 8
 // public class Wertpapiere : ObservableCollection<Wertpapier>
 // Im folgenden Beispiel werden das Gruppieren, Sortieren und Filtern von Wertpapiere-Daten in einer
@@ -62,8 +62,10 @@ namespace MeineFinanzen.ViewModel {
             ICollectionView cvWertpapiere = CollectionViewSource.GetDefaultView(mw.dgWertpapiere.ItemsSource);
             if (cvWertpapiere != null) {
                 cvWertpapiere.GroupDescriptions.Clear();
-            }            
+            }
+            ConWrLi("---- -TW1- In TabWertpapiere");
             mw.dgWertpapiere.UpdateLayout();
+            ConWrLi("---- -TW2- ");
             typeid = -1;
             FelderLöschen();
             //wpVorher = null;       // NOCH holeVortagesDaten();
@@ -72,6 +74,7 @@ namespace MeineFinanzen.ViewModel {
             DataSetAdmin.dtPortFol.DefaultView.Sort = "WPTypeID ASC";
             dtt2 = DataSetAdmin.dtPortFol.DefaultView.ToTable();
             DataSetAdmin.dtPortFol = dtt2;
+            ConWrLi("---- -TW3- ");
             for (int ir = 0; ir < DataSetAdmin.dtPortFol.Rows.Count; ir++) {
                 if (typeid == -1)
                     typeid = (int)DataSetAdmin.dtPortFol.Rows[ir]["WPTypeID"];
@@ -109,7 +112,7 @@ namespace MeineFinanzen.ViewModel {
                 suAktuWert = anzahl * aktKurs;
                 suKaufWert = (double)DataSetAdmin.dtPortFol.Rows[ir]["WPKaufSumme"];
                 suErtrag = suAktuWert + suZahlungenAlle - suKaufWert;
-                Single heute = 0;
+                float heute = 0;
                 try {
                     heute = (Single)DataSetAdmin.dtPortFol.Rows[ir]["WPProzentAenderung"];
                 } catch (Exception) {
@@ -136,10 +139,10 @@ namespace MeineFinanzen.ViewModel {
                 DateTime kursZeit = DateTime.Today;
                 DateTime kaufDatum = Convert.ToDateTime("01.01.1980");
                 int depotID = 0;
-                Single zinssatz = 0;
+                float zinssatz = 0;
                 DateTime abDatum = Convert.ToDateTime("01.01.1980");
                 DateTime bisDatum = Convert.ToDateTime("01.01.1980");
-                Single sharpe = 0;
+                float sharpe = 0;
                 string url = "";
                 if (typeid == GeldKto) {
                     kursZeit = (DateTime)DataSetAdmin.dtPortFol.Rows[ir]["WPStand"];
@@ -156,12 +159,12 @@ namespace MeineFinanzen.ViewModel {
                         aktKurs = Convert.ToSingle(DataSetAdmin.dtPortFol.Rows[ir]["WPKurs"]);
                         kaufSumme = (double)DataSetAdmin.dtPortFol.Rows[ir]["WPKaufsumme"];
                         depotID = (int)DataSetAdmin.dtPortFol.Rows[ir]["WPDepotID"];
-                        zinssatz = (Single)DataSetAdmin.dtPortFol.Rows[ir]["WPZinsSatz"];
+                        zinssatz = (float)DataSetAdmin.dtPortFol.Rows[ir]["WPZinsSatz"];
                         abDatum = (DateTime)DataSetAdmin.dtPortFol.Rows[ir]["WPAbDatum"];
                         bisDatum = (DateTime)DataSetAdmin.dtPortFol.Rows[ir]["WPBisDatum"];
                         //if (iSIN == "DE0008490962")
                         //    sharpe = (Single)DataSetAdmin.dtPortFol.Rows[ir]["WPSharpe"];
-                        sharpe = (Single)DataSetAdmin.dtPortFol.Rows[ir]["WPSharpe"];
+                        sharpe = (float)DataSetAdmin.dtPortFol.Rows[ir]["WPSharpe"];
                         url = (string)DataSetAdmin.dtPortFol.Rows[ir]["WPUrlText"];
                     } catch (Exception ex) {
                         MessageBox.Show("ErstelleDgBankenWertpapiere() Fehler: " + ex);
@@ -185,6 +188,9 @@ namespace MeineFinanzen.ViewModel {
                             suErtrag = suErtragAktWert;
                     }
                 }
+                string strGrAnz = string.Empty;
+                if (typeid == 80) 
+                    strGrAnz = "Nicht anzeigen";
                 DgBanken._wertpapiere.Add(new Wertpapier {
                     Anzahl = anzahl,
                     Name = name,
@@ -210,7 +216,7 @@ namespace MeineFinanzen.ViewModel {
                     BisDatum = bisDatum,
                     Sharpe = sharpe,
                     URL = url,
-                    isSumme = false
+                    IsSumme = false
                 });
                 suZahlungen2 += suZahlungenAlle;
                 if (typeid != GeldKto)
@@ -235,7 +241,8 @@ namespace MeineFinanzen.ViewModel {
                 su0101Wert = 0;
                 suErtrag = 0;
             }   // ir ... dtPortFol.Rows.Count   
-            // Ende Wertpapiere loop                                                                     
+                // Ende Wertpapiere loop    
+            ConWrLi("---- -TW4- ");
             AnzeigenSummen2(aKName);
             aKName = "EndSummen";
             DgBanken._wertpapiere.Add(new Wertpapier {
@@ -263,7 +270,7 @@ namespace MeineFinanzen.ViewModel {
                 BisDatum = keinDatum,
                 Sharpe = 0,
                 URL = "",
-                isSumme = true
+                IsSumme = true
             });
 
             double re3 = 0.00;
@@ -295,13 +302,13 @@ namespace MeineFinanzen.ViewModel {
                 BisDatum = keinDatum,
                 Sharpe = 0,
                 URL = "",
-                isSumme = true
+                IsSumme = true
             };
             DgBanken._wertpapiere.Add(wp);
             CollectionViewSource.GetDefaultView(mw.dgWertpapiere.ItemsSource).Refresh();
         }
-        internal void AnzeigenSummen2(string xname) {
-            name = "Summe " + aKName;
+        internal void AnzeigenSummen2(string xname) {           
+            name = "Summe " + aKName;           
             suAktuWert3 += suAktuWert2;
             suZahlungen3 += suZahlungen2;
             suKaufWert3 += suKaufWert2;
@@ -343,7 +350,7 @@ namespace MeineFinanzen.ViewModel {
                 BisDatum = keinDatum,
                 Sharpe = 0,
                 URL = "",
-                isSumme = true
+                IsSumme = true
             });
             suErtrag2 = 0;
             suAktuWert2 = 0;

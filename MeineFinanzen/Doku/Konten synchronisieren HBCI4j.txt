@@ -1,0 +1,28 @@
+﻿KontenSynchronisierenHBCI4j_Click
+	Mit java HBCI4j und DepotAbrufTest.bat
+    nach Wertpap_ISIN.xml erstellen.  
+	Aus DgBanken.banken die Properties (Eigenschaften) der Banken holen:
+		Aus PropDir:   C:\Users\LuKe/hbci4j-core/hbci4j-core-3.0.10/
+			Dateien mit Endung .properties,	fi.Length < 500 || fi.Length > 1600
+				Datei durchsuchen nach 'client.passport.default='
+				ING überlesen !!!!!!!!!
+				SetCurrentDirectory setzen: C:\Users\LuKe\eclipse-workspace\hbci4java-master.zip_expanded\hbci4java-master\target\classes
+				Meldung 'HBCI läuft'.
+				Process starten: D:\MeineFinanzen\MyDepot\DepotAbrufTest.bat:
+					@echo off
+					color 9F
+					ECHO argument-0 %0
+					ECHO argument-1 %1
+					ECHO argument-2 %2
+					rem pause obok
+					cd C:\Users\LuKe\eclipse-workspace\hbci4java-master.zip_expanded\hbci4java-master\target\classes
+					java org/kapott/hbci/tools/DepotAbrufTest %1 %2
+					rem cd C:\Users\LuKe
+					echo Meldung aus 'D:/MeineFinanzen/MyDepot/DepotAbrufTest.bat:'    Ich bin fertig!!!!!!!!!!!!!!!!!!!
+					rem pause fertig
+				Nach DatenDir: D:\MeineFinanzen\MyDepot\KursDaten\Depot-aus-hbci4j\
+			Aus DatenDir lesen. StartWith Wertpapier_
+			dtPortFol updaten.
+				Wenn neu ADD: WPAnzahl, WPKurs, WPStand, WPAktWert, WPName, WPisin, WPKurz.
+			    Wenn update : WPAnzahl, WPKurs, WPStand, WPAktWert, WPKursVorher, WPStandVorher, WPKaufsumme, WPBisDatum.  
+

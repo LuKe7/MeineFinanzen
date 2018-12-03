@@ -1,15 +1,17 @@
-﻿// 13.11.2018   -View-  SynchronVergleich.cs 
+﻿// 21.11.2018   -View-  SynchronVergleich.cs 
+// 19.11.2018 Diffferenz auf +- 1% festgelegt.
 // Vergleich der Synchronisationsdaten von:
 //  1. Subsembly
 //  2. HBCI4j
 //  3. Internet (Scraping)
+using MeineFinanzen.Helpers;
+using MeineFinanzen.Model;
+using MeineFinanzen.ViewModel;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -17,36 +19,34 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xml.Serialization;
-using MeineFinanzen.Helpers;
-using MeineFinanzen.Model;
 namespace MeineFinanzen.View {
     public partial class SynchronVergleich : Window {
+        public float Proz { get; set; }    // = 1.00F;
         public SynchroVs _synchrovs = null;
+        public SynchroVs _synchrovsNurPreisDiff = null;
         XmlSerializer ser = new XmlSerializer(typeof(CollWertpapiere));
         private delegate void EmptyDelegate();
         public ICollectionView View;
-        private bool _isGroup = true;
-        private bool NurPreisDifferenzen = false;
+        private bool NurPreisDifferenzen = true;
         public SynchronVergleich() {
+            Proz = 1.00F;
             InitializeComponent();
             DataContext = this;
-            _synchrovs = (SynchroVs)Resources["MyDataSource"];  // new SynchroVs();         
+            _synchrovs = (SynchroVs)Resources["MyDataSource"];  // new SynchroVs();      
+            _synchrovsNurPreisDiff = new SynchroVs();
             _synchrovs.Changed += SynchroVergleichChangedHandler;
             ConWrLi("start -Statustext-           ");
         }
-        private void Window_Loaded(object sender, RoutedEventArgs e) {
-            txtUnten.Clear();
-            txtUnten.FontSize = 10;
-            txtUnten.FontFamily = new FontFamily("Courier New, Verdana");
-            PrintTxtUnten("Start -SynchronVergleich-");
+        private void Window_Loaded(object sender, RoutedEventArgs e) {            
             HoleDatenGesamt(sender);
         }
         private void HoleDatenGesamt(object sender) {
             _synchrovs.Clear();
+            _synchrovsNurPreisDiff.Clear();
             HoleDaten("PortFol_", "1", "Subsembly");
             HoleDaten("PortFolHBCI_", "2", "HBCI4j");
             HoleDaten("PortFolInt_", "3", "Internet");
-            _synchrovs.Sort(x => x.WPVSort, false);
+            _synchrovs.Sort(x => x.WPVSort, true);
             SynchroV sv1 = null;
             SynchroV sv2 = null;
             SynchroV sv3 = null;
@@ -69,19 +69,21 @@ namespace MeineFinanzen.View {
                     float p1 = (sv1.WPVKurs - sv2.WPVKurs) * 100 / sv2.WPVKurs;
                     float p2 = (sv2.WPVKurs - sv3.WPVKurs) * 100 / sv3.WPVKurs;
                     float p3 = (sv1.WPVKurs - sv3.WPVKurs) * 100 / sv3.WPVKurs;
-                    if (p1 > 2 || p1 < -2) {
+                    if (p1 > Proz || p1 < -Proz) {
                         sv1.WPVAnzeigen = sv2.WPVAnzeigen = sv3.WPVAnzeigen = true;
                         sv1.WPVForegroundColor = sv2.WPVForegroundColor = sv3.WPVForegroundColor = Brushes.Red;
-                    } else if (p3 > 2 || p3 < -2) {
+                    } else if (p2 > Proz || p2 < -Proz) {
                         sv1.WPVAnzeigen = sv2.WPVAnzeigen = sv3.WPVAnzeigen = true;
                         sv1.WPVForegroundColor = sv2.WPVForegroundColor = sv3.WPVForegroundColor = Brushes.Magenta;
-                    } else if (p2 > 2 || p2 < -2) {
+                    } else if (p3 > Proz || p3 < -Proz) {
                         sv1.WPVAnzeigen = sv2.WPVAnzeigen = sv3.WPVAnzeigen = true;
                         sv1.WPVForegroundColor = sv2.WPVForegroundColor = sv3.WPVForegroundColor = Brushes.Orange;
-                    } else if (p1 == 0) {
-                    } else if (p2 == 0) {
-                    } else if (p3 == 0) {
-                    }                   
+                    }
+                    if ((p1 > Proz || p1 < -Proz) || (p2 > Proz || p2 < -Proz) || (p3 > Proz || p3 < -Proz)) {
+                        _synchrovsNurPreisDiff.Add(sv1);
+                        _synchrovsNurPreisDiff.Add(sv2);
+                        _synchrovsNurPreisDiff.Add(sv3);
+                    }
                     string str = sv1.WPVName;
                     if (str.Length > 30)
                         str = str.Substring(0, 30);
@@ -91,26 +93,23 @@ namespace MeineFinanzen.View {
                     nn++;
                 }
             }
-            ICollectionView cvVergl = CollectionViewSource.GetDefaultView(dgSynchroVergleich.ItemsSource);
-            //cvVergl.Filter = new Predicate<SynchroV>(Contains);
-
-            //cvVergl.Filter += new FilterEventHandler(CollectionViewSourceSynchro_Filter);
-
-            dgSynchroVergleich.ItemsSource = _synchrovs;
-            UngroupButton_Click(sender, new RoutedEventArgs());
+            if (NurPreisDifferenzen)
+                dgSynchroVergleich.ItemsSource = _synchrovsNurPreisDiff;
+            else
+                dgSynchroVergleich.ItemsSource = _synchrovs;
+            GroupButton_Click(sender, new RoutedEventArgs());
             dgSynchroVergleich.Items.Refresh();
         }
         private void HoleDaten(string strFile, string strSort, string strWomit) {
             CollWertpapiere cwp = Wertpapiere_ReadXml(strFile, out DateTime dt);
             foreach (Wertpapier wp in cwp) {
-                if (wp.isSumme)
+                if (wp.IsSumme)
                     continue;
                 Wertpapierklasse typeid = (Wertpapierklasse)wp.Type;
                 if (typeid < Wertpapierklasse.MinWertpap || typeid > Wertpapierklasse.MaxWertpap)
                     continue;
                 if (wp.ISIN.ToString().Length != 12)
                     continue;
-                // Console.WriteLine("{0,-12} {1,-30} {2}", wp.ISIN, wp.Name, wp.Type);
                 _synchrovs.Add(new SynchroV {
                     WPVAnzahl = wp.Anzahl,
                     WPVName = wp.Name,
@@ -152,14 +151,7 @@ namespace MeineFinanzen.View {
         private void Window_Closing(object sender, CancelEventArgs e) { }
         private void ConWrLi(string str1) {
             Console.WriteLine("{0,-50} {1}", str1, DateTime.Now.ToString("yyyy.MM.dd  HH:mm:ss.f"));
-        }
-        private void PrintTxtUnten(string str) {
-            DoEvents();
-            txtUnten.AppendText(Environment.NewLine + str);
-            txtUnten.ScrollToEnd();
-            txtUnten.InvalidateVisual();
-            DoEvents();
-        }
+        }       
         protected void DoEvents() {
             //  if (System.Windows.Application.Current != null)
             //      System.Windows.Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new ThreadStart(delegate { }));
@@ -170,20 +162,23 @@ namespace MeineFinanzen.View {
             //* using System.Windows.Threading; im Header festlegen   
         }
         private void GroupButton_Click(object sender, RoutedEventArgs e) {
-            //e.Handled = true;
             ICollectionView cvVergl = CollectionViewSource.GetDefaultView(dgSynchroVergleich.ItemsSource);
             if (cvVergl != null && cvVergl.CanGroup == true) {
-                _isGroup = true;
                 cvVergl.GroupDescriptions.Clear();
                 cvVergl.GroupDescriptions.Add(new PropertyGroupDescription("WPVName"));
             }
+            //HoleDatenGesamt(sender);
         }
         private void UngroupButton_Click(object sender, RoutedEventArgs e) {
             ICollectionView cvVergl = CollectionViewSource.GetDefaultView(dgSynchroVergleich.ItemsSource);
             if (cvVergl != null && cvVergl.CanGroup == true) {
-                _isGroup = false;
                 cvVergl.GroupDescriptions.Clear();
             }
+            //HoleDatenGesamt(sender);
+        }
+        private void BtPreisDifferenzen_Click(object sender, RoutedEventArgs e) {
+            NurPreisDifferenzen = NurPreisDifferenzen ^ true;
+            HoleDatenGesamt(sender);
         }
         private void CollectionViewSourceSynchro_Filter(object sender, FilterEventArgs e) {
             /* So filtern Sie Elemente in einem DataGrid.
@@ -219,38 +214,24 @@ namespace MeineFinanzen.View {
                 dep = VisualTreeHelper.GetParent(dep);
             row1 = dep as DataGridRow;
             string isi = null;
-            string nam = null;
-            int nro = -1;
             if (row1 != null) {
                 try {
                     isi = ((SynchroV)(row1.Item)).WPVISIN;
-                    nam = ((SynchroV)(row1.Item)).WPVName;
+                    foreach (Wertpapier wp in DgBanken._wertpapiere) {
+                        if (isi != wp.ISIN)
+                            continue;
+                        Process.Start(wp.URL);
+                    }
                 } catch (Exception ex) {
                     MessageBox.Show("gridSynchronVergleich_PreviewMouseDown() Fehler: " + ex);
                     return;
-                }
-                nro = FindRowIndex(row1);
-                if (e.LeftButton == MouseButtonState.Pressed) {
-                    if (_isGroup) {
-                        _isGroup = false;
-                        return;
-                    }
-                    if (row1.DetailsVisibility == Visibility.Collapsed) {
-                        row1.DetailsVisibility = Visibility.Visible;
-                    } else {
-                        row1.DetailsVisibility = Visibility.Collapsed;
-                    }
-                }
+                }               
             }
         }
         private int FindRowIndex(DataGridRow row) {
             DataGrid dataGrid = ItemsControl.ItemsControlFromItemContainer(row) as DataGrid;
             int index = dataGrid.ItemContainerGenerator.IndexFromContainer(row);
             return index;
-        }
-        private void BtPreisDifferenzen_Click(object sender, RoutedEventArgs e) {
-            NurPreisDifferenzen = NurPreisDifferenzen ^ true;
-            HoleDatenGesamt(sender);
         }
         private void Display(Collection<SynchroV> cs) {
             Console.WriteLine();
@@ -278,15 +259,15 @@ namespace MeineFinanzen.View {
                 string sort = ((SynchroV)Row1.Item).WPVRowColor;
                 if (++n == 1) {
                     sv1 = ((SynchroV)Row1.Item);
-           
+
                 } else if (n == 2)
                     sv2 = ((SynchroV)Row1.Item);
                 else if (n == 3) {
                     sv3 = ((SynchroV)Row1.Item);
-                    /* if (sv1.WPVAnzeigen && sv2.WPVAnzeigen && sv3.WPVAnzeigen)
-                        Console.WriteLine("Anzeigen:       Name: {0,-50} FC: {1,8} Sort: {2}", sv1.WPVName, sv1.WPVForegroundColor, sv1.WPVSort + sv2.WPVSort + sv3.WPVSort);
-                    else
-                        Console.WriteLine("Nicht Anzeigen: Name: {0,-50} FC: {1,8} Sort: {2}", sv1.WPVName, sv1.WPVForegroundColor, sv1.WPVSort + sv2.WPVSort + sv3.WPVSort); */
+                    //if (sv1.WPVAnzeigen && sv2.WPVAnzeigen && sv3.WPVAnzeigen)
+                        //Console.WriteLine("Anzeigen:       Name: {0,-50} FC: {1,8} Sort: {2}", sv1.WPVName, sv1.WPVForegroundColor, sv1.WPVSort + sv2.WPVSort + sv3.WPVSort);
+                    //else
+                        //Console.WriteLine("Nicht Anzeigen: Name: {0,-50} FC: {1,8} Sort: {2}", sv1.WPVName, sv1.WPVForegroundColor, sv1.WPVSort + sv2.WPVSort + sv3.WPVSort);
                     n = 0;
                 }
             }

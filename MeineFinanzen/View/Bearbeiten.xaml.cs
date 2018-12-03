@@ -34,7 +34,7 @@ namespace MeineFinanzen.View {
             Top = location.Y;
             _wertpap = (Model.CollWertpapiere)_mw.Resources["wertpapiereXXX"];
             if (_isin == "") {
-                System.Windows.MessageBox.Show("Ein neues Wertpapier wird angelgt. NOCH");
+                MessageBox.Show("Ein neues Wertpapier wird angelgt. NOCH");
                 return;
             }
             Visibility = Visibility.Visible;
@@ -118,7 +118,7 @@ namespace MeineFinanzen.View {
         }
         public Model.Wertpapier FindWP(string isin) {
             foreach (Model.Wertpapier wp in _wertpap) {
-                if (wp.isSumme)
+                if (wp.IsSumme)
                     continue;
                 if (wp.ISIN != isin)
                     continue;

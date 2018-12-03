@@ -1,5 +1,4 @@
-﻿// 02.11.2018   -Model-  CollWertpapiere.cs 
-using MeineFinanzen.Helpers;
+﻿// 23.11.2018   -Model-  CollWertpapiere.cs 
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -142,18 +141,17 @@ namespace MeineFinanzen.Model {
         public int Type { get; set; }
         public string AKKurz { get; set; }
         public string AKName { get; set; }      // 20
-        public Single Zins { get; set; }
+        public float Zins { get; set; }
         public DateTime AbDatum { get; set; }
         public DateTime BisDatum { get; set; }
-        public Single Sharpe {
+        public float Sharpe {
             get { return _sharpe; }
             set {
                 _sharpe = value;
                 RaisePropertyChanged("Sharpe");
             }
         }
-        public bool isSumme { get; set; }      // 25          
-        //public Single WertAm0101 { get; set; }  
+        public bool IsSumme { get; set; }      // 25          
         public event PropertyChangedEventHandler PropertyChanged;
         internal void NotifyPropertyChanged(string propertyName) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

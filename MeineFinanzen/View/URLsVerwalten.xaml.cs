@@ -3,7 +3,7 @@
 // Die Wertpapiere suchen sich ihren Parametersatz selbst. Über Url1 + Url2 !!!!
 // Erstellen dieser Sätze, falls sie nicht vorhanden sind.
 // Ergänzen dieser Sätze manuell.
-// 30.06.2018 Leere URLs NOCH !!!!!!!!!!!!!!!!!!!
+// 30.06.2018 Leere URLs !!!!!!!!!!!!!!!!!!!
 /*  <tblVorgabeInt2 diffgr:id="tblVorgabeInt21" msdata:rowOrder="0" diffgr:hasChanges="inserted">
       <Url1>https://www.finanzen.net/</Url1>
       <Url2>fonds</Url2>
@@ -160,7 +160,7 @@ namespace MeineFinanzen.View {
                 splitUrls = wps.WPVURL.Split('/');
                 bool gef = false;
                 if (splitUrls.Length < 3)
-                    continue;           // NOCH  wp ohne url
+                    continue;           // wp ohne url
                 foreach (UrlVerwalten vg in liVorg) {
                     splitVorg = vg.Url1.Split('/');            // https leer www.finanzen.net leer                      
                     if (splitUrls[2] == splitVorg[2] && splitUrls[3] == vg.Url2) {
@@ -491,7 +491,7 @@ namespace MeineFinanzen.View {
             }
         }
         private void CbBoxanfang_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            System.Windows.Forms.MessageBox.Show("NOCH    cbBoxanfang_SelectionChanged");
+            System.Windows.Forms.MessageBox.Show("cbBoxanfang_SelectionChanged");
         }
         private void CbAusschluss1_Loaded(object sender, RoutedEventArgs e) {
             //cbUrl2.Text = "URL2";
@@ -506,13 +506,13 @@ namespace MeineFinanzen.View {
             }
         }
         private void CbAusschluss1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            System.Windows.Forms.MessageBox.Show("NOCH    cbAusschluss1_SelectionChanged");
+            System.Windows.Forms.MessageBox.Show("cbAusschluss1_SelectionChanged");
         }
         private void CbWert1_Loaded(object sender, RoutedEventArgs e) {
-            //System.Windows.Forms.MessageBox.Show("NOCH    cbWert1_Loaded");
+            //System.Windows.Forms.MessageBox.Show("cbWert1_Loaded");
         }
         private void CbWert1_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            System.Windows.Forms.MessageBox.Show("NOCH    cbWert1_SelectionChanged");
+            System.Windows.Forms.MessageBox.Show("cbWert1_SelectionChanged");
         }
         private void Wb1_Navigating(object sender, WebBrowserNavigatingEventArgs e) { }
         private void DgvUrls_Neu_Click(object sender, RoutedEventArgs e) {
@@ -529,7 +529,7 @@ namespace MeineFinanzen.View {
             //string browser = GetDefaultBrowser();
         }
         private void DgvUrls_bearbeiten_Click(object sender, RoutedEventArgs e) {
-            System.Windows.Forms.MessageBox.Show("NOCH    dgvUrls_bearbeiten_Click");
+            System.Windows.Forms.MessageBox.Show("dgvUrls_bearbeiten_Click");
         }
         private void MyMenuButton_ContextMenu_Closed(object sender, RoutedEventArgs e) {
             //Console.WriteLine("intercepted!!!!");
@@ -539,7 +539,7 @@ namespace MeineFinanzen.View {
             wb1.GoSearch();
         }
         private void _Beenden_Click(object sender, RoutedEventArgs e) {
-            System.Windows.Forms.MessageBox.Show("NOCH    _Beenden_Click");
+            System.Windows.Forms.MessageBox.Show("_Beenden_Click");
         }
         private void SearchButton_Click(object sender, RoutedEventArgs e) {
             wb1.GoSearch();
@@ -561,11 +561,11 @@ namespace MeineFinanzen.View {
                 _elem1 = wb1.Document.GetElementFromPoint(e.ClientMousePosition);
                 // Ruft das an den angegebenen Clientkoordinaten befindliche HTML-Element ab.                            
                 if (_elem1 != null) {
-                    AddTextStr("wb1_Document_Click: " + _elem1.InnerText); 
+                    AddTextStr("wb1_Document_Click: " + _elem1.InnerText);
                     // 145,01EUR
                     // 145,01 < span class="currency-iso">EUR</span>
 
-                      HtmlElementCollection elemColl = null;
+                    HtmlElementCollection elemColl = null;
                     HtmlDocument doc = wb1.Document;
                     if (doc != null)
                         AddTextStr("--- Start ---" + wb1.Document.Url);
@@ -587,12 +587,12 @@ namespace MeineFinanzen.View {
             } // else
         }
         private int SearchSuchbegriff(string url1, string boxanfang, string txtkurse, string txtkurszeit,
-     string txtkursdatum, string txtkurs, ref WertpapSynchroNeu wpsneu) {
+            string txtkursdatum, string txtkurs, ref WertpapSynchroNeu wpsneu) {
             if (wb1.Document == null)
                 return 2;
-            String pattBetrag = @"(\d+)([,])(\d+)(\d+)";                                // 9,99
-            String pattDatum = @"(\d+)(\d+)([.])(\d+)(\d+)([.])(\d+)(\d+)(\d+)(\d+)";   // 99.99.9999
-            String pattZeit = @"(\d+)(\d+)([:])(\d+)(\d+)([:])(\d+)(\d+)";              // 99:99:99
+            string pattBetrag = @"(\d+)([,])(\d+)(\d+)";                                // 9,99
+            string pattDatum = @"(\d+)(\d+)([.])(\d+)(\d+)([.])(\d+)(\d+)(\d+)(\d+)";   // 99.99.9999
+            string pattZeit = @"(\d+)(\d+)([:])(\d+)(\d+)([:])(\d+)(\d+)";              // 99:99:99
             HtmlElementCollection elemColl = null;
             HtmlDocument doc = wb1.Document;
             if (doc != null)
@@ -802,10 +802,10 @@ key.Close();
 return browser;
 }  */
         private void Abmelden_Click(object sender, RoutedEventArgs e) {
-            System.Windows.Forms.MessageBox.Show("NOCH    Abmelden_Click");
+            System.Windows.Forms.MessageBox.Show("Abmelden_Click");
         }
         private void DgvVorgabeInt2_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            System.Windows.Forms.MessageBox.Show("NOCH    dgvVorgabeInt2_SelectionChanged");
+            System.Windows.Forms.MessageBox.Show("dgvVorgabeInt2_SelectionChanged");
         }
         protected void DoEvents() {
             if (System.Windows.Application.Current != null)

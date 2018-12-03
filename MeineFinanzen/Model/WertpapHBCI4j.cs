@@ -1,4 +1,4 @@
-﻿// 06.01.2018   -Model-  WertpapHBCI4j.cs 
+﻿// 26.11.2018   -Model-  WertpapHBCI4j.cs 
 using System;
 using System.IO;
 using System.Reflection;
@@ -19,7 +19,7 @@ namespace MeineFinanzen.Model {
         public string DepotWaehrung { get; set; }
         public string EinstandsPreis { get; set; }
         public string EinstandsPreisWaehrung { get; set; }
-        public DateTime KaufDatum { get; set; }      
+        public DateTime KaufDatum { get; set; }
         /*
                 public event PropertyChangedEventHandler PropertyChanged;
                 internal void NotifyPropertyChanged(string propertyName) {
@@ -36,28 +36,25 @@ namespace MeineFinanzen.Model {
                 */
         static XmlSerializer xmlserializer = new XmlSerializer(typeof(WertpapHBCI4j));
         public void SerializeWriteWertpapHBCI4j(string filename, WertpapHBCI4j wp) {
-            // Write
             try {
-                using (StreamWriter wr = new StreamWriter(filename, false))     // false == nicht append                                                                           
-                {
+                using (StreamWriter wr = new StreamWriter(filename, false)) {
                     xmlserializer.Serialize(wr, wp);
-                    }
-                } catch (Exception ex) {
-                System.Windows.MessageBox.Show("Fehler: in SerializeWriteWertpapHBCI4j() " + ex + Environment.NewLine + filename);
                 }
+            } catch (Exception ex) {
+                System.Windows.MessageBox.Show("Fehler: in SerializeWriteWertpapHBCI4j() " + ex + Environment.NewLine + filename);
             }
+        }
         public void DeserializeReadWertpapHBCI4j(string filename, out WertpapHBCI4j wphbci) {   //List<WertpapHBCI4j> wphbci) {
-            // Read
             wphbci = null;
             try {
                 using (StreamReader _reader = new StreamReader(filename)) {
                     wphbci = (WertpapHBCI4j)xmlserializer.Deserialize(_reader);
-                    }
-                } catch (Exception ex) {
-                System.Windows.MessageBox.Show("Fehler: DeserializeReadWertpapHBCI4j(): " + ex);
                 }
-            AktualisiereWertpapHBCI4jDaten(filename, wphbci);
+            } catch (Exception ex) {
+                System.Windows.MessageBox.Show("Fehler: DeserializeReadWertpapHBCI4j(): " + ex);
             }
+            AktualisiereWertpapHBCI4jDaten(filename, wphbci);
+        }
         private void AktualisiereWertpapHBCI4jDaten(string filename, WertpapHBCI4j wphbci) {
             FileInfo fiExe = (new FileInfo(Assembly.GetEntryAssembly().Location));
             DateTime dtLeUmw = File.GetLastWriteTime(fiExe.FullName);
@@ -69,6 +66,6 @@ namespace MeineFinanzen.Model {
             bankÜ.LiBankKonten[0].Konto Name8 =
             bankÜ.LiBankKonten[0].Konto Nr8 =
             bankÜ.LiBankKonten[0].Konto Value8 = */
-            }
         }
     }
+}

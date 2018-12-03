@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Media;
+using ProjSynIntNS.Model;
 namespace MeineFinanzen.Model {
     public class SynchroV : INotifyPropertyChanged {
         public float WPVAnzahl { get; set; }
